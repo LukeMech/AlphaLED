@@ -302,8 +302,12 @@ void setup() {
 
 void loop() {
   // Here paste the functions you like to use
-  animate(alphabet.C, alphabet.B, 2, 120, strip.Color(0, 0, 20));
-  animate(alphabet.B, alphabet.A, 2, 120, strip.Color(0, 20, 0));
-  animate(alphabet.A, alphabet.B, 3, 120, strip.Color(0, 0, 20));
-  animate(alphabet.B, alphabet.C, 3, 120, strip.Color(20, 0, 0));
+  animate(alphabet.C, alphabet.B, 2, 120, strip.Color(0, 0, 50));
+  delay(500);
+  animate(alphabet.B, alphabet.A, 2, 120, strip.Color(0, 50, 0));
+  delay(500);
+  animate(alphabet.A, alphabet.B, 3, 120, strip.Color(0, 0, 50));
+  delay(500);
+  animate(alphabet.B, alphabet.C, 3, 120, strip.Color(50, 0, 0));
+  delay(500);
 }
