@@ -24,6 +24,7 @@ uint8_t led_map[8][8] = {  // Table corresponding to the physical position/numbe
 // Alphabet maps
 struct Maps {
   uint8_t
+
     A[8][8] = { { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 1, 1, 1, 1, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 } },
     B[8][8] = { { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 1, 1, 1, 0, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 1, 1, 1, 0, 0, 0 }, { 0, 0, 1, 1, 1, 0, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 1, 1, 1, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 } },
     C[8][8] = { { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 } },
@@ -37,7 +38,11 @@ struct Maps {
     K[8][8] = { { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 1, 0, 1, 0, 0, 0 }, { 0, 0, 1, 1, 0, 0, 0, 0 }, { 0, 0, 1, 1, 0, 0, 0, 0 }, { 0, 0, 1, 0, 1, 0, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 } },
     L[8][8] = { { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 1, 1, 1, 1, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 } },
     Ł[8][8] = { { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 1, 0, 1, 0, 0, 0 }, { 0, 0, 1, 1, 0, 0, 0, 0 }, { 0, 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 1, 1, 1, 1, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 } },
-    M[8][8] = { { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 1, 0, 0, 0, 0, 1, 0 }, { 0, 1, 1, 0, 0, 1, 1, 0 }, { 0, 1, 0, 1, 1, 0, 1, 0 }, { 0, 1, 0, 0, 0, 0, 1, 0 }, { 0, 1, 0, 0, 0, 0, 1, 0 }, { 0, 1, 0, 0, 0, 0, 1, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 } };
+    M[8][8] = { { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 1, 0, 0, 0, 0, 1, 0 }, { 0, 1, 1, 0, 0, 1, 1, 0 }, { 0, 1, 0, 1, 1, 0, 1, 0 }, { 0, 1, 0, 0, 0, 0, 1, 0 }, { 0, 1, 0, 0, 0, 0, 1, 0 }, { 0, 1, 0, 0, 0, 0, 1, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 } },
+    N[8][8] = { { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 1, 0, 0, 0, 0, 1, 0 }, { 0, 1, 1, 0, 0, 0, 1, 0 }, { 0, 1, 0, 1, 0, 0, 1, 0 }, { 0, 1, 0, 0, 1, 0, 1, 0 }, { 0, 1, 0, 0, 0, 1, 1, 0 }, { 0, 1, 0, 0, 0, 0, 1, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 } },
+    O[8][8] = { { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 } },
+    P[8][8] = { { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 1, 1, 1, 0, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 1, 1, 1, 0, 0, 0 }, { 0, 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 } };
+
 } alphabet;
 
 // Init LEDs
@@ -60,7 +65,7 @@ void display(uint8_t map[][8]) {
 void animate(uint8_t startMap[][8], uint8_t endMap[][8], uint8_t direction = 0, int gap = 50, int addDelay = 0) {
   // Direction 0: Text ---->>>
   if (!direction) {
-    for (uint8_t shift = 0; shift < 8; shift++) {
+    for (uint8_t shift = 1; shift < 8; shift++) {
       for (uint8_t y = 0; y < 8; y++) {
         for (uint8_t x = 0; x < 8; x++) {
           uint8_t value = 0;
@@ -77,7 +82,7 @@ void animate(uint8_t startMap[][8], uint8_t endMap[][8], uint8_t direction = 0, 
   }
   // Direction 1: <<<---- Text
   else {
-    for (int8_t shift = 7; shift >= 0; shift--) {
+    for (int8_t shift = 6; shift >= 0; shift--) {
       for (uint8_t y = 0; y < 8; y++) {
         for (uint8_t x = 0; x < 8; x++) {
           uint8_t value = 0;
@@ -96,7 +101,7 @@ void animate(uint8_t startMap[][8], uint8_t endMap[][8], uint8_t direction = 0, 
   delay(addDelay);
 }
 
-void noiceAlphabet(int gaps = 150, int animLength = 50) {
+void noiceAlphabet(int gaps = 0, int animLength = 90) {
 
   animate(alphabet.A, alphabet.B, 0, animLength, gaps);
   animate(alphabet.B, alphabet.C, 0, animLength, gaps);
@@ -111,8 +116,13 @@ void noiceAlphabet(int gaps = 150, int animLength = 50) {
   animate(alphabet.K, alphabet.L, 0, animLength, gaps);
   animate(alphabet.L, alphabet.Ł, 0, animLength, gaps);
   animate(alphabet.Ł, alphabet.M, 0, animLength, gaps);
-  delay(gaps);
+  animate(alphabet.M, alphabet.N, 0, animLength, gaps);
+  animate(alphabet.N, alphabet.O, 0, animLength, gaps);
+  animate(alphabet.O, alphabet.P, 0, animLength, gaps);
 
+  animate(alphabet.P, alphabet.O, 1, animLength, gaps);
+  animate(alphabet.O, alphabet.N, 1, animLength, gaps);
+  animate(alphabet.N, alphabet.M, 1, animLength, gaps);
   animate(alphabet.M, alphabet.Ł, 1, animLength, gaps);
   animate(alphabet.Ł, alphabet.L, 1, animLength, gaps);
   animate(alphabet.L, alphabet.K, 1, animLength, gaps);
@@ -126,18 +136,17 @@ void noiceAlphabet(int gaps = 150, int animLength = 50) {
   animate(alphabet.D, alphabet.C, 1, animLength, gaps);
   animate(alphabet.C, alphabet.B, 1, animLength, gaps);
   animate(alphabet.B, alphabet.A, 1, animLength, gaps);
-  delay(gaps);
 }
 
 void setup() {
   strip.begin();
   strip.show();
+  display(alphabet.A);
+  delay(100);
 }
 
 
 void loop() {
-  display(alphabet.A);
-  delay(150);
   // Here paste the functions you like to use
   noiceAlphabet();
 }
