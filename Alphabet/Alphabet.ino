@@ -5,7 +5,7 @@
 #define LED_PIN D1  // LED Pin
 
 #define LED_COLOR_0 strip.Color(0, 0, 0)   // diode color for 0 (background) (R G B)
-#define LED_COLOR_1 strip.Color(50, 0, 0)  // diode color for 1 (text) (R G B)
+#define LED_COLOR_1 strip.Color(20, 0, 0)  // diode color for 1 (text) (R G B)
 
 uint8_t led_map[8][8] = {  // Table corresponding to the physical position/number of the LEDs
   { 63, 62, 61, 60, 59, 58, 57, 56 },
@@ -22,7 +22,7 @@ uint8_t led_map[8][8] = {  // Table corresponding to the physical position/numbe
 // <-- To use out-of-the-box -->
 
 // Alphabet maps
-struct Maps {
+struct {
   uint8_t
 
     A[8][8] = { { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 1, 1, 1, 1, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 } },
@@ -41,9 +41,26 @@ struct Maps {
     M[8][8] = { { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 1, 0, 0, 0, 0, 1, 0 }, { 0, 1, 1, 0, 0, 1, 1, 0 }, { 0, 1, 0, 1, 1, 0, 1, 0 }, { 0, 1, 0, 0, 0, 0, 1, 0 }, { 0, 1, 0, 0, 0, 0, 1, 0 }, { 0, 1, 0, 0, 0, 0, 1, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 } },
     N[8][8] = { { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 1, 0, 0, 0, 0, 1, 0 }, { 0, 1, 1, 0, 0, 0, 1, 0 }, { 0, 1, 0, 1, 0, 0, 1, 0 }, { 0, 1, 0, 0, 1, 0, 1, 0 }, { 0, 1, 0, 0, 0, 1, 1, 0 }, { 0, 1, 0, 0, 0, 0, 1, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 } },
     O[8][8] = { { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 } },
-    P[8][8] = { { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 1, 1, 1, 0, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 1, 1, 1, 0, 0, 0 }, { 0, 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 } };
+    P[8][8] = { { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 1, 1, 1, 0, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 1, 1, 1, 0, 0, 0 }, { 0, 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 } },
+
+    U[8][8] = { { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 } };
 
 } alphabet;
+
+// Characters maps
+struct {
+  uint8_t
+
+    exclam_mark[8][8] = { { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 } };
+
+} characters;
+
+// Numbers maps
+struct {
+  uint8_t
+    one[8][8] = { { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 } };
+
+} numbers;
 
 // Init LEDs
 Adafruit_NeoPixel strip(64, LED_PIN, NEO_GRB + NEO_KHZ800);
@@ -132,7 +149,7 @@ void noiceAlphabet(int gaps = 0, int animLength = 90) {
   animate(alphabet.H, alphabet.G, 1, animLength, gaps);
   animate(alphabet.G, alphabet.F, 1, animLength, gaps);
   animate(alphabet.F, alphabet.E, 1, animLength, gaps);
-  animate(alphabet.E, alphabet.D, 1, animLength, gaps);
+  animate(alphabet.E, alphabet.D, 1, animLength, gaps);   
   animate(alphabet.D, alphabet.C, 1, animLength, gaps);
   animate(alphabet.C, alphabet.B, 1, animLength, gaps);
   animate(alphabet.B, alphabet.A, 1, animLength, gaps);
@@ -141,12 +158,13 @@ void noiceAlphabet(int gaps = 0, int animLength = 90) {
 void setup() {
   strip.begin();
   strip.show();
-  display(alphabet.A);
-  delay(100);
+  display(characters.exclam_mark);
+  delay(1000);
 }
 
 
 void loop() {
   // Here paste the functions you like to use
+
   noiceAlphabet();
 }
