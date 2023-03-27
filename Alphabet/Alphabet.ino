@@ -4,7 +4,7 @@
 
 #define LED_PIN D1  // LED Pin
 
-#define LED_COLOR_0 strip.Color(0, 0, 0)    // diode color for 0 (background) (R G B)
+#define LED_COLOR_0 strip.Color(0, 0, 0)   // diode color for 0 (background) (R G B)
 #define LED_COLOR_1 strip.Color(50, 0, 0)  // diode color for 1 (text) (R G B)
 
 uint8_t led_map[8][8] = {  // Table corresponding to the physical position/number of the LEDs
@@ -33,8 +33,11 @@ struct Maps {
     G[8][8] = { { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 1, 0, 1, 1, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 } },
     H[8][8] = { { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 1, 1, 1, 1, 0, 0 }, { 0, 0, 1, 1, 1, 1, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 } },
     I[8][8] = { { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 } },
-    J[8][8] = { { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 1, 1, 1, 1, 0, 0 }, { 0, 0, 0, 0, 0, 1, 0, 0 }, { 0, 0, 0, 0, 0, 1, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 } };
-
+    J[8][8] = { { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 1, 1, 1, 1, 0, 0 }, { 0, 0, 0, 0, 0, 1, 0, 0 }, { 0, 0, 0, 0, 0, 1, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 } },
+    K[8][8] = { { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 1, 0, 1, 0, 0, 0 }, { 0, 0, 1, 1, 0, 0, 0, 0 }, { 0, 0, 1, 1, 0, 0, 0, 0 }, { 0, 0, 1, 0, 1, 0, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 } },
+    L[8][8] = { { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 1, 1, 1, 1, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 } },
+    Ł[8][8] = { { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 1, 0, 1, 0, 0, 0 }, { 0, 0, 1, 1, 0, 0, 0, 0 }, { 0, 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 1, 1, 1, 1, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 } },
+    M[8][8] = { { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 1, 0, 0, 0, 0, 1, 0 }, { 0, 1, 1, 0, 0, 1, 1, 0 }, { 0, 1, 0, 1, 1, 0, 1, 0 }, { 0, 1, 0, 0, 0, 0, 1, 0 }, { 0, 1, 0, 0, 0, 0, 1, 0 }, { 0, 1, 0, 0, 0, 0, 1, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 } };
 } alphabet;
 
 // Init LEDs
@@ -54,15 +57,15 @@ void display(uint8_t map[][8]) {
 }
 
 // Animate between maps
-void animate(uint8_t startMap[][8], uint8_t endMap[][8], uint8_t direction = 0, int gap = 100) {
+void animate(uint8_t startMap[][8], uint8_t endMap[][8], uint8_t direction = 0, int gap = 50, int addDelay = 0) {
   // Direction 0: Text ---->>>
   if (!direction) {
-    for (uint8_t shift = 1; shift < 7; shift++) {
+    for (uint8_t shift = 0; shift < 8; shift++) {
       for (uint8_t y = 0; y < 8; y++) {
         for (uint8_t x = 0; x < 8; x++) {
           uint8_t value = 0;
-          if (x < (6 - shift)) value = startMap[y][x + shift];
-          else value = endMap[y][x - (6 - shift)];
+          if (x < (7 - shift)) value = startMap[y][x + shift];
+          else value = endMap[y][x - (7 - shift)];
           uint8_t index = led_map[y][x];
           if (value == 0) strip.setPixelColor(index, LED_COLOR_0);
           else if (value == 1) strip.setPixelColor(index, LED_COLOR_1);
@@ -74,11 +77,11 @@ void animate(uint8_t startMap[][8], uint8_t endMap[][8], uint8_t direction = 0, 
   }
   // Direction 1: <<<---- Text
   else {
-    for (int8_t shift = 5; shift >= 0; shift--) {
+    for (int8_t shift = 7; shift >= 0; shift--) {
       for (uint8_t y = 0; y < 8; y++) {
         for (uint8_t x = 0; x < 8; x++) {
           uint8_t value = 0;
-          if (x >= (6 - shift)) value = startMap[y][x - (6 - shift)];
+          if (x >= (7 - shift)) value = startMap[y][x - (7 - shift)];
           else value = endMap[y][x + shift];
           uint8_t index = led_map[y][x];
           if (value == 0) strip.setPixelColor(index, LED_COLOR_0);
@@ -89,46 +92,40 @@ void animate(uint8_t startMap[][8], uint8_t endMap[][8], uint8_t direction = 0, 
       delay(gap);
     }
   }
+
+  delay(addDelay);
 }
 
-void noiceAlphabet(int gaps = 500, int animLength = 50) {
+void noiceAlphabet(int gaps = 150, int animLength = 50) {
 
-  animate(alphabet.A, alphabet.B, 0, animLength);
-  delay(gaps);
-  animate(alphabet.B, alphabet.C, 0, animLength);
-  delay(gaps);
-  animate(alphabet.C, alphabet.D, 0, animLength);
-  delay(gaps);
-  animate(alphabet.D, alphabet.E, 0, animLength);
-  delay(gaps);
-  animate(alphabet.E, alphabet.F, 0, animLength);
-  delay(gaps);
-  animate(alphabet.F, alphabet.G, 0, animLength);
-  delay(gaps);
-  animate(alphabet.G, alphabet.H, 0, animLength);
-  delay(gaps);
-  animate(alphabet.H, alphabet.I, 0, animLength);
-  delay(gaps);
-  animate(alphabet.I, alphabet.J, 0, animLength);
+  animate(alphabet.A, alphabet.B, 0, animLength, gaps);
+  animate(alphabet.B, alphabet.C, 0, animLength, gaps);
+  animate(alphabet.C, alphabet.D, 0, animLength, gaps);
+  animate(alphabet.D, alphabet.E, 0, animLength, gaps);
+  animate(alphabet.E, alphabet.F, 0, animLength, gaps);
+  animate(alphabet.F, alphabet.G, 0, animLength, gaps);
+  animate(alphabet.G, alphabet.H, 0, animLength, gaps);
+  animate(alphabet.H, alphabet.I, 0, animLength, gaps);
+  animate(alphabet.I, alphabet.J, 0, animLength, gaps);
+  animate(alphabet.J, alphabet.K, 0, animLength, gaps);
+  animate(alphabet.K, alphabet.L, 0, animLength, gaps);
+  animate(alphabet.L, alphabet.Ł, 0, animLength, gaps);
+  animate(alphabet.Ł, alphabet.M, 0, animLength, gaps);
   delay(gaps);
 
-  animate(alphabet.J, alphabet.I, 1, animLength);
-  delay(gaps);
-  animate(alphabet.I, alphabet.H, 1, animLength);
-  delay(gaps);
-  animate(alphabet.H, alphabet.G, 1, animLength);
-  delay(gaps);
-  animate(alphabet.G, alphabet.F, 1, animLength);
-  delay(gaps);
-  animate(alphabet.F, alphabet.E, 1, animLength);
-  delay(gaps);
-  animate(alphabet.E, alphabet.D, 1, animLength);
-  delay(gaps);
-  animate(alphabet.D, alphabet.C, 1, animLength);
-  delay(gaps);
-  animate(alphabet.C, alphabet.B, 1, animLength);
-  delay(gaps);
-  animate(alphabet.B, alphabet.A, 1, animLength);
+  animate(alphabet.M, alphabet.Ł, 1, animLength, gaps);
+  animate(alphabet.Ł, alphabet.L, 1, animLength, gaps);
+  animate(alphabet.L, alphabet.K, 1, animLength, gaps);
+  animate(alphabet.K, alphabet.J, 1, animLength, gaps);
+  animate(alphabet.J, alphabet.I, 1, animLength, gaps);
+  animate(alphabet.I, alphabet.H, 1, animLength, gaps);
+  animate(alphabet.H, alphabet.G, 1, animLength, gaps);
+  animate(alphabet.G, alphabet.F, 1, animLength, gaps);
+  animate(alphabet.F, alphabet.E, 1, animLength, gaps);
+  animate(alphabet.E, alphabet.D, 1, animLength, gaps);
+  animate(alphabet.D, alphabet.C, 1, animLength, gaps);
+  animate(alphabet.C, alphabet.B, 1, animLength, gaps);
+  animate(alphabet.B, alphabet.A, 1, animLength, gaps);
   delay(gaps);
 }
 
@@ -139,7 +136,8 @@ void setup() {
 
 
 void loop() {
-
-  noiceAlphabet();
+  display(alphabet.A);
+  delay(150);
   // Here paste the functions you like to use
+  noiceAlphabet();
 }
