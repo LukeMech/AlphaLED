@@ -63,6 +63,7 @@ struct {
 struct {
   uint8_t
 
+    space[8][8] = { { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 } },
     exclam_mark[8][8] = { { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 } };
 
 } characters;
@@ -96,7 +97,7 @@ void animate(uint8_t startMap[][8], uint8_t endMap[][8], uint8_t direction = 0, 
   // New text color
   if (newColor1) LED_COLOR_1 = newColor1;
 
-  // Direction 0: Text ---->>>
+  // Direction 0: <<<---- Text
   if (!direction) {
     for (uint8_t shift = 1; shift < 8; shift++) {
       for (uint8_t y = 0; y < 8; y++) {
@@ -120,7 +121,7 @@ void animate(uint8_t startMap[][8], uint8_t endMap[][8], uint8_t direction = 0, 
       delay(gap);
     }
   }
-  // Direction 1: <<<---- Text
+  // Direction 1: Text ---->>>
   else if (direction == 1) {
     for (int8_t shift = 6; shift >= 0; shift--) {
       for (uint8_t y = 0; y < 8; y++) {
@@ -194,7 +195,7 @@ void animate(uint8_t startMap[][8], uint8_t endMap[][8], uint8_t direction = 0, 
   }
 }
 
-void noiceAlphabet(int gaps = 0, int animLength = 90) {
+void noiceAlphabet(int gaps = 100, int animLength = 90) {
 
   animate(alphabet.A, alphabet.B, 0, animLength);
   delay(gaps);
@@ -241,7 +242,7 @@ void noiceAlphabet(int gaps = 0, int animLength = 90) {
   animate(alphabet.X, alphabet.Y, 0, animLength);
   delay(gaps);
   animate(alphabet.Y, alphabet.Z, 0, animLength);
-  delay(gaps + 200);
+  delay(gaps * 2);
 
   animate(alphabet.Z, alphabet.Y, 1, animLength);
   delay(gaps);
@@ -288,26 +289,19 @@ void noiceAlphabet(int gaps = 0, int animLength = 90) {
   animate(alphabet.C, alphabet.B, 1, animLength);
   delay(gaps);
   animate(alphabet.B, alphabet.A, 1, animLength);
-  delay(gaps + 200);
+  delay(gaps * 2);
 }
+
+
 
 void setup() {
   strip.begin();
   strip.show();
-  display(characters.exclam_mark);
+  display(alphabet.A);
   delay(1000);
-  display(alphabet.C);
-  delay(600);
 }
 
 void loop() {
   // Here paste the functions you like to use
-  animate(alphabet.C, alphabet.B, 2, 120, strip.Color(0, 0, 50));
-  delay(500);
-  animate(alphabet.B, alphabet.A, 2, 120, strip.Color(0, 50, 0));
-  delay(500);
-  animate(alphabet.A, alphabet.B, 3, 120, strip.Color(0, 0, 50));
-  delay(500);
-  animate(alphabet.B, alphabet.C, 3, 120, strip.Color(50, 0, 0));
-  delay(500);
+  noiceAlphabet();
 }
