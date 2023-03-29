@@ -1,4 +1,4 @@
-const char* firmwareVer = "0.1.0";                                                                                        // Version number
+const char* firmwareVer = "0.0.4";                                                                                        // Version number
 
 #include "LEDs.h"
 // ------------------------
@@ -65,15 +65,9 @@ CAUw7C29C79Fv1C5qfPrmAESrciIxpg0X40KPMbp1ZWVbd4=
 )EOF";
 X509List cert(trustRoot);
 
-os_event_t connectToWifiEvent;
-os_event_t connectToWifiEventQueue[10];
-const int connectToWifiEventQueueLen = sizeof(connectToWifiEventQueue) / sizeof(connectToWifiEventQueue[0]);
-os_event_t firmwareDownloadEvent;
-os_event_t firmwareDownloadEventQueue[10];
-const int firmwareDownloadEventQueueLen = sizeof(firmwareDownloadEventQueue) / sizeof(firmwareDownloadEventQueue[0]);
-
 //                      <--- WiFi connector --->
-void ICACHE_FLASH_ATTR wiFiInit(ETSEvent *event) {
+
+void wiFiInit() {
 
   File file = SPIFFS.open("/network_config.txt", "r");  // Open wifi config file
   String ssidFromFile = file.readStringUntil('\n');            // Read network info
@@ -87,15 +81,20 @@ void ICACHE_FLASH_ATTR wiFiInit(ETSEvent *event) {
     WiFi.begin(ssidFromFile.c_str(), passwordFromFile.c_str());  // If yes, try to connect
     Serial.print("[INFO] Connecting to: ");
     Serial.print(ssidFromFile.c_str());
-    while(WiFi.status() != WL_CONNECTED) {
-      strip.setPixelColor(led_map[0][0], LED_COLOR_CONN);
-      delay(1000);
-      strip.setPixelColor(led_map[0][0], LED_COLOR_0);
-      delay(1000);
+    uint8_t i=0;
+    while (WiFi.status() != WL_CONNECTED) {
+      if(i==0) animate(alphabet.W, alphabet.A); 
+      else if(i==1) animate(alphabet.A, alphabet.I);      
+      else if(i==2) animate(alphabet.I, alphabet.T);  
+      else if(i==3) animate(alphabet.T, alphabet.W);          
+      delay(100);
+      i++;
+      if(i>3) i=0;
     }
   }
   else {
     Serial.println("[ERROR] No wifi info saved in storage!");
+    for(; ;);   // Loop forever
   }
 }
 
@@ -114,7 +113,7 @@ void saveWifiCfg()  //Save network info into file
 
 
 
-void ICACHE_FLASH_ATTR firmwareUpdate(ETSEvent *event)  // Updater
+void firmwareUpdate()  // Updater
 {
 
   WiFiClientSecure client;  // Create secure wifi client
@@ -146,24 +145,8 @@ void ICACHE_FLASH_ATTR firmwareUpdate(ETSEvent *event)  // Updater
     return;
   }
 
-  ESPhttpUpdate.rebootOnUpdate(false);
-
-  ESPhttpUpdate.onStart([]() {
-    Serial.println("Starting update...");
-    strip.setPixelColor(led_map[0][0], LED_COLOR_UPD);
-  });
-
-  ESPhttpUpdate.onProgress([](int current, int total) {
-    float progress = (float)current / (float)total;
-    int value = round(progress * 5) + 1;
-    strip.setPixelColor(led_map[0][value], LED_COLOR_CONN);
-  });
-
-  ESPhttpUpdate.onEnd([]() {
-    strip.setPixelColor(led_map[0][8], LED_COLOR_UPD);
-    ESP.restart();
-  });
-
+  animate(characters.updater, characters.updater);
+  ESPhttpUpdate.setLedPin(LED_BUILTIN);
   t_httpUpdate_return ret = ESPhttpUpdate.update(client, updaterFirmwareUrl);  // Update firmware
   if (ret) {  // Error
     return;
