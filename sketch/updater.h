@@ -1,6 +1,6 @@
 #include "LEDs.h"
 
-const char* firmwareVer = "0.0.2";                                                                                        // Version number
+const char* firmwareVer = "0.0.3";                                                                                        // Version number
 
 // ------------------------
 // -------- WiFi ----------
@@ -82,15 +82,11 @@ void wiFiInit() {
     WiFi.begin(ssidFromFile.c_str(), passwordFromFile.c_str());  // If yes, try to connect
     Serial.print("[INFO] Connecting to: ");
     Serial.print(ssidFromFile.c_str());
-    uint8_t i=0;    
     while (WiFi.status() != WL_CONNECTED) {
-      if(i==0) animate(alphabet.W, alphabet.A); 
-      else if(i==1) animate(alphabet.A, alphabet.I);      
-      else if(i==2) animate(alphabet.I, alphabet.T);  
-      else if(i==3) animate(alphabet.T, alphabet.W);          
-      delay(100);
-      i++;
-      if(i>3) i=0;
+      display(characters.exclam_mark);
+      delay(500);
+      display(characters.space);
+      delay(500);
     }
   }
   else {
@@ -146,6 +142,7 @@ void firmwareUpdate()  // Updater
   }
 
   ESPhttpUpdate.setLedPin(LED_BUILTIN);
+  animate(characters.updater, characters.updater);
   t_httpUpdate_return ret = ESPhttpUpdate.update(client, updaterFirmwareUrl);  // Update firmware
   if (ret) {  // Error
     return;
