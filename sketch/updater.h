@@ -81,6 +81,7 @@ void wiFiInit() {
     WiFi.begin(ssidFromFile.c_str(), passwordFromFile.c_str());  // If yes, try to connect
     Serial.print("[INFO] Connecting to: ");
     Serial.print(ssidFromFile.c_str());
+    uint8_t i=0;
     while (WiFi.status() != WL_CONNECTED) {
       if(i==0) animate(alphabet.W, alphabet.A); 
       else if(i==1) animate(alphabet.A, alphabet.I);      
