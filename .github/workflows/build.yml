@@ -47,6 +47,7 @@ jobs:
       # Upload to repository
       - name: Push changes to repo
         run: |
+          mkdir ./updater || true
           cp ./sketch/build/**/*.ino.bin ./updater/firmware.bin
           cp ./sketch/version.txt ./updater/build-version.txt
           rm -rf ./sketch/build
