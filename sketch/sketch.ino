@@ -12,7 +12,7 @@ void setup() {
   Serial.println("[STATUS] Start!");
 
   strip.begin();  // Init strips
-  strip.show();
+  display(characters.space);
 
   if (!SPIFFS.begin()) ESP.restart();  // Begin filesystem
 

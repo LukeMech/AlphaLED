@@ -1,4 +1,4 @@
-const char* firmwareVer = "0.0.5";  // Version number
+const char* firmwareVer = "0.1.0";  // Version number
 
 #include "LEDs.h"
 // ------------------------
@@ -71,23 +71,21 @@ X509List cert(trustRoot);
 
 void firmwareUpdate() {  // Updater
 
+  strip.setPixelColor(led_map[0][8], LED_COLOR_UPD);
+  strip.show();
+
   WiFiClientSecure client;  // Create secure wifi client
   client.setTrustAnchors(&cert);
 
   configTime(0, 0, "pool.ntp.org", "time.nist.gov");  // Set time via NTP, as required for x.509 validation
   time_t now = time(nullptr);
 
-  if (!client.connect(host, httpsPort)) {  // Connect to github
-    return;
-  }
+  if (!client.connect(host, httpsPort)) return;  // Connect to github
 
   HTTPClient http;  // Connect to release API
   http.begin(client, updaterVersionCtrlUrl);
   int httpCode = http.GET();
-  if (httpCode != HTTP_CODE_OK) {
-    return;
-  }
-
+  if (httpCode != HTTP_CODE_OK) return;
 
   String new_version = http.getString();  //Download version tag
   new_version.trim();
@@ -99,32 +97,44 @@ void firmwareUpdate() {  // Updater
 
   ESPhttpUpdate.onStart([]() {
     Serial.println("Starting update...");
-    strip.setPixelColor(led_map[0][0], LED_COLOR_UPD);
+    strip.setPixelColor(led_map[0][0], LED_COLOR_0);
+
+    strip.setPixelColor(led_map[3][0], LED_COLOR_UPD);
+    strip.setPixelColor(led_map[4][0], LED_COLOR_UPD);
+
+    strip.setPixelColor(led_map[3][8], LED_COLOR_UPD);
+    strip.setPixelColor(led_map[4][8], LED_COLOR_UPD);
     strip.show();
   });
 
   ESPhttpUpdate.onProgress([](int current, int total) {
     float progress = (float)current / (float)total;
-    int value = round(progress * 6) + 1;
+    int value = round(progress * 5) + 1;
     Serial.print("[PROGRESS] Updater: ");
     Serial.println(progress * 100);
 
-    strip.setPixelColor(led_map[0][value], LED_COLOR_CONN);
+    strip.setPixelColor(led_map[3][value], LED_COLOR_CONN);
+    strip.setPixelColor(led_map[4][value], LED_COLOR_CONN);
     strip.show();
   });
 
   ESPhttpUpdate.onEnd([]() {
-    for (uint8_t i; i < 8; i++) strip.setPixelColor(led_map[0][i], LED_COLOR_0);
+    for (uint8_t i; i < 8; i++) {
+      strip.setPixelColor(led_map[3][i], LED_COLOR_0);
+      strip.setPixelColor(led_map[4][i], LED_COLOR_0);
+    }
+
     strip.show();
-    animate(characters.space, characters.updater, 2, 100);
+    animate(characters.space, characters.updater, 2, 100, LED_COLOR_CONN);
     ESP.restart();
   });
+
   t_httpUpdate_return ret = ESPhttpUpdate.update(client, updaterFirmwareUrl);  // Update firmware
   if (ret) {                                                                   // Error
     strip.setPixelColor(led_map[0][8], LED_COLOR_ERR);
     strip.show();
     delay(2000);
-    for (uint8_t i; i < 8; i++) strip.setPixelColor(led_map[0][i], LED_COLOR_UPD);
+    for (uint8_t i; i < 8; i++) strip.setPixelColor(led_map[0][i], LED_COLOR_0);
     strip.show();
   }
 }
