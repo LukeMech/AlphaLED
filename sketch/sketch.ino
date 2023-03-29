@@ -1,4 +1,5 @@
 #include "updater.h"
+#include "LEDs.h"
 
 void cba() {
   animate(alphabet.C, alphabet.B, 2, 120, strip.Color(0, 0, 20));
@@ -20,6 +21,14 @@ void setup() {
 
   if (WiFi_UpdateCredentialsFile) saveWifiCfg();  // Save network config
   wiFiInit();  // Connect to wifi
+  while (WiFi.status() != WL_CONNECTED) {
+    display(characters.exclam_mark);
+    delay(500);
+    display(characters.space);
+    delay(500);
+  }
+
+  animate(characters.updater, characters.updater);
   firmwareUpdate();  
   
   strip.begin();    // Init strips
