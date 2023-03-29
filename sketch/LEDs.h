@@ -1,6 +1,6 @@
 #include <Adafruit_NeoPixel.h>
 
-const int LED_PIN = D1;                                      // LED Pin
+const int LED_PIN = D1;  // LED Pin
 
 Adafruit_NeoPixel strip(64, LED_PIN, NEO_GRB + NEO_KHZ800);  // Init LEDs
 
@@ -17,6 +17,10 @@ uint8_t led_map[8][8] = {  // Table corresponding to the physical position/numbe
 
 uint32_t LED_COLOR_0 = strip.Color(0, 0, 0);   // diode color for 0 (background) (R G B)
 uint32_t LED_COLOR_1 = strip.Color(20, 0, 0);  // diode color for 1 (text) (R G B)
+
+uint32_t LED_COLOR_CONN = strip.Color(0, 20, 0);  // diode color for update
+uint32_t LED_COLOR_UPD = strip.Color(0, 0, 20);   // diode color for update
+uint32_t LED_COLOR_ERR = strip.Color(20, 0, 0);   // diode color for update
 
 // Alphabet maps
 struct {
@@ -241,7 +245,7 @@ void alphabetAnim(int gaps = 0, int animLength = 90) {
   animate(alphabet.X, alphabet.Y, 0, animLength);
   delay(gaps);
   animate(alphabet.Y, alphabet.Z, 0, animLength);
-  delay(gaps ? gaps*2 : 200);
+  delay(gaps ? gaps * 2 : 200);
 
   animate(alphabet.Z, alphabet.Y, 1, animLength);
   delay(gaps);
@@ -288,5 +292,5 @@ void alphabetAnim(int gaps = 0, int animLength = 90) {
   animate(alphabet.C, alphabet.B, 1, animLength);
   delay(gaps);
   animate(alphabet.B, alphabet.A, 1, animLength);
-  delay(gaps ? gaps*2 : 200);
+  delay(gaps ? gaps * 2 : 200);
 }

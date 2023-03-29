@@ -11,22 +11,16 @@ void setup() {
   Serial.begin(9600);  // Begin serial
   Serial.println("[STATUS] Start!");
 
-  strip.begin();    // Init strips
+  strip.begin();  // Init strips
   strip.show();
 
-  if (!SPIFFS.begin()) ESP.restart();              // Begin filesystem 
-    
+  if (!SPIFFS.begin()) ESP.restart();  // Begin filesystem
+
   pinMode(LED_BUILTIN, OUTPUT);  // Set pin modes
   digitalWrite(LED_BUILTIN, HIGH);
 
-  display(alphabet.W);
-
   if (WiFi_UpdateCredentialsFile) saveWifiCfg();  // Save network config
-  wiFiInit();  // Connect to wifi
-  firmwareUpdate();  
-
-  display(alphabet.C);
-  delay(1000);
+  wiFiInit();                                     // Connect to wifi
 }
 
 void loop() {

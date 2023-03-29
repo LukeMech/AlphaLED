@@ -55,6 +55,6 @@ jobs:
           git config --global user.name github-actions
           git config --global user.email github-actions@github.com
           git pull
-          git add .
-          git commit -m "🏗️ Build v$(cat version.txt)"
-          git push
+          git add . || true
+          git commit -m "🏗️ Build v$(cat version.txt)" || true
+          git push || true
