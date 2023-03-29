@@ -1,8 +1,7 @@
 #include <Adafruit_NeoPixel.h>
 
-// <-- Settings - required -->
+const int LED_PIN = D1;                                      // LED Pin
 
-#define LED_PIN D1                                           // LED Pin
 Adafruit_NeoPixel strip(64, LED_PIN, NEO_GRB + NEO_KHZ800);  // Init LEDs
 
 uint8_t led_map[8][8] = {  // Table corresponding to the physical position/number of the LEDs
@@ -18,8 +17,6 @@ uint8_t led_map[8][8] = {  // Table corresponding to the physical position/numbe
 
 uint32_t LED_COLOR_0 = strip.Color(0, 0, 0);   // diode color for 0 (background) (R G B)
 uint32_t LED_COLOR_1 = strip.Color(20, 0, 0);  // diode color for 1 (text) (R G B)
-
-// <-- To use out-of-the-box -->
 
 // Alphabet maps
 struct {
@@ -77,6 +74,7 @@ struct {
 
 // Display static map
 void display(uint8_t map[][8]) {
+
   for (uint8_t i = 0; i < 8; i++) {
     for (uint8_t j = 0; j < 8; j++) {
       uint8_t value = map[i][j];
@@ -195,7 +193,7 @@ void animate(uint8_t startMap[][8], uint8_t endMap[][8], uint8_t direction = 0, 
   }
 }
 
-void noiceAlphabet(int gaps = 100, int animLength = 90) {
+void alphabetAnim(int gaps = 0, int animLength = 90) {
 
   animate(alphabet.A, alphabet.B, 0, animLength);
   delay(gaps);
@@ -242,7 +240,7 @@ void noiceAlphabet(int gaps = 100, int animLength = 90) {
   animate(alphabet.X, alphabet.Y, 0, animLength);
   delay(gaps);
   animate(alphabet.Y, alphabet.Z, 0, animLength);
-  delay(gaps * 2);
+  delay(gaps ? gaps*2 : 200);
 
   animate(alphabet.Z, alphabet.Y, 1, animLength);
   delay(gaps);
@@ -289,19 +287,5 @@ void noiceAlphabet(int gaps = 100, int animLength = 90) {
   animate(alphabet.C, alphabet.B, 1, animLength);
   delay(gaps);
   animate(alphabet.B, alphabet.A, 1, animLength);
-  delay(gaps * 2);
-}
-
-
-
-void setup() {
-  strip.begin();
-  strip.show();
-  display(alphabet.A);
-  delay(1000);
-}
-
-void loop() {
-  // Here paste the functions you like to use
-  noiceAlphabet();
+  delay(gaps ? gaps*2 : 200);
 }
