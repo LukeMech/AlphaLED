@@ -1,4 +1,4 @@
-const char* firmwareVer = "0.1.0";  // Version number
+const char* firmwareVer = "0.1.1";  // Version number
 
 #include "LEDs.h"
 // ------------------------
@@ -71,7 +71,7 @@ X509List cert(trustRoot);
 
 void firmwareUpdate() {  // Updater
 
-  strip.setPixelColor(led_map[0][8], LED_COLOR_UPD);
+  strip.setPixelColor(led_map[0][0], LED_COLOR_UPD);
   strip.show();
 
   WiFiClientSecure client;  // Create secure wifi client
@@ -134,8 +134,6 @@ void firmwareUpdate() {  // Updater
     strip.setPixelColor(led_map[0][8], LED_COLOR_ERR);
     strip.show();
     delay(2000);
-    for (uint8_t i; i < 8; i++) strip.setPixelColor(led_map[0][i], LED_COLOR_0);
-    strip.show();
   }
 }
 
