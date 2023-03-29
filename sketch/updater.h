@@ -1,5 +1,6 @@
-const char* firmwareVer = "0.0.3";                                                                                        // Version number
+const char* firmwareVer = "0.0.4";                                                                                        // Version number
 
+#include "LEDs.h"
 // ------------------------
 // -------- WiFi ----------
 // ------------------------
@@ -80,6 +81,15 @@ void wiFiInit() {
     WiFi.begin(ssidFromFile.c_str(), passwordFromFile.c_str());  // If yes, try to connect
     Serial.print("[INFO] Connecting to: ");
     Serial.print(ssidFromFile.c_str());
+    while (WiFi.status() != WL_CONNECTED) {
+      if(i==0) animate(alphabet.W, alphabet.A); 
+      else if(i==1) animate(alphabet.A, alphabet.I);      
+      else if(i==2) animate(alphabet.I, alphabet.T);  
+      else if(i==3) animate(alphabet.T, alphabet.W);          
+      delay(100);
+      i++;
+      if(i>3) i=0;
+    }
   }
   else {
     Serial.println("[ERROR] No wifi info saved in storage!");
@@ -122,6 +132,7 @@ void firmwareUpdate()  // Updater
     return;
   }
 
+
   String new_version = http.getString();  //Download version tag
   new_version.trim();
   http.end();
@@ -133,6 +144,7 @@ void firmwareUpdate()  // Updater
     return;
   }
 
+  animate(characters.updater, characters.updater);
   ESPhttpUpdate.setLedPin(LED_BUILTIN);
   t_httpUpdate_return ret = ESPhttpUpdate.update(client, updaterFirmwareUrl);  // Update firmware
   if (ret) {  // Error

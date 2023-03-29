@@ -50,11 +50,11 @@ jobs:
         run: |
           mkdir ./updater || true
           cp ./sketch/build/**/*.ino.bin ./updater/firmware.bin
-          cp ./sketch/version.txt ./updater/build-version.txt
+          cp ./version.txt ./updater/build-version.txt
           rm -rf ./sketch/build
           git config --global user.name github-actions
           git config --global user.email github-actions@github.com
           git pull
           git add .
-          git commit -m "🏗️ Build v$(cat sketch/version.txt)"
+          git commit -m "🏗️ Build v$(cat version.txt)"
           git push
