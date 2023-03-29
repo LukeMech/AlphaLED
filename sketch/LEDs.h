@@ -15,8 +15,10 @@ uint8_t led_map[8][8] = {  // Table corresponding to the physical position/numbe
   { 0, 1, 2, 3, 4, 5, 6, 7 }
 };
 
-uint32_t LED_COLOR_0 = strip.Color(0, 0, 0);   // diode color for 0 (background) (R G B)
-uint32_t LED_COLOR_1 = strip.Color(20, 0, 0);  // diode color for 1 (text) (R G B)
+uint32_t LED_COLOR_0 = strip.Color(0, 0, 0);    // diode color for 0 (background) (R G B)
+uint32_t LED_COLOR_1 = strip.Color(20, 0, 0);   // diode color for 1 (text) (R G B)
+uint32_t LED_COLOR_CONN = strip.Color(20, 20, 0); // diode color for update
+uint32_t LED_COLOR_UPD = strip.Color(0, 20, 0); // diode color for update
 
 // Alphabet maps
 struct {
@@ -62,7 +64,8 @@ struct {
 
     space[8][8] = { { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 } },
     exclam_mark[8][8] = { { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 } },
-    updater[8][8] = { { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 } };
+
+    updater[8][8] = { { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 1, 1, 1, 1, 1, 1, 0 }, { 0, 0, 1, 1, 1, 1, 0, 0 }, { 0, 0, 0, 1, 1, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 } };
 
 } characters;
 
@@ -80,6 +83,7 @@ void display(uint8_t map[][8]) {
     for (uint8_t j = 0; j < 8; j++) {
       uint8_t value = map[i][j];
       uint8_t index = led_map[i][j];
+      if(i==0) return;
       if (value == 0) strip.setPixelColor(index, LED_COLOR_0);
       else if (value == 1) strip.setPixelColor(index, LED_COLOR_1);
     }
@@ -101,6 +105,7 @@ void animate(uint8_t startMap[][8], uint8_t endMap[][8], uint8_t direction = 0, 
     for (uint8_t shift = 1; shift < 8; shift++) {
       for (uint8_t y = 0; y < 8; y++) {
         for (uint8_t x = 0; x < 8; x++) {
+          if(y==0) return;
           uint8_t value = 0;
           if (x < (7 - shift)) {
             value = startMap[y][x + shift];
@@ -125,6 +130,7 @@ void animate(uint8_t startMap[][8], uint8_t endMap[][8], uint8_t direction = 0, 
     for (int8_t shift = 6; shift >= 0; shift--) {
       for (uint8_t y = 0; y < 8; y++) {
         for (uint8_t x = 0; x < 8; x++) {
+          if(y==0) return;
           uint8_t value = 0;
           if (x >= (7 - shift)) {
             value = startMap[y][x - (7 - shift)];
@@ -149,6 +155,7 @@ void animate(uint8_t startMap[][8], uint8_t endMap[][8], uint8_t direction = 0, 
     for (uint8_t shift = 1; shift < 8; shift++) {
       for (uint8_t x = 0; x < 8; x++) {
         for (uint8_t y = 0; y < 8; y++) {
+          if(y==0) return;
           uint8_t value = 0;
           if (y < (7 - shift)) {
             value = startMap[y + shift][x];
@@ -173,6 +180,7 @@ void animate(uint8_t startMap[][8], uint8_t endMap[][8], uint8_t direction = 0, 
     for (int8_t shift = 6; shift >= 0; shift--) {
       for (uint8_t x = 0; x < 8; x++) {
         for (uint8_t y = 0; y < 8; y++) {
+          if(y==0) return;
           uint8_t value = 0;
           if (y >= (7 - shift)) {
             value = startMap[y - (7 - shift)][x];
