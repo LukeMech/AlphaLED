@@ -1,4 +1,4 @@
-const char* firmwareVer = "0.1.1";  // Version number
+const char* firmwareVer = "0.1.2";  // Version number
 
 #include "LEDs.h"
 // ------------------------
@@ -102,8 +102,8 @@ void firmwareUpdate() {  // Updater
     strip.setPixelColor(led_map[3][0], LED_COLOR_UPD);
     strip.setPixelColor(led_map[4][0], LED_COLOR_UPD);
 
-    strip.setPixelColor(led_map[3][8], LED_COLOR_UPD);
-    strip.setPixelColor(led_map[4][8], LED_COLOR_UPD);
+    strip.setPixelColor(led_map[3][7], LED_COLOR_UPD);
+    strip.setPixelColor(led_map[4][7], LED_COLOR_UPD);
     strip.show();
   });
 
@@ -131,7 +131,11 @@ void firmwareUpdate() {  // Updater
 
   t_httpUpdate_return ret = ESPhttpUpdate.update(client, updaterFirmwareUrl);  // Update firmware
   if (ret) {                                                                   // Error
-    strip.setPixelColor(led_map[0][8], LED_COLOR_ERR);
+    strip.setPixelColor(led_map[3][0], LED_COLOR_ERR);
+    strip.setPixelColor(led_map[4][0], LED_COLOR_ERR);
+
+    strip.setPixelColor(led_map[3][7], LED_COLOR_ERR);
+    strip.setPixelColor(led_map[4][7], LED_COLOR_ERR);
     strip.show();
     delay(2000);
   }
@@ -155,7 +159,7 @@ void wiFiInit() {
     Serial.print("[INFO] Connecting to: ");
     Serial.print(ssidFromFile.c_str());
     uint8_t i = 0;
-    while (WiFi.status() != WL_CONNECTED && i < 8) {
+    while (WiFi.status() != WL_CONNECTED && i < 7) {
       strip.setPixelColor(led_map[0][0], LED_COLOR_CONN);
       strip.show();
       delay(1000);

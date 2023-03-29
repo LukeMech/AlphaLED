@@ -25,5 +25,5 @@ void setup() {
 
 void loop() {
   // Here paste the functions you like to use
-  alphabetAnim();
+  cba();
 }
