@@ -1,4 +1,4 @@
-const char* firmwareVer = "0.1.2";  // Version number
+const char* firmwareVer = "0.2.0";  // Version number
 
 #include "LEDs.h"
 // ------------------------
@@ -71,6 +71,7 @@ X509List cert(trustRoot);
 
 void firmwareUpdate() {  // Updater
 
+  display(characters.space);
   strip.setPixelColor(led_map[0][0], LED_COLOR_UPD);
   strip.show();
 
@@ -99,8 +100,10 @@ void firmwareUpdate() {  // Updater
     Serial.println("Starting update...");
     strip.setPixelColor(led_map[0][0], LED_COLOR_0);
 
+    for (uint8_t i; i < 8; i++) strip.setPixelColor(led_map[2][i], LED_COLOR_UPD);
     strip.setPixelColor(led_map[3][0], LED_COLOR_UPD);
     strip.setPixelColor(led_map[4][0], LED_COLOR_UPD);
+    for (uint8_t i; i < 8; i++) strip.setPixelColor(led_map[5][i], LED_COLOR_UPD);
 
     strip.setPixelColor(led_map[3][7], LED_COLOR_UPD);
     strip.setPixelColor(led_map[4][7], LED_COLOR_UPD);
@@ -157,23 +160,12 @@ void wiFiInit() {
   if (strcmp(ssidFromFile.c_str(), "")) {                        // Check if SSID provided
     WiFi.begin(ssidFromFile.c_str(), passwordFromFile.c_str());  // If yes, try to connect
     Serial.print("[INFO] Connecting to: ");
-    Serial.print(ssidFromFile.c_str());
-    uint8_t i = 0;
-    while (WiFi.status() != WL_CONNECTED && i < 7) {
-      strip.setPixelColor(led_map[0][0], LED_COLOR_CONN);
-      strip.show();
-      delay(1000);
-      strip.setPixelColor(led_map[0][0], LED_COLOR_0);
-      strip.show();
-      delay(1000);
-      i++;
-    }
-    if (WiFi.status() == WL_CONNECTED) firmwareUpdate();
+    Serial.println(ssidFromFile.c_str());
   } else Serial.println("[ERROR] No wifi info saved in storage!");
 }
 
-void saveWifiCfg()  //Save network info into file
-{
+void saveWifiCfg() {  //Save network info into file
+
   SPIFFS.remove("/network_config.txt");  // Recreate config file
   File file = SPIFFS.open("/network_config.txt", "w");
   file.println(ssid);  // Save info into file

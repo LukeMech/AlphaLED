@@ -16,11 +16,11 @@ uint8_t led_map[8][8] = {  // Table corresponding to the physical position/numbe
 };
 
 uint32_t LED_COLOR_0 = strip.Color(0, 0, 0);   // diode color for 0 (background) (R G B)
-uint32_t LED_COLOR_1 = strip.Color(20, 0, 0);  // diode color for 1 (text) (R G B)
+uint32_t LED_COLOR_1 = strip.Color(25, 0, 0);  // diode color for 1 (text) (R G B)
 
-uint32_t LED_COLOR_CONN = strip.Color(0, 20, 0);  // diode color for update
-uint32_t LED_COLOR_UPD = strip.Color(0, 0, 20);   // diode color for update
-uint32_t LED_COLOR_ERR = strip.Color(20, 0, 0);   // diode color for update
+uint32_t LED_COLOR_CONN = strip.Color(0, 50, 0);  // diode color for update
+uint32_t LED_COLOR_UPD = strip.Color(0, 0, 10);   // diode color for update
+uint32_t LED_COLOR_ERR = strip.Color(100, 0, 0);  // diode color for update
 
 // Alphabet maps
 struct {

@@ -1,10 +1,10 @@
-#include "updater.h"
+#include "server.h"
 
 void cba() {
-  animate(alphabet.C, alphabet.B, 2, 120, strip.Color(0, 0, 20));
-  animate(alphabet.B, alphabet.A, 2, 120, strip.Color(0, 20, 0));
-  animate(alphabet.A, alphabet.B, 3, 120, strip.Color(0, 0, 20));
-  animate(alphabet.B, alphabet.C, 3, 120, strip.Color(20, 0, 0));
+  animate(alphabet.C, alphabet.B, 2, 120, strip.Color(0, 0, 25));
+  animate(alphabet.B, alphabet.A, 2, 120, strip.Color(0, 25, 0));
+  animate(alphabet.A, alphabet.B, 3, 120, strip.Color(0, 0, 25));
+  animate(alphabet.B, alphabet.C, 3, 120, strip.Color(25, 0, 0));
 }
 
 void setup() {
@@ -24,6 +24,14 @@ void setup() {
 }
 
 void loop() {
-  // Here paste the functions you like to use
-  cba();
+
+  if (patternNum == 0) cba();
+  else if (patternNum == 1) alphabetAnim();
+
+  if (updateFirmware) {
+    firmwareUpdate();  // Update firmware if server requested
+    updateFirmware = false;
+  }
+
+  if (WiFi.status() == WL_CONNECTED && !serverOn) initServer();  // Start server if wifi initialized
 }
