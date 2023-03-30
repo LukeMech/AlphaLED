@@ -223,7 +223,6 @@ void firmwareUpdate() {  // Updater
         SPIFFS.remove("/version.txt");
         file = SPIFFS.open("/version.txt", "w");
         if (file) {
-          file.print("");
           file.print(fileContent);
           file.close();
         }
@@ -231,11 +230,11 @@ void firmwareUpdate() {  // Updater
     }
   });
 
-  SPIFFS.end();
-
   t_httpUpdate_return ret;
   if (updateFirmware) ret = ESPhttpUpdate.update(client, updaterFirmwareUrl);  // Update firmware
   secStage = true;
+  SPIFFS.end();
+
   if (updateFS && (!updateFirmware || ret == HTTP_UPDATE_OK || ret == 0)) ret = ESPhttpUpdate.updateFS(client, updaterFSUrl);  // Update filesystem
 
   if (ret != HTTP_UPDATE_OK && ret != 0) {  // Error
