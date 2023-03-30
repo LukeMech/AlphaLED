@@ -66,8 +66,6 @@ X509List cert(trustRoot);
 
 //                      <--- Firmware updater --->
 
-
-
 void firmwareUpdate() {  // Updater
 
   display(characters.space);
@@ -88,28 +86,31 @@ void firmwareUpdate() {  // Updater
   if (httpCode != HTTP_CODE_OK) return;
 
   String new_version = http.getString();  //Download version tag
+  int firmware_pos = new_version.indexOf("Firmware: ") + 10;
+  String newFirmwareVer = new_version.substring(firmware_pos);
   int server_pos = new_version.indexOf("Server: ") + 8;
   int server_end_pos = new_version.indexOf("\nFirmware:");
-  int firmware_pos = new_version.indexOf("Firmware: ") + 10;
   String newServerVer = new_version.substring(server_pos, server_end_pos);
-  String newFirmwareVer = new_version.substring(firmware_pos);
-
-  newServerVer.trim();
   newFirmwareVer.trim();
+  Serial.println(newFirmwareVer);
+  newServerVer.trim();
+  Serial.println(newServerVer);
   http.end();
 
-  String serverVer, firmwareVer;
+  String firmwareVer, serverVer;
   File file = SPIFFS.open("/version.txt", "r");  // Read versions
   while (file.available()) {
     String line = file.readStringUntil('\n');
     if (line.startsWith("Server:")) serverVer = line.substring(line.indexOf(":") + 2);
     else if (line.startsWith("Firmware:")) firmwareVer = line.substring(line.indexOf(":") + 2);
   }
-  serverVer.trim();
   firmwareVer.trim();
+  Serial.println(firmwareVer);
+  serverVer.trim();
+  Serial.println(serverVer);
   file.close();
 
-  if ((!strcmp(firmwareVer.c_str(), newFirmwareVer.c_str()) && !strcmp(serverVer.c_str(), newServerVer.c_str())) || (!new_version.c_str() || new_version.c_str() == "")) {  // Check if version is the same
+  if (!strcmp(firmwareVer.c_str(), newFirmwareVer.c_str()) || (!newFirmwareVer.c_str() || newFirmwareVer.c_str() == "")) {  // Check if version is the same
     return;
   }
 
@@ -150,9 +151,25 @@ void firmwareUpdate() {  // Updater
     delay(1000);
   });
 
-  t_httpUpdate_return ret = ESPhttpUpdate.update(client, updaterFirmwareUrl);  // Update firmware
-  if (!ret) ret = ESPhttpUpdate.updateFS(client, updaterFSUrl);                // Update filesystem
-  if (ret) {                                                                   // Error
+  t_httpUpdate_return ret = ESPhttpUpdate.updateFS(client, updaterFSUrl);  // Update filesystem
+  if (ret != HTTP_UPDATE_OK) {                                             // Error
+    Serial.print("[ERROR] ");
+    Serial.println(ESPhttpUpdate.getLastErrorString());
+    Serial.println(ret);
+    strip.setPixelColor(led_map[3][0], LED_COLOR_ERR);
+    strip.setPixelColor(led_map[4][0], LED_COLOR_ERR);
+
+    strip.setPixelColor(led_map[3][7], LED_COLOR_ERR);
+    strip.setPixelColor(led_map[4][7], LED_COLOR_ERR);
+    strip.show();
+    delay(2000);
+    return;
+  }
+  ret = ESPhttpUpdate.update(client, updaterFirmwareUrl);  // Update firmware
+  if (ret) {                                               // Error
+    Serial.print("[ERROR] ");
+    Serial.println(ESPhttpUpdate.getLastErrorString());
+    Serial.println(ret);
     strip.setPixelColor(led_map[3][0], LED_COLOR_ERR);
     strip.setPixelColor(led_map[4][0], LED_COLOR_ERR);
 
