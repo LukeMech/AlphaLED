@@ -141,9 +141,7 @@ void firmwareUpdate() {  // Updater
   int server_end_pos = new_version.indexOf("\nFirmware:");
   String newServerVer = new_version.substring(server_pos, server_end_pos);
   newFirmwareVer.trim();
-  Serial.println(newFirmwareVer);
   newServerVer.trim();
-  Serial.println(newServerVer);
   http.end();
 
   String firmwareVer, serverVer;
@@ -153,14 +151,16 @@ void firmwareUpdate() {  // Updater
     if (line.startsWith("Server:")) serverVer = line.substring(line.indexOf(":") + 2);
     else if (line.startsWith("Firmware:")) firmwareVer = line.substring(line.indexOf(":") + 2);
   }
-
   firmwareVer.trim();
-  Serial.println(firmwareVer);
   serverVer.trim();
-  Serial.println(serverVer);
   file.close();
 
-  if (!strcmp(firmwareVer.c_str(), newFirmwareVer.c_str()) || (!newFirmwareVer.c_str() || newFirmwareVer.c_str() == "")) {  // Check if version is the same
+  Serial.println("[INFO] My firmware version: " +  firmwareVer.c_str());
+  Serial.println("[INFO] Firmware version on server: " +  newFirmwareVer.c_str());
+  Serial.println("[INFO] My server (files) version: " +  serverVer.c_str());
+  Serial.println("[INFO] Server (files) version on server: " +  newServerVer.c_str());
+
+  if (!strcmp(firmwareVer.c_str(), newFirmwareVer.c_str()) || !strcmp(serverVer.c_str(), newServerVer.c_str()) || (!newFirmwareVer.c_str() || newFirmwareVer.c_str() == "") || (!newFirmwareVer.c_str() || newFirmwareVer.c_str() == "")) {  // Check if version is the same
     return;
   }
 
@@ -182,7 +182,7 @@ void firmwareUpdate() {  // Updater
 
   ESPhttpUpdate.onProgress([&](int current, int total) {
     float progress = (float)current / (float)total;
-    int value = round(progress * 5) + 1;
+    int value = round(progress * 4) + 1;
     Serial.print("[PROGRESS] Updater: ");
     Serial.println(progress * 100);
 
@@ -190,6 +190,14 @@ void firmwareUpdate() {  // Updater
     strip.setPixelColor(led_map[secStage ? 6 : 2][value], LED_COLOR_CONN);
     strip.show();
   });
+
+  ESPhttpUpdate.onEnd([&]() {
+    strip.setPixelColor(led_map[secStage ? 5 : 1][6], LED_COLOR_CONN);
+    strip.setPixelColor(led_map[secStage ? 6 : 2][6], LED_COLOR_CONN);
+    strip.show();
+  });
+
+  LittleFS.end();
 
   t_httpUpdate_return ret = ESPhttpUpdate.updateFS(client, updaterFSUrl);  // Update filesystem
   secStage = true;
