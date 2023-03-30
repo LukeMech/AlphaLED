@@ -163,7 +163,7 @@ void firmwareUpdate() {  // Updater
   // Check if version is the same
   bool updateFS = true, updateFirmware = true;
   if (!strcmp(firmwareVer.c_str(), newFirmwareVer.c_str()) || (!newFirmwareVer.c_str() || newFirmwareVer.c_str() == "")) updateFirmware = false;
-  if (!strcmp(fsVer.c_str(), newFsVer.c_str()) || (!newFsVer.c_str() || newFsVer.c_str() == "")) updateFS = false;
+  if ((!strcmp(fsVer.c_str(), newFsVer.c_str()) || (!newFsVer.c_str() || newFsVer.c_str() == "")) && !updateFirmware) updateFS = false;
 
   // If up-to-date
   if (!updateFirmware && !updateFS) return;
@@ -210,24 +210,6 @@ void firmwareUpdate() {  // Updater
     strip.setPixelColor(led_map[dualUpdate ? (secStage ? 5 : 1) : 3][6], LED_COLOR_CONN);
     strip.setPixelColor(led_map[dualUpdate ? (secStage ? 6 : 2) : 4][6], LED_COLOR_CONN);
     strip.show();
-
-    // Change version file if FS not updating
-    if (!dualUpdate && !secStage) {
-      File file = SPIFFS.open("/version.txt", "r");
-      if (file) {
-        String fileContent = file.readString();
-        file.close();
-        int firmwareIndex = fileContent.indexOf("Firmware: ") + 10;
-        int firmwareEndIndex = fileContent.indexOf("\n", firmwareIndex);
-        fileContent.replace(fileContent.substring(firmwareIndex, firmwareEndIndex), newFirmwareVer);
-        SPIFFS.remove("/version.txt");
-        file = SPIFFS.open("/version.txt", "w");
-        if (file) {
-          file.print(fileContent);
-          file.close();
-        }
-      }
-    }
   });
 
   t_httpUpdate_return ret;
