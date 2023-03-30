@@ -36,26 +36,19 @@ jobs:
   
           arduino-cli lib install "Adafruit NeoPixel" "ESPAsyncWebSrv"
           arduino-cli lib install --git-url "" || true
-          
-          mkdir ./program/build || true
-          cd ./program/build
-          wget https://github.com/igrr/mkspiffs/releases/download/0.2.3/mkspiffs-0.2.3-arduino-esp8266-linux64.tar.gz
-          tar -xvf mkspiffs-0.2.3-arduino-esp8266-linux64.tar.gz
 
       # Compile
       - name: Compile sketch and filesystem
         run: |
           arduino-cli compile -b "esp8266:esp8266:nodemcuv2" -e './program'
-
-          cd ./program/build/mkspiffs-0.2.3-arduino-esp8266-linux64
-          ./mkspiffs -c ../../../filesystem -s 1048576 ../filesystem.bin
+          /home/runner/.arduino15/packages/esp8266/tools/mkspiffs/*/mkspiffs -c ../../../filesystem -s 1048576 ./program/build/filesystem.bin
 
       # Upload to repository
       - name: Push changes to repo
         run: |
           mkdir ./updater || true
-          cp ./program/build/**/*.ino.bin ./program/firmware.bin
-          cp ./program/build/filesystem.bin ./program/filesystem.bin
+          cp ./program/build/**/*.ino.bin ./updater/firmware.bin
+          cp ./program/build/filesystem.bin ./updater/filesystem.bin
           cp ./filesystem/version.txt ./updater/build-version.txt
           rm -rf ./program/build
           git config --global user.name github-actions
