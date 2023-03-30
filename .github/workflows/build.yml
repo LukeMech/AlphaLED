@@ -43,8 +43,9 @@ jobs:
       # Compile
       - name: Compile sketch and filesystem
         run: |
+          ls /home/runner/.arduino15/packages/esp8266/tools/mklittlefs
           arduino-cli compile -b "esp8266:esp8266:nodemcuv2" -e './program'
-          /home/runner/.arduino15/packages/esp8266/tools/mklittlefs/$(ls)/mklittlefs.exe -c ./filesystem -s 1048576 ../filesystem.bin
+          /home/runner/.arduino15/packages/esp8266/tools/mklittlefs/$(ls)/mklittlefs -c ./filesystem -s 1048576 ../filesystem.bin
           
       # Upload to repository
       - name: Push changes to repo
