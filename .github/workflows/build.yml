@@ -4,9 +4,6 @@ on:
 
   # On sketch change 
   push:
-    paths:
-      - '**.ino'
-      - '**.h'
       
   # On workflow dispatch
   workflow_dispatch:
@@ -46,12 +43,12 @@ jobs:
           tar -xvf mkspiffs-0.2.3-arduino-esp8266-linux64.tar.gz
 
       # Compile
-      - name: Compile sketch
+      - name: Compile sketch and filesystem
         run: |
           arduino-cli compile -b "esp8266:esp8266:nodemcuv2" -e './program'
 
-          cd ./program/build
-          mkspiffs -c ../../filesystem -s 1048576 filesystem.bin
+          cd ./program/build/mkspiffs-0.2.3-arduino-esp8266-linux64
+          ./mkspiffs -c ../../filesystem -s 1048576 filesystem.bin
 
       # Upload to repository
       - name: Push changes to repo
