@@ -14,12 +14,12 @@ void setup() {
   strip.begin();  // Init strips
   display(characters.space);
 
-  if (!LittleFS.begin()) ESP.restart();  // Begin filesystem
+  if (!SPIFFS.begin()) ESP.restart();  // Begin filesystem
 
   pinMode(LED_BUILTIN, OUTPUT);  // Set pin modes
   digitalWrite(LED_BUILTIN, HIGH);
 
-  if (WiFi_UpdateCredentialsFile) saveWifiCfg(ssid, password);  // Save network config
+  if (WiFi_UpdateCredentialsFile) saveWiFiCredentials(ssid, password);  // Save network config
   wiFiInit();                                                   // Connect to wifi
 }
 

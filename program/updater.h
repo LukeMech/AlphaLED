@@ -31,8 +31,9 @@ const char* updaterFSUrl = "https://raw.githubusercontent.com/LukeMech/AlphaLED/
 // Updater
 #include <ESP8266httpUpdate.h>
 
-// Filesystem
-#include <LittleFS.h>
+// Filesystems
+#include <FS.h>
+#include <EEPROM.h>
 
 #include <CertStoreBearSSL.h>
 BearSSL::CertStore certStore;
@@ -67,33 +68,49 @@ X509List cert(trustRoot);
 
 //                      <--- WiFi connector --->
 
-void wiFiInit() {
+struct WiFiCredentials {
+  char ssid[32];
+  char password[32];
+};
 
-  File file = LittleFS.open("/config/network_config.txt", "r");  // Open wifi config file
-  String ssidFromFile = file.readStringUntil('\n');       // Read network info
-  String passwordFromFile = file.readStringUntil('\n');
-  file.close();
+void saveWiFiCredentials(const char* ssid, const char* password) {
+  WiFiCredentials credentials;
 
-  ssidFromFile.trim();  // Delete spaces at the beginning and end
-  passwordFromFile.trim();
+  strncpy(credentials.ssid, ssid, 32);
+  strncpy(credentials.password, password, 32);
 
-  if (strcmp(ssidFromFile.c_str(), "")) {                        // Check if SSID provided
-    WiFi.begin(ssidFromFile.c_str(), passwordFromFile.c_str());  // If yes, try to connect
-    Serial.print("[INFO] Connecting to: ");
-    Serial.println(ssidFromFile.c_str());
-  } else Serial.print("[ERROR] No wifi info saved.");
+  EEPROM.begin(sizeof(credentials));
+  EEPROM.put(0, credentials);
+  EEPROM.commit();
+  EEPROM.end();
 }
 
-void saveWifiCfg(String ssidToSave, String passwordToSave) {  //Save network info into file
+bool loadWiFiCredentials(char* ssid, char* password) {
+  WiFiCredentials credentials;
 
-  LittleFS.rmdir("/config/network_config.txt");  // Recreate config file
-  File file = LittleFS.open("/config/network_config.txt", "w");
+  EEPROM.begin(sizeof(credentials));
+  EEPROM.get(0, credentials);
+  EEPROM.end();
 
-  file.println(ssidToSave);  // Save info into file
-  file.println(passwordToSave);
+  if (strlen(credentials.ssid) == 0 || strlen(credentials.password) == 0) {
+    return false;
+  }
 
-  Serial.println("[INFO] Wifi credentials saved");
-  file.close();
+  strncpy(ssid, credentials.ssid, 32);
+  strncpy(password, credentials.password, 32);
+
+  return true;
+}
+
+void wiFiInit() {
+  char savedSsid[32];
+  char savedPass[32];
+  if (loadWiFiCredentials(savedSsid, savedPass)) {
+    WiFi.begin(savedSsid, savedPass);  // If yes, try to connect
+    Serial.print("[INFO] Connecting to: ");
+    Serial.println(savedSsid);
+
+  } else Serial.print("[ERROR] No wifi info saved.");
 }
 
 //                      <--- Firmware updater --->
@@ -130,7 +147,7 @@ void firmwareUpdate() {  // Updater
   http.end();
 
   String firmwareVer, serverVer;
-  File file = LittleFS.open("/version.txt", "r");  // Read versions
+  File file = SPIFFS.open("/version.txt", "r");  // Read versions
   while (file.available()) {
     String line = file.readStringUntil('\n');
     if (line.startsWith("Server:")) serverVer = line.substring(line.indexOf(":") + 2);
@@ -174,8 +191,11 @@ void firmwareUpdate() {  // Updater
     strip.show();
   });
 
+  SPIFFS.end();
   t_httpUpdate_return ret = ESPhttpUpdate.updateFS(client, updaterFSUrl);  // Update filesystem
+
   secStage = true;
+  SPIFFS.begin();
 
   if (ret == HTTP_UPDATE_OK || ret == 0) ret = ESPhttpUpdate.update(client, updaterFirmwareUrl);  // Update firmware
   if (ret != HTTP_UPDATE_OK && ret != 0) {                                                        // Error
