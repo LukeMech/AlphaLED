@@ -17,18 +17,19 @@ setInterval(getLEDsPattern, 5000)
 async function versionNum() {
     var versionNum = document.getElementById('version')
     try {
-      const number = await fetch('version.txt')
-      if(number.ok) {
+      const response = await fetch('version.txt')
+      if(response.ok) {
         const text = await response.text();
         const serverVerPos = text.indexOf('Server: ') + 8;
         const serverVerEndPos = text.indexOf(' -');
         const serverVer = text.substring(serverVerPos, serverVerEndPos);
   
-         versionNum.innerHTML = versionNum.innerHTML + ` v${await serverVer}`
+         versionNum.innerHTML = versionNum.innerHTML + ` v${serverVer}`
       }
     }
     catch (error) {
       versionNum.innerHTML = versionNum.innerHTML + ' Testing env'
+      console.error(error)
     }
   }
   versionNum()
