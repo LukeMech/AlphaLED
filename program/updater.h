@@ -155,10 +155,10 @@ void firmwareUpdate() {  // Updater
   serverVer.trim();
   file.close();
 
-  Serial.println("[INFO] My firmware version: " +  firmwareVer.c_str());
-  Serial.println("[INFO] Firmware version on server: " +  newFirmwareVer.c_str());
-  Serial.println("[INFO] My server (files) version: " +  serverVer.c_str());
-  Serial.println("[INFO] Server (files) version on server: " +  newServerVer.c_str());
+  Serial.println("[INFO] My firmware version: " +  firmwareVer);
+  Serial.println("[INFO] Firmware version on server: " +  newFirmwareVer);
+  Serial.println("[INFO] My server (files) version: " +  serverVer);
+  Serial.println("[INFO] Server (files) version on server: " +  newServerVer);
 
   if (!strcmp(firmwareVer.c_str(), newFirmwareVer.c_str()) || !strcmp(serverVer.c_str(), newServerVer.c_str()) || (!newFirmwareVer.c_str() || newFirmwareVer.c_str() == "") || (!newFirmwareVer.c_str() || newFirmwareVer.c_str() == "")) {  // Check if version is the same
     return;
