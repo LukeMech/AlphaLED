@@ -41,7 +41,7 @@ jobs:
       - name: Compile sketch and filesystem
         run: |
           mkdir ./program/build || true
-          /home/runner/.arduino15/packages/esp8266/tools/mklittlefs/**/mklittlefs -c ./filesystem ./program/build/filesystem.bin
+          /home/runner/.arduino15/packages/esp8266/tools/mkspiffs/**/mkspiffs -c ./filesystem ./program/build/filesystem.bin
           arduino-cli compile -b "esp8266:esp8266:nodemcuv2" -e './program'
           
       # Upload to repository

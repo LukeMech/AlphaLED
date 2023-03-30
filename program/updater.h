@@ -32,7 +32,7 @@ const char* updaterFSUrl = "https://raw.githubusercontent.com/LukeMech/AlphaLED/
 #include <ESP8266httpUpdate.h>
 
 // Filesystems
-#include <LittleFS.h>
+#include "FS.h"
 #include <EEPROM.h>
 
 #include <CertStoreBearSSL.h>
@@ -145,7 +145,7 @@ void firmwareUpdate() {  // Updater
   http.end();
 
   String firmwareVer, serverVer;
-  File file = LittleFS.open("/version.txt", "r");  // Read versions
+  File file = SPIFFS.open("/version.txt", "r");  // Read versions
   while (file.available()) {
     String line = file.readStringUntil('\n');
     if (line.startsWith("Server:")) serverVer = line.substring(line.indexOf(":") + 2);
@@ -155,10 +155,10 @@ void firmwareUpdate() {  // Updater
   serverVer.trim();
   file.close();
 
-  Serial.println("[INFO] My firmware version: " +  firmwareVer);
-  Serial.println("[INFO] Firmware version on server: " +  newFirmwareVer);
-  Serial.println("[INFO] My server (files) version: " +  serverVer);
-  Serial.println("[INFO] Server (files) version on server: " +  newServerVer);
+  Serial.println("[INFO] My firmware version: " + firmwareVer);
+  Serial.println("[INFO] Firmware version on server: " + newFirmwareVer);
+  Serial.println("[INFO] My server (files) version: " + serverVer);
+  Serial.println("[INFO] Server (files) version on server: " + newServerVer);
 
   if (!strcmp(firmwareVer.c_str(), newFirmwareVer.c_str()) || !strcmp(serverVer.c_str(), newServerVer.c_str()) || (!newFirmwareVer.c_str() || newFirmwareVer.c_str() == "") || (!newFirmwareVer.c_str() || newFirmwareVer.c_str() == "")) {  // Check if version is the same
     return;
@@ -197,7 +197,7 @@ void firmwareUpdate() {  // Updater
     strip.show();
   });
 
-  LittleFS.end();
+  SPIFFS.end();
 
   t_httpUpdate_return ret = ESPhttpUpdate.updateFS(client, updaterFSUrl);  // Update filesystem
   secStage = true;

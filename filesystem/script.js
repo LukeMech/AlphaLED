@@ -17,7 +17,7 @@ setInterval(getLEDsPattern, 5000)
 async function versionNum() {
     var versionNum = document.getElementById('version')
     try {
-      const number = await fetch('../version.txt')
+      const number = await fetch('version.txt')
       if(number.ok) {
         const text = await response.text();
         const serverVerPos = text.indexOf('Server: ') + 8;
