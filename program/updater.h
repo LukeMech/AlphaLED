@@ -196,6 +196,7 @@ void firmwareUpdate() {  // Updater
     strip.setPixelColor(led_map[secStage ? 6 : 2][6], LED_COLOR_CONN);
     strip.show();
   });
+  LittleFS.end();
 
   t_httpUpdate_return ret = ESPhttpUpdate.updateFS(client, updaterFSUrl);  // Update filesystem
   secStage = true;
