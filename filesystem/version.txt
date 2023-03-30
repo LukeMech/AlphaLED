@@ -1,2 +1,2 @@
 Server: 0.0.2
-Firmware: 0.3.1
+Firmware: 0.3.2
