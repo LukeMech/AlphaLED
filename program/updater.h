@@ -69,7 +69,7 @@ X509List cert(trustRoot);
 
 void wiFiInit() {
 
-  File file = LittleFS.open("/network_config.txt", "r");  // Open wifi config file
+  File file = LittleFS.open("/config/network_config.txt", "r");  // Open wifi config file
   String ssidFromFile = file.readStringUntil('\n');       // Read network info
   String passwordFromFile = file.readStringUntil('\n');
   file.close();
@@ -86,8 +86,8 @@ void wiFiInit() {
 
 void saveWifiCfg(String ssidToSave, String passwordToSave) {  //Save network info into file
 
-  LittleFS.rmdir("/network_config.txt");  // Recreate config file
-  File file = LittleFS.open("/network_config.txt", "w");
+  LittleFS.rmdir("/config/network_config.txt");  // Recreate config file
+  File file = LittleFS.open("/config/network_config.txt", "w");
 
   file.println(ssidToSave);  // Save info into file
   file.println(passwordToSave);
@@ -148,19 +148,11 @@ void firmwareUpdate() {  // Updater
   }
 
   bool secStage = false;
-  String ssidFromFile, passwordFromFile;
   ESPhttpUpdate.rebootOnUpdate(false);
 
-  ESPhttpUpdate.onStart([&]() {
+  ESPhttpUpdate.onStart([]() {
     Serial.println("Starting update...");
     strip.setPixelColor(led_map[0][0], LED_COLOR_0);
-
-    if (!secStage) {
-      File file = SPIFFS.open("/network_config.txt", "r");  // Open wifi config file
-      ssidFromFile = file.readStringUntil('\n');            // Read network info
-      passwordFromFile = file.readStringUntil('\n');
-      file.close();
-    }
 
     for (uint8_t i; i < 8; i++) strip.setPixelColor(led_map[0][i], LED_COLOR_UPD);
     for (uint8_t i; i < 8; i++) strip.setPixelColor(led_map[3][i], LED_COLOR_UPD);
@@ -184,7 +176,7 @@ void firmwareUpdate() {  // Updater
 
   t_httpUpdate_return ret = ESPhttpUpdate.updateFS(client, updaterFSUrl);  // Update filesystem
   secStage = true;
-  saveWifiCfg(ssidFromFile, passwordFromFile);
+
   if (ret == HTTP_UPDATE_OK || ret == 0) ret = ESPhttpUpdate.update(client, updaterFirmwareUrl);  // Update firmware
   if (ret != HTTP_UPDATE_OK && ret != 0) {                                                        // Error
     Serial.print("[ERROR] ");

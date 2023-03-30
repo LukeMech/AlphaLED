@@ -8,8 +8,10 @@ uint8_t patternNum = 0;
 bool serverOn = false, updateFirmware = false;
 
 void initServer() {
+  updateFirmware = true;
+
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-    File file = LittleFS.open("index.html", "r");
+    File file = LittleFS.open("/index.html", "r");
     if (file) {
       request->send(200, "text/html", file.readString());
       file.close();
@@ -24,7 +26,7 @@ void initServer() {
     patternNum++;
     if (patternNum > 1) patternNum = 0;
 
-    File file = LittleFS.open("index.html", "r");
+    File file = LittleFS.open("/index.html", "r");
     if (file) {
       request->send(200, "text/html", file.readString());
       file.close();
@@ -34,7 +36,7 @@ void initServer() {
   server.on("/update", HTTP_GET, [](AsyncWebServerRequest *request) {
     updateFirmware = true;
 
-    File file = LittleFS.open("index.html", "r");
+    File file = LittleFS.open("/index.html", "r");
     if (file) {
       request->send(200, "text/html", file.readString());
       file.close();
