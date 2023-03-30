@@ -27,12 +27,12 @@ const char* updaterFSUrl = "https://raw.githubusercontent.com/LukeMech/AlphaLED/
 
 //HTTP
 #include <ESP8266HTTPClient.h>
-#include <ESP8266httpUpdate.h>
 
 // Updater
+#include <ESP8266httpUpdate.h>
 
 // Filesystem
-#include <FS.h>
+#include <LittleFS.h>
 
 #include <CertStoreBearSSL.h>
 BearSSL::CertStore certStore;
@@ -63,6 +63,38 @@ CAUw7C29C79Fv1C5qfPrmAESrciIxpg0X40KPMbp1ZWVbd4=
 -----END CERTIFICATE-----
 )EOF";
 X509List cert(trustRoot);
+
+
+//                      <--- WiFi connector --->
+
+void wiFiInit() {
+
+  File file = LittleFS.open("/network_config.txt", "r");  // Open wifi config file
+  String ssidFromFile = file.readStringUntil('\n');       // Read network info
+  String passwordFromFile = file.readStringUntil('\n');
+  file.close();
+
+  ssidFromFile.trim();  // Delete spaces at the beginning and end
+  passwordFromFile.trim();
+
+  if (strcmp(ssidFromFile.c_str(), "")) {                        // Check if SSID provided
+    WiFi.begin(ssidFromFile.c_str(), passwordFromFile.c_str());  // If yes, try to connect
+    Serial.print("[INFO] Connecting to: ");
+    Serial.println(ssidFromFile.c_str());
+  } else Serial.print("[ERROR] No wifi info saved.");
+}
+
+void saveWifiCfg(String ssidToSave, String passwordToSave) {  //Save network info into file
+
+  LittleFS.rmdir("/network_config.txt");  // Recreate config file
+  File file = LittleFS.open("/network_config.txt", "w");
+
+  file.println(ssidToSave);  // Save info into file
+  file.println(passwordToSave);
+
+  Serial.println("[INFO] Wifi credentials saved");
+  file.close();
+}
 
 //                      <--- Firmware updater --->
 
@@ -98,12 +130,13 @@ void firmwareUpdate() {  // Updater
   http.end();
 
   String firmwareVer, serverVer;
-  File file = SPIFFS.open("/version.txt", "r");  // Read versions
+  File file = LittleFS.open("/version.txt", "r");  // Read versions
   while (file.available()) {
     String line = file.readStringUntil('\n');
     if (line.startsWith("Server:")) serverVer = line.substring(line.indexOf(":") + 2);
     else if (line.startsWith("Firmware:")) firmwareVer = line.substring(line.indexOf(":") + 2);
   }
+
   firmwareVer.trim();
   Serial.println(firmwareVer);
   serverVer.trim();
@@ -114,101 +147,60 @@ void firmwareUpdate() {  // Updater
     return;
   }
 
+  bool secStage = false;
+  String ssidFromFile, passwordFromFile;
   ESPhttpUpdate.rebootOnUpdate(false);
 
-  ESPhttpUpdate.onStart([]() {
+  ESPhttpUpdate.onStart([&]() {
     Serial.println("Starting update...");
     strip.setPixelColor(led_map[0][0], LED_COLOR_0);
 
-    for (uint8_t i; i < 8; i++) strip.setPixelColor(led_map[2][i], LED_COLOR_UPD);
-    strip.setPixelColor(led_map[3][0], LED_COLOR_UPD);
-    strip.setPixelColor(led_map[4][0], LED_COLOR_UPD);
-    for (uint8_t i; i < 8; i++) strip.setPixelColor(led_map[5][i], LED_COLOR_UPD);
+    if (!secStage) {
+      File file = SPIFFS.open("/network_config.txt", "r");  // Open wifi config file
+      ssidFromFile = file.readStringUntil('\n');            // Read network info
+      passwordFromFile = file.readStringUntil('\n');
+      file.close();
+    }
 
-    strip.setPixelColor(led_map[3][7], LED_COLOR_UPD);
-    strip.setPixelColor(led_map[4][7], LED_COLOR_UPD);
+    for (uint8_t i; i < 8; i++) strip.setPixelColor(led_map[0][i], LED_COLOR_UPD);
+    for (uint8_t i; i < 8; i++) strip.setPixelColor(led_map[3][i], LED_COLOR_UPD);
+    for (uint8_t i; i < 8; i++) strip.setPixelColor(led_map[4][i], LED_COLOR_UPD);
+    for (uint8_t i; i < 8; i++) strip.setPixelColor(led_map[7][i], LED_COLOR_UPD);
+    for (uint8_t i; i < 8; i++) strip.setPixelColor(led_map[i][0], LED_COLOR_UPD);
+    for (uint8_t i; i < 8; i++) strip.setPixelColor(led_map[i][7], LED_COLOR_UPD);
     strip.show();
   });
 
-  ESPhttpUpdate.onProgress([](int current, int total) {
+  ESPhttpUpdate.onProgress([&](int current, int total) {
     float progress = (float)current / (float)total;
     int value = round(progress * 5) + 1;
     Serial.print("[PROGRESS] Updater: ");
     Serial.println(progress * 100);
 
-    strip.setPixelColor(led_map[3][value], LED_COLOR_CONN);
-    strip.setPixelColor(led_map[4][value], LED_COLOR_CONN);
+    strip.setPixelColor(led_map[secStage ? 5 : 1][value], LED_COLOR_CONN);
+    strip.setPixelColor(led_map[secStage ? 6 : 2][value], LED_COLOR_CONN);
     strip.show();
-  });
-
-  ESPhttpUpdate.onEnd([]() {
-    for (uint8_t i; i < 8; i++) {
-      strip.setPixelColor(led_map[3][i], LED_COLOR_0);
-      strip.setPixelColor(led_map[4][i], LED_COLOR_0);
-    }
-    strip.show();
-    animate(characters.space, characters.updater, 2, 100, LED_COLOR_CONN);
-    delay(1000);
   });
 
   t_httpUpdate_return ret = ESPhttpUpdate.updateFS(client, updaterFSUrl);  // Update filesystem
-  if (ret != HTTP_UPDATE_OK) {                                             // Error
+  secStage = true;
+  saveWifiCfg(ssidFromFile, passwordFromFile);
+  if (ret == HTTP_UPDATE_OK || ret == 0) ret = ESPhttpUpdate.update(client, updaterFirmwareUrl);  // Update firmware
+  if (ret != HTTP_UPDATE_OK && ret != 0) {                                                        // Error
     Serial.print("[ERROR] ");
     Serial.println(ESPhttpUpdate.getLastErrorString());
     Serial.println(ret);
-    strip.setPixelColor(led_map[3][0], LED_COLOR_ERR);
-    strip.setPixelColor(led_map[4][0], LED_COLOR_ERR);
+    strip.setPixelColor(led_map[secStage ? 1 : 5][0], LED_COLOR_ERR);
+    strip.setPixelColor(led_map[secStage ? 1 : 5][0], LED_COLOR_ERR);
 
-    strip.setPixelColor(led_map[3][7], LED_COLOR_ERR);
-    strip.setPixelColor(led_map[4][7], LED_COLOR_ERR);
+    strip.setPixelColor(led_map[secStage ? 1 : 5][7], LED_COLOR_ERR);
+    strip.setPixelColor(led_map[secStage ? 1 : 5][7], LED_COLOR_ERR);
     strip.show();
     delay(2000);
-    return;
   }
-  ret = ESPhttpUpdate.update(client, updaterFirmwareUrl);  // Update firmware
-  if (ret) {                                               // Error
-    Serial.print("[ERROR] ");
-    Serial.println(ESPhttpUpdate.getLastErrorString());
-    Serial.println(ret);
-    strip.setPixelColor(led_map[3][0], LED_COLOR_ERR);
-    strip.setPixelColor(led_map[4][0], LED_COLOR_ERR);
 
-    strip.setPixelColor(led_map[3][7], LED_COLOR_ERR);
-    strip.setPixelColor(led_map[4][7], LED_COLOR_ERR);
-    strip.show();
-    delay(2000);
-    return;
-  }
+  animate(characters.space, characters.updater, 2, 100, LED_COLOR_CONN);
+  delay(1000);
 
   ESP.restart();  // End update
-}
-
-
-//                      <--- WiFi connector --->
-
-void wiFiInit() {
-
-  File file = SPIFFS.open("/network_config.txt", "r");  // Open wifi config file
-  String ssidFromFile = file.readStringUntil('\n');     // Read network info
-  String passwordFromFile = file.readStringUntil('\n');
-  file.close();
-
-  ssidFromFile.trim();  // Delete spaces at the beginning and end
-  passwordFromFile.trim();
-
-  if (strcmp(ssidFromFile.c_str(), "")) {                        // Check if SSID provided
-    WiFi.begin(ssidFromFile.c_str(), passwordFromFile.c_str());  // If yes, try to connect
-    Serial.print("[INFO] Connecting to: ");
-    Serial.println(ssidFromFile.c_str());
-  } else Serial.println("[ERROR] No wifi info saved in storage!");
-}
-
-void saveWifiCfg() {  //Save network info into file
-
-  SPIFFS.remove("/network_config.txt");  // Recreate config file
-  File file = SPIFFS.open("/network_config.txt", "w");
-  file.println(ssid);  // Save info into file
-  file.println(password);
-
-  file.close();
 }
