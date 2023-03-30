@@ -1,2 +1,2 @@
-Server: 0.1.5-1
-Firmware: 0.3.6-1
+Server: 23.03.31
+Firmware: 23.03.31
