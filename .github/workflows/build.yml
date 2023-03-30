@@ -48,7 +48,7 @@ jobs:
           arduino-cli compile -b "esp8266:esp8266:nodemcuv2" -e './program'
 
           cd ./program/build/mkspiffs-0.2.3-arduino-esp8266-linux64
-          ./mkspiffs -c ../../filesystem -s 1048576 filesystem.bin
+          ./mkspiffs -c ../../../filesystem -s 1048576 ../filesystem.bin
 
       # Upload to repository
       - name: Push changes to repo
