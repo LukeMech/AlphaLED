@@ -55,6 +55,6 @@ jobs:
           git config --global user.name github-actions
           git config --global user.email github-actions@github.com
           git pull
-          git add . || true
-          git commit -m "🏗️ Build v$(grep 'Firmware:' ./updater/build-version.txt | cut -d' ' -f2)" || true
-          git push || true
+          git add .
+          git commit -m "🏗️ Build v$(grep 'Firmware:' ./updater/build-version.txt | cut -d' ' -f2)/$(grep 'Server:' ./updater/build-version.txt | cut -d' ' -f2)"
+          git push

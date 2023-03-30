@@ -1,2 +1,2 @@
-Server: 0.1.4
+Server: 0.1.5
 Firmware: 0.3.6-1
