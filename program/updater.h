@@ -236,7 +236,7 @@ void firmwareUpdate() {  // Updater
   t_httpUpdate_return ret;
   if (updateFirmware) ret = ESPhttpUpdate.update(client, updaterFirmwareUrl);  // Update firmware
   secStage = true;
-  if ((ret == HTTP_UPDATE_OK || ret == 0 || ret==-1) && updateFS) ret = ESPhttpUpdate.updateFS(client, updaterFSUrl);  // Update filesystem
+  if (updateFS && (!updateFirmware || ret == HTTP_UPDATE_OK || ret == 0)) ret = ESPhttpUpdate.updateFS(client, updaterFSUrl);  // Update filesystem
 
   if (ret != HTTP_UPDATE_OK && ret != 0) {  // Error
     Serial.print("[ERROR] ");
@@ -249,6 +249,7 @@ void firmwareUpdate() {  // Updater
     strip.setPixelColor(led_map[dualUpdate ? (secStage ? 6 : 2) : 4][7], LED_COLOR_ERR);
     strip.show();
     delay(2000);
+
   } else {
     delay(500);
     animate(characters.space, characters.updater, 2, 100, LED_COLOR_CONN);

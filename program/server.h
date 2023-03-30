@@ -52,8 +52,10 @@ void initServer() {
 
   // Updater
   server.on("/update", HTTP_GET, [](AsyncWebServerRequest *request) {
-    updateFirmware = true;
     request->redirect("/");
+
+    delay(2000);
+    updateFirmware = true;
   });
 
   server.begin();
