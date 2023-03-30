@@ -40,21 +40,30 @@ jobs:
           arduino-cli lib install "Adafruit NeoPixel" "ESPAsyncWebSrv"
           arduino-cli lib install --git-url "" || true
           
+          mkdir ./program/build || true
+          cd ./program/build
+          wget https://github.com/igrr/mkspiffs/releases/download/0.2.3/mkspiffs-0.2.3-arduino-esp8266-linux64.tar.gz
+          tar -xvf mkspiffs-0.2.3-arduino-esp8266-linux64.tar.gz
+
       # Compile
       - name: Compile sketch
         run: |
-          arduino-cli compile -b "esp8266:esp8266:nodemcuv2" -e './sketch'
-      
+          arduino-cli compile -b "esp8266:esp8266:nodemcuv2" -e './program'
+
+          cd ./program/build
+          mkspiffs -c ../../filesystem -s 1048576 filesystem.bin
+
       # Upload to repository
       - name: Push changes to repo
         run: |
           mkdir ./updater || true
-          cp ./sketch/build/**/*.ino.bin ./updater/firmware.bin
-          cp ./version.txt ./updater/build-version.txt
-          rm -rf ./sketch/build
+          cp ./program/build/**/*.ino.bin ./program/firmware.bin
+          cp ./program/build/filesystem.bin ./program/filesystem.bin
+          cp ./filesystem/version.txt ./updater/build-version.txt
+          rm -rf ./program/build
           git config --global user.name github-actions
           git config --global user.email github-actions@github.com
           git pull
           git add . || true
-          git commit -m "🏗️ Build v$(cat version.txt)" || true
+          git commit -m "🏗️ Build v$(grep 'Firmware:' version.txt | cut -d' ' -f2)" || true
           git push || true

@@ -11,19 +11,34 @@ String html = "<html><body><form method='POST' action='/change'><input type='sub
 
 
 void initServer() {
+  File file = SPIFFS.open("/index.html", "r");
+  if (!file) updateFirmware = true;              // Re-download filesystem
+  String mainPageHtml;
+  else if (file) {
+      mainPageHtml = file.readString();
+      file.close();
+  }
+
+
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(200, "text/html", html);
+    
+    if(file) request->send(200, "text/html", mainPageHtml);
+    else request->send(404, "text/plain", "File not found");
+
   });
 
-  server.on("/change", HTTP_POST, [](AsyncWebServerRequest *request) {
+  server.on("/change", HTTP_GET, [](AsyncWebServerRequest *request) {
     Serial.println("Received /change");
+    if(file) request->send(200, "text/html", mainPageHtml);
+    else request->send(404, "text/plain", "File not found");
+    
     patternNum++;
     if (patternNum > 1) patternNum = 0;
 
     request->send(200, "text/plain", "Changing animation style to " + String(patternNum + 1) + " - wait for current animation to complete");
   });
 
-  server.on("/update", HTTP_POST, [](AsyncWebServerRequest *request) {
+  server.on("/update", HTTP_GET, [](AsyncWebServerRequest *request) {
     updateFirmware = true;
     request->send(200, "text/plain", "Calling for updater right after animation is done!");
   });
