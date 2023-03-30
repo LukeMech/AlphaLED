@@ -21,6 +21,12 @@ void setup() {
   Serial.print(fs_info.usedBytes);
   Serial.print("/");
   Serial.println(fs_info.totalBytes);
+  Dir dir = SPIFFS.openDir("/");
+  while (dir.next()) {
+    String fileName = dir.fileName();
+    Serial.print("File: ");
+    Serial.println(fileName);
+  }
 
   pinMode(LED_BUILTIN, OUTPUT);  // Set pin modes
   digitalWrite(LED_BUILTIN, HIGH);
