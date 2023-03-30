@@ -22,8 +22,8 @@ async function versionNum() {
       const lines = text.split('\n');
       for (const line of lines) {
         if (line.startsWith('Server: ')) {
-          const version = line.substr('Server: '.length);
-          versionNum.innerHTML = versionNum.innerHTML + ` v${serverVer}`
+          const version = line.substring('Server: '.length);
+          versionNum.innerHTML = versionNum.innerHTML + ` v${version}`
           break;
         }
       }  
