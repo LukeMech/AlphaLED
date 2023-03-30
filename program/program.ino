@@ -14,9 +14,9 @@ void setup() {
   strip.begin();  // Init strips
   display(characters.space);
 
-  if (!LittleFS.begin()) ESP.restart();  // Begin filesystem
+  if (!SPIFFS.begin()) ESP.restart();  // Begin filesystem
   FSInfo fs_info;
-  LittleFS.info(fs_info);
+  SPIFFS.info(fs_info);
   Serial.print("[INFO] Space: ");
   Serial.print(fs_info.usedBytes);
   Serial.print("/");

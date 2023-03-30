@@ -9,7 +9,7 @@ bool serverOn = false, updateFirmware = false;
 
 void initServer() {
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-    File file = LittleFS.open("/index.html", "r");
+    File file = SPIFFS.open("/index.html", "r");
     if (file) {
       request->send(200, "text/html", file.readString());
     } else {
@@ -24,7 +24,7 @@ void initServer() {
     patternNum++;
     if (patternNum > 1) patternNum = 0;
 
-    File file = LittleFS.open("/index.html", "r");
+    File file = SPIFFS.open("/index.html", "r");
     if (file) {
       request->send(200, "text/html", file.readString());
     } else request->send(200, "text/plain", "Changing animation style, wait for current animation to complete!");
@@ -34,7 +34,7 @@ void initServer() {
   server.on("/update", HTTP_GET, [](AsyncWebServerRequest *request) {
     updateFirmware = true;
 
-    File file = LittleFS.open("/index.html", "r");
+    File file = SPIFFS.open("/index.html", "r");
     if (file) {
       request->send(200, "text/html", file.readString());
     } else request->send(200, "text/plain", "Calling for updater right after animation is done!");
