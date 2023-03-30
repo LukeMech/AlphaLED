@@ -1,2 +1,2 @@
-Server: 0.0.1 - Alpha
-Firmware: 0.3.0 - Alpha
+Server: 0.0.1 
+Firmware: 0.3.1
