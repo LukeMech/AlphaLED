@@ -29,6 +29,12 @@ void initServer() {
   server.on("/scripts/script.js", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(SPIFFS, "/scripts/script.js","text/js");
   });
+  server.on("/images/logo.png", HTTP_GET, [](AsyncWebServerRequest *request) {
+      request->send(SPIFFS, "/images/logo.png", String(), false);
+  });
+  server.on("/version.txt", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(SPIFFS, "/version.txt","text/plain");
+  });
 
   // Auto-refresh animation pattern
   server.on("/getledspattern", HTTP_GET, [](AsyncWebServerRequest *request) {
