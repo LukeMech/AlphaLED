@@ -37,13 +37,11 @@ jobs:
           arduino-cli lib install "Adafruit NeoPixel" "ESPAsyncWebSrv"
           arduino-cli lib install --git-url "" || true
 
-          mkdir ./program/build || true
-          cd ./program/build
-
-      # Compile
+          # Compile
       - name: Compile sketch and filesystem
         run: |
-          /home/runner/.arduino15/packages/esp8266/tools/mklittlefs/**/mklittlefs -c ./filesystem -s 1048576 ./program/build/filesystem.bin
+          mkdir ./program/build || true
+          /home/runner/.arduino15/packages/esp8266/tools/mkspiffs/**/mkspiffs -c ./filesystem -s 1048576 ./program/build/filesystem.bin
           arduino-cli compile -b "esp8266:esp8266:nodemcuv2" -e './program'
           
       # Upload to repository
