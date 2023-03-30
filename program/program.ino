@@ -14,7 +14,7 @@ void setup() {
   strip.begin();  // Init strips
   display(characters.space);
 
-  if (!SPIFFS.begin()) ESP.restart();  // Begin filesystem
+  if (!LittleFS.begin()) ESP.restart();  // Begin filesystem
 
   pinMode(LED_BUILTIN, OUTPUT);  // Set pin modes
   digitalWrite(LED_BUILTIN, HIGH);
