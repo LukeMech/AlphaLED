@@ -29,6 +29,7 @@ void loop() {
   else if (patternNum == 1) alphabetAnim();
 
   if (updateFirmware) {
+    delay(1000);
     firmwareUpdate();  // Update firmware if server requested
     updateFirmware = false;
   }
