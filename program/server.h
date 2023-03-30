@@ -38,7 +38,7 @@ void initServer() {
 
   // Auto-refresh animation pattern
   server.on("/getledspattern", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(200, "text/plain", String(patternNum));
+    request->send(200, "text/plain", String(patternNum+1));
   });
 
 
