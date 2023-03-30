@@ -1,4 +1,4 @@
-const char* firmwareVer = "0.2.1";  // Version number
+const char* firmwareVer = "0.2.0";  // Version number
 
 #include "LEDs.h"
 // ------------------------
