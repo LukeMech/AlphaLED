@@ -139,45 +139,60 @@ void firmwareUpdate() {  // Updater
   String newFirmwareVer = new_version.substring(firmware_pos);
   int server_pos = new_version.indexOf("Server: ") + 8;
   int server_end_pos = new_version.indexOf("\nFirmware:");
-  String newServerVer = new_version.substring(server_pos, server_end_pos);
+  String newFsVer = new_version.substring(server_pos, server_end_pos);
+  newFsVer.trim();
   newFirmwareVer.trim();
-  newServerVer.trim();
   http.end();
 
-  String firmwareVer, serverVer;
+  String firmwareVer, fsVer;
   File file = SPIFFS.open("/version.txt", "r");  // Read versions
   while (file.available()) {
     String line = file.readStringUntil('\n');
-    if (line.startsWith("Server:")) serverVer = line.substring(line.indexOf(":") + 2);
+    if (line.startsWith("Server:")) fsVer = line.substring(line.indexOf(":") + 2);
     else if (line.startsWith("Firmware:")) firmwareVer = line.substring(line.indexOf(":") + 2);
   }
+  fsVer.trim();
   firmwareVer.trim();
-  serverVer.trim();
   file.close();
 
-  Serial.println("[INFO] My firmware version: " + firmwareVer);
-  Serial.println("[INFO] Firmware version on server: " + newFirmwareVer);
-  Serial.println("[INFO] My server (files) version: " + serverVer);
-  Serial.println("[INFO] Server (files) version on server: " + newServerVer);
+  Serial.println("[INFO] Firmware version: " + firmwareVer);
+  Serial.println("[INFO] Firmware latest version: " + newFirmwareVer);
+  Serial.println("[INFO] Local filesystem version: " + fsVer);
+  Serial.println("[INFO] Filesystem latest version: " + newFsVer);
 
-  if (!strcmp(firmwareVer.c_str(), newFirmwareVer.c_str()) || !strcmp(serverVer.c_str(), newServerVer.c_str()) || (!newFirmwareVer.c_str() || newFirmwareVer.c_str() == "") || (!newFirmwareVer.c_str() || newFirmwareVer.c_str() == "")) {  // Check if version is the same
-    return;
-  }
+  // Check if version is the same
+  bool updateFS = true, updateFirmware = true;
+  if (!strcmp(firmwareVer.c_str(), newFirmwareVer.c_str()) || (!newFirmwareVer.c_str() || newFirmwareVer.c_str() == "")) updateFirmware = false;
+  if (!strcmp(fsVer.c_str(), newFsVer.c_str()) || (!newFsVer.c_str() || newFsVer.c_str() == "")) updateFS = false;
 
-  bool secStage = false;
-  ESPhttpUpdate.rebootOnUpdate(false);
+  // If up-to-date
+  if (!updateFirmware && !updateFS) return;
 
-  ESPhttpUpdate.onStart([]() {
-    Serial.println("Starting update...");
-    strip.setPixelColor(led_map[0][0], LED_COLOR_0);
-
+  // Set LEDs
+  strip.setPixelColor(led_map[0][0], LED_COLOR_0);
+  if (updateFirmware && updateFS) {
     for (uint8_t i; i < 8; i++) strip.setPixelColor(led_map[0][i], LED_COLOR_UPD);
     for (uint8_t i; i < 8; i++) strip.setPixelColor(led_map[3][i], LED_COLOR_UPD);
     for (uint8_t i; i < 8; i++) strip.setPixelColor(led_map[4][i], LED_COLOR_UPD);
     for (uint8_t i; i < 8; i++) strip.setPixelColor(led_map[7][i], LED_COLOR_UPD);
     for (uint8_t i; i < 8; i++) strip.setPixelColor(led_map[i][0], LED_COLOR_UPD);
     for (uint8_t i; i < 8; i++) strip.setPixelColor(led_map[i][7], LED_COLOR_UPD);
-    strip.show();
+  } else {
+    for (uint8_t i; i < 8; i++) strip.setPixelColor(led_map[2][i], LED_COLOR_UPD);
+    for (uint8_t i; i < 8; i++) strip.setPixelColor(led_map[5][i], LED_COLOR_UPD);
+    strip.setPixelColor(led_map[3][0], LED_COLOR_UPD);
+    strip.setPixelColor(led_map[4][0], LED_COLOR_UPD);
+    strip.setPixelColor(led_map[3][7], LED_COLOR_UPD);
+    strip.setPixelColor(led_map[4][7], LED_COLOR_UPD);
+  }
+  strip.show();
+
+  // Update progress - change leds
+  bool secStage = false, dualUpdate = false;
+  if (updateFirmware && updateFS) dualUpdate = true;
+  ESPhttpUpdate.rebootOnUpdate(false);
+  ESPhttpUpdate.onStart([]() {
+    Serial.println("Starting update...");
   });
 
   ESPhttpUpdate.onProgress([&](int current, int total) {
@@ -186,38 +201,59 @@ void firmwareUpdate() {  // Updater
     Serial.print("[PROGRESS] Updater: ");
     Serial.println(progress * 100);
 
-    strip.setPixelColor(led_map[secStage ? 5 : 1][value], LED_COLOR_CONN);
-    strip.setPixelColor(led_map[secStage ? 6 : 2][value], LED_COLOR_CONN);
+    strip.setPixelColor(led_map[dualUpdate ? (secStage ? 5 : 1) : 3][value], LED_COLOR_CONN);
+    strip.setPixelColor(led_map[dualUpdate ? (secStage ? 6 : 2) : 4][value], LED_COLOR_CONN);
     strip.show();
   });
 
   ESPhttpUpdate.onEnd([&]() {
-    strip.setPixelColor(led_map[secStage ? 5 : 1][6], LED_COLOR_CONN);
-    strip.setPixelColor(led_map[secStage ? 6 : 2][6], LED_COLOR_CONN);
+    strip.setPixelColor(led_map[dualUpdate ? (secStage ? 5 : 1) : 3][6], LED_COLOR_CONN);
+    strip.setPixelColor(led_map[dualUpdate ? (secStage ? 6 : 2) : 4][6], LED_COLOR_CONN);
     strip.show();
+
+    // Change version file if FS not updating
+    if (!dualUpdate && !secStage) {
+      File file = SPIFFS.open("/version.txt", "r");
+      if (file) {
+        String fileContent = file.readString();
+        file.close();
+        int firmwareIndex = fileContent.indexOf("Firmware: ") + 10;
+        int firmwareEndIndex = fileContent.indexOf("\n", firmwareIndex);
+        fileContent.replace(fileContent.substring(firmwareIndex, firmwareEndIndex), newFirmwareVer);
+        SPIFFS.remove("/version.txt");
+        file = SPIFFS.open("/version.txt", "w");
+        if (file) {
+          file.print("");
+          file.print(fileContent);
+          file.close();
+        }
+      }
+    }
   });
-  
+
   SPIFFS.end();
 
-  t_httpUpdate_return ret = ESPhttpUpdate.updateFS(client, updaterFSUrl);  // Update filesystem
+  t_httpUpdate_return ret;
+  if (updateFirmware) ret = ESPhttpUpdate.update(client, updaterFirmwareUrl);  // Update firmware
   secStage = true;
+  if ((ret == HTTP_UPDATE_OK || ret == 0) && updateFS) ret = ESPhttpUpdate.updateFS(client, updaterFSUrl);  // Update filesystem
 
-  if (ret == HTTP_UPDATE_OK || ret == 0) ret = ESPhttpUpdate.update(client, updaterFirmwareUrl);  // Update firmware
-  if (ret != HTTP_UPDATE_OK && ret != 0) {                                                        // Error
+  if (ret != HTTP_UPDATE_OK && ret != 0) {  // Error
     Serial.print("[ERROR] ");
     Serial.println(ESPhttpUpdate.getLastErrorString());
     Serial.println(ret);
-    strip.setPixelColor(led_map[secStage ? 1 : 5][0], LED_COLOR_ERR);
-    strip.setPixelColor(led_map[secStage ? 1 : 5][0], LED_COLOR_ERR);
+    strip.setPixelColor(led_map[dualUpdate ? (secStage ? 5 : 1) : 3][0], LED_COLOR_ERR);
+    strip.setPixelColor(led_map[dualUpdate ? (secStage ? 6 : 2) : 4][0], LED_COLOR_ERR);
 
-    strip.setPixelColor(led_map[secStage ? 1 : 5][7], LED_COLOR_ERR);
-    strip.setPixelColor(led_map[secStage ? 1 : 5][7], LED_COLOR_ERR);
+    strip.setPixelColor(led_map[dualUpdate ? (secStage ? 5 : 1) : 3][7], LED_COLOR_ERR);
+    strip.setPixelColor(led_map[dualUpdate ? (secStage ? 6 : 2) : 4][7], LED_COLOR_ERR);
     strip.show();
     delay(2000);
+  } else {
+    delay(500);
+    animate(characters.space, characters.updater, 2, 100, LED_COLOR_CONN);
+    delay(500);
   }
-
-  animate(characters.space, characters.updater, 2, 100, LED_COLOR_CONN);
-  delay(1000);
 
   ESP.restart();  // End update
 }

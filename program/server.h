@@ -23,22 +23,12 @@ void initServer() {
     Serial.println("Received /change");
     patternNum++;
     if (patternNum > 1) patternNum = 0;
-
-    File file = SPIFFS.open("/index.html", "r");
-    if (file) {
-      request->send(200, "text/html", file.readString());
-    } else request->send(200, "text/plain", "Changing animation style, wait for current animation to complete!");
-    file.close();
+    request->redirect("/");
   });
 
   server.on("/update", HTTP_GET, [](AsyncWebServerRequest *request) {
     updateFirmware = true;
-
-    File file = SPIFFS.open("/index.html", "r");
-    if (file) {
-      request->send(200, "text/html", file.readString());
-    } else request->send(200, "text/plain", "Calling for updater right after animation is done!");
-    file.close();
+    request->redirect("/");
   });
 
   server.on("/getledspattern", HTTP_GET, [](AsyncWebServerRequest *request) {
