@@ -39,14 +39,12 @@ jobs:
 
           mkdir ./program/build || true
           cd ./program/build
-          wget https://github.com/igrr/mkspiffs/releases/download/0.2.3/mkspiffs-0.2.3-arduino-esp8266-linux64.tar.gz
-          tar -xvf mkspiffs-0.2.3-arduino-esp8266-linux64.tar.gz
+
       # Compile
       - name: Compile sketch and filesystem
         run: |
           arduino-cli compile -b "esp8266:esp8266:nodemcuv2" -e './program'
-          cd ./program/build/mkspiffs-0.2.3-arduino-esp8266-linux64
-          ./mkspiffs -c ../../../filesystem -s 1048576 ../filesystem.bin
+          /home/runner/.arduino15/packages/esp8266/tools/mklittlefs/$(ls)/mklittlefs.exe -c ./filesystem -s 1048576 ../filesystem.bin
           
       # Upload to repository
       - name: Push changes to repo
