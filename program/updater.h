@@ -32,7 +32,7 @@ const char* updaterFSUrl = "https://raw.githubusercontent.com/LukeMech/AlphaLED/
 #include <ESP8266httpUpdate.h>
 
 // Filesystems
-#include "FS.h"
+#include "LittleFS.h"
 #include <EEPROM.h>
 
 #include <CertStoreBearSSL.h>
@@ -145,7 +145,7 @@ void firmwareUpdate() {  // Updater
   http.end();
 
   String firmwareVer, serverVer;
-  File file = SPIFFS.open("/version.txt", "r");  // Read versions
+  File file = LittleFS.open("/version.txt", "r");  // Read versions
   while (file.available()) {
     String line = file.readStringUntil('\n');
     if (line.startsWith("Server:")) serverVer = line.substring(line.indexOf(":") + 2);
@@ -197,9 +197,20 @@ void firmwareUpdate() {  // Updater
     strip.show();
   });
 
-  SPIFFS.end();
+  LittleFS.end();
 
   t_httpUpdate_return ret = ESPhttpUpdate.updateFS(client, updaterFSUrl);  // Update filesystem
+
+  LittleFS.begin();
+  File root = LittleFS.open("/", "r");
+  file = root.openNextFile();
+  while (file) {
+
+    Serial.print("FILE: ");
+    Serial.println(file.name());
+
+    file = root.openNextFile();
+  }
   secStage = true;
 
   if (ret == HTTP_UPDATE_OK || ret == 0) ret = ESPhttpUpdate.update(client, updaterFirmwareUrl);  // Update firmware
