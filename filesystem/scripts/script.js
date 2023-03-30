@@ -18,14 +18,15 @@ async function versionNum() {
     var versionNum = document.getElementById('version')
     try {
       const response = await fetch('version.txt')
-      if(response.ok) {
-        const text = await response.text();
-        const serverVerPos = text.indexOf('Server: ') + 8;
-        const serverVerEndPos = text.indexOf(' -');
-        const serverVer = text.substring(serverVerPos, serverVerEndPos);
-  
-         versionNum.innerHTML = versionNum.innerHTML + ` v${serverVer}`
-      }
+      const text = await response.text();
+      const lines = text.split('\n');
+      for (const line of lines) {
+        if (line.startsWith('Server: ')) {
+          const version = line.substr('Server: '.length);
+          versionNum.innerHTML = versionNum.innerHTML + ` v${serverVer}`
+          break;
+        }
+      }  
     }
     catch (error) {
       versionNum.innerHTML = versionNum.innerHTML + ' Testing env'
