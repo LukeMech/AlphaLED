@@ -19,7 +19,7 @@ async function versionNum() {
     const response = await fetch('version.txt')
     const text = await response.text();
     const lines = text.split('\n');
-    const FSversion=0, Fvversion=0;
+    let FSversion, Fvversion;
     for (const line of lines) {
       if (line.startsWith('Filesystem: ')) FSversion = line.substring('Filesystem: '.length);
       else if (line.startsWith('Firmware: ')) Fvversion = line.substring('Firmware: '.length);

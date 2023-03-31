@@ -4,6 +4,8 @@ on:
 
   # On sketch change 
   push:
+    paths:
+      - "**/version.txt"
       
   # On workflow dispatch
   workflow_dispatch:
