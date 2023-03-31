@@ -16,22 +16,15 @@ setInterval(getLEDsPattern, 5000)
 // Check version number
 async function versionNum() {
     var versionNum = document.getElementById('version')
-    try {
-      const response = await fetch('version.txt')
-      const text = await response.text();
-      const lines = text.split('\n');
-      for (const line of lines) {
-        if (line.startsWith('Server: ')) {
-          const version = line.substring('Server: '.length);
-          versionNum.innerHTML = versionNum.innerHTML + ` v${version}`
-          break;
-        }
-      }  
-    }
-    catch (error) {
-      versionNum.innerHTML = versionNum.innerHTML + ' Testing env'
-      console.error(error)
-    }
+    const response = await fetch('version.txt')
+    const text = await response.text();
+    const lines = text.split('\n');
+    const FSversion=0, Fvversion=0;
+    for (const line of lines) {
+      if (line.startsWith('Filesystem: ')) FSversion = line.substring('Filesystem: '.length);
+      else if (line.startsWith('Firmware: ')) Fvversion = line.substring('Firmware: '.length);
+    }  
+    versionNum.innerHTML = versionNum.innerHTML + `  v${Fvversion} / FS: ${FSversion}`
   }
   versionNum()
   

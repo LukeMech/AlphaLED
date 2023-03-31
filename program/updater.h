@@ -137,7 +137,7 @@ void firmwareUpdate() {  // Updater
   String new_version = http.getString();  //Download version tag
   int firmware_pos = new_version.indexOf("Firmware: ") + 10;
   String newFirmwareVer = new_version.substring(firmware_pos);
-  int server_pos = new_version.indexOf("Server: ") + 8;
+  int server_pos = new_version.indexOf("Filesystem: ") + 8;
   int server_end_pos = new_version.indexOf("\nFirmware:");
   String newFsVer = new_version.substring(server_pos, server_end_pos);
   newFsVer.trim();
@@ -148,7 +148,7 @@ void firmwareUpdate() {  // Updater
   File file = SPIFFS.open("/version.txt", "r");  // Read versions
   while (file.available()) {
     String line = file.readStringUntil('\n');
-    if (line.startsWith("Server:")) fsVer = line.substring(line.indexOf(":") + 2);
+    if (line.startsWith("Filesystem:")) fsVer = line.substring(line.indexOf(":") + 2);
     else if (line.startsWith("Firmware:")) firmwareVer = line.substring(line.indexOf(":") + 2);
   }
   fsVer.trim();
@@ -163,7 +163,7 @@ void firmwareUpdate() {  // Updater
   // Check if version is the same
   bool updateFS = true, updateFirmware = true;
   if (!strcmp(firmwareVer.c_str(), newFirmwareVer.c_str()) || (!newFirmwareVer.c_str() || newFirmwareVer.c_str() == "")) updateFirmware = false;
-  if ((!strcmp(fsVer.c_str(), newFsVer.c_str()) || (!newFsVer.c_str() || newFsVer.c_str() == "")) && !updateFirmware) updateFS = false;
+  if (!strcmp(fsVer.c_str(), newFsVer.c_str()) || (!newFsVer.c_str() || newFsVer.c_str() == "")) updateFS = false;
 
   // If up-to-date
   if (!updateFirmware && !updateFS) return;
@@ -209,6 +209,14 @@ void firmwareUpdate() {  // Updater
   ESPhttpUpdate.onEnd([&]() {
     strip.setPixelColor(led_map[dualUpdate ? (secStage ? 5 : 1) : 3][6], LED_COLOR_CONN);
     strip.setPixelColor(led_map[dualUpdate ? (secStage ? 6 : 2) : 4][6], LED_COLOR_CONN);
+    if (!updateFS) {
+      File versionFile = SPIFFS.open("/version.txt", "w");
+      String versionFileText = versionFile.readString();
+      versionFileText.replace("Firmware: " + versionFileText.substring(versionFileText.indexOf("Firmware: ") + 10, versionFileText.indexOf('\n', versionFileText.indexOf("Firmware: "))), newFirmwareVer);
+      versionFile.seek(0);
+      versionFile.write(versionFileText.c_str());
+      versionFile.close();
+    }
     strip.show();
   });
 
