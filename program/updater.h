@@ -137,9 +137,9 @@ void firmwareUpdate() {  // Updater
   String new_version = http.getString();  //Download version tag
   int firmware_pos = new_version.indexOf("Firmware: ") + 10;
   String newFirmwareVer = new_version.substring(firmware_pos);
-  int server_pos = new_version.indexOf("Filesystem: ") + 12;
-  int server_end_pos = new_version.indexOf("\nFirmware:");
-  String newFsVer = new_version.substring(server_pos, server_end_pos);
+  int fs_pos = new_version.indexOf("Filesystem: ") + 12;
+  int fs_end_pos = new_version.indexOf("\nFirmware:");
+  String newFsVer = new_version.substring(fs_pos, fs_end_pos);
   newFsVer.trim();
   newFirmwareVer.trim();
   http.end();

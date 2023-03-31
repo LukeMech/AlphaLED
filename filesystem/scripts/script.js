@@ -24,7 +24,7 @@ async function versionNum() {
       if (line.startsWith('Filesystem: ')) FSversion = line.substring('Filesystem: '.length);
       else if (line.startsWith('Firmware: ')) Fvversion = line.substring('Firmware: '.length);
     }  
-    versionNum.innerHTML = versionNum.innerHTML + ` Files: v${FSversion} / CPU: v${Fvversion}`
+    versionNum.innerHTML = versionNum.innerHTML + ` CPU: v${Fvversion} / Files: v${FSversion}`
   }
   versionNum()
   
