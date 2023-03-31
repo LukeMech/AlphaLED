@@ -5,7 +5,7 @@ on:
   # On sketch change 
   push:
     paths:
-      - "**/version.txt"
+      - "filesystem/version.txt"
       
   # On workflow dispatch
   workflow_dispatch:
@@ -58,5 +58,5 @@ jobs:
           git config --global user.email github-actions@github.com
           git pull
           git add .
-          git commit -m "🏗️ Firmware v$(grep 'Firmware:' ./updater/build-version.txt | cut -d' ' -f2) | FS v$(grep 'Server:' ./updater/build-version.txt | cut -d' ' -f2)"
+          git commit -m "🏗️ Firmware v$(grep 'Firmware:' ./updater/build-version.txt | cut -d' ' -f2) | FS v$(grep 'Filesystem:' ./updater/build-version.txt | cut -d' ' -f2)"
           git push
