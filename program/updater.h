@@ -210,11 +210,12 @@ void firmwareUpdate() {  // Updater
     strip.setPixelColor(led_map[dualUpdate ? (secStage ? 5 : 1) : 3][6], LED_COLOR_CONN);
     strip.setPixelColor(led_map[dualUpdate ? (secStage ? 6 : 2) : 4][6], LED_COLOR_CONN);
     if (!updateFS) {
-      File versionFile = SPIFFS.open("/version.txt", "rw");
-      String versionFileText = versionFile.readString();
-      versionFileText.replace("Firmware: " + versionFileText.substring(versionFileText.indexOf("Firmware: ") + 10, versionFileText.indexOf('\n', versionFileText.indexOf("Firmware: "))), newFirmwareVer);
+      File versionFile = SPIFFS.open("/version.txt", "w");
       versionFile.seek(0);
-      versionFile.write(versionFileText.c_str());
+      versionFile.write(new_version.c_str());
+      Serial.println("[INFO] Updating version.txt based on http string:\n-----");
+      Serial.println(new_version.c_str());
+      Serial.println("-----");
       versionFile.close();
     }
     strip.show();
