@@ -103,7 +103,7 @@ struct {
 
 AsyncWebServer server(80);
 
-uint8_t patternNum = 0;
+int8_t patternNum = 0;
 bool serverOn = false, updateFirmware = false;
 
 
