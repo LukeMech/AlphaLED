@@ -36,7 +36,7 @@ async function getLEDsPattern() {
     xhttp.open("GET", "../functions/getLedsPattern", true);
     xhttp.send();
 }
-await getLEDsPattern();
+getLEDsPattern();
 setInterval(getLEDsPattern, 500);
 
 function request(cmd) {

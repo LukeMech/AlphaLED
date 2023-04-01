@@ -23,4 +23,4 @@ async function getSystemInfo() {
     xhttp.send();
 }
 
-await getSystemInfo();
+getSystemInfo();

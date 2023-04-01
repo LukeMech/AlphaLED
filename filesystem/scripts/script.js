@@ -1,20 +1,20 @@
 // Check version number
-let connectionState, xhttp;
+let connectionStatus, xhttp;
 const connErrMsg = '<i class="fa-solid fa-arrow-rotate-right fa-spin" style="color: #dc0909"></i> Reconnecting...';
 async function connectionState() {
-  connectionState = document.getElementById('connection')
+  connectionStatus = document.getElementById('connection')
   xhttp = new XMLHttpRequest();
   xhttp.open("HEAD", "../functions/connCheck", true);
   xhttp.timeout = 3000;
   xhttp.send();
   function connError() {
-    if (connectionState.innerHTML != connErrMsg) connectionState.innerHTML = connErrMsg;
+    if (connectionStatus.innerHTML != connErrMsg) connectionStatus.innerHTML = connErrMsg;
   }
 
   xhttp.onreadystatechange = () => {
     if (this.status == 200) {
       // Connection good
-      connectionState.innerHTML = '<i class="fa-solid fa-check" style="color: #0cdf4b;"></i> Connected';
+      connectionStatus.innerHTML = '<i class="fa-solid fa-check" style="color: #0cdf4b;"></i> Connected';
 
       // Connection error
     } else connError();
