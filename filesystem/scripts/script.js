@@ -4,8 +4,20 @@ function getLEDsPattern() {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-      if(this.responseText != "0") document.getElementById("patternNum").innerHTML = 'CHANGE (' + this.responseText + ')';
-      else document.getElementById("patternNum").innerHTML = 'CHANGE';
+      if(this.responseText != "0" && this.responseText != "-1" && this.responseText != "-2" && this.responseText != "-3") {
+        document.getElementById("patternNum").innerHTML = 'CHANGE (' + this.responseText + ')';
+        document.getElementById("flashlight").innerHTML = 'FLASHLIGHT';
+      }
+      else {
+        document.getElementById("patternNum").innerHTML = 'CHANGE';
+        switch (this.responseText) {
+          case 0: this.responseText = '1'
+          case -1: this.responseText = '2'
+          case -2: this.responseText = '3'
+          case -3: this.responseText = '4 - max'
+        }
+        document.getElementById("flashlight").innerHTML = 'FLASHLIGHT (' + this.responseText + ')';
+      }
     }
   };
   xhttp.open("GET", "/getledspattern", true);

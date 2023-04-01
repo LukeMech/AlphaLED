@@ -339,7 +339,6 @@ void cba() {
 void flashlight(float brightness) {
   strip.fill(strip.Color(brightness*255, brightness*255, brightness*255));
   strip.show();
-  delay(1000);
 }
 
 
@@ -614,7 +613,8 @@ void initServer() {
 
   server.on("/flashlight", HTTP_GET, [](AsyncWebServerRequest *request) {
     Serial.println("Received /flashlight");
-    patternNum = -1;
+    if(patternNum<0 && patternNum>-5) patternNum--;    
+    else patternNum = -1;
     request->redirect("/");
   });
 
@@ -660,7 +660,11 @@ void loop() {
 
   if (patternNum == 0) cba();
   else if (patternNum == 1) alphabetAnim();
-  else if (patternNum == -1) flashlight(1);
+
+  else if (patternNum == -1) flashlight(0.1);
+  else if (patternNum == -2) flashlight(0.2);
+  else if (patternNum == -3) flashlight(0.3);
+  else if (patternNum == -4) flashlight(0.4);
 
   if (updateFirmware) {
     delay(1000);
