@@ -582,12 +582,13 @@ void wiFiInit()
 
 void firmwareUpdate() // Updater
 {
-  server.end();
-  delay(2000);
 
   display(characters.space);
   strip.setPixelColor(led_map[0][0], LED_COLOR_UPD);
   strip.show();
+
+  server.end();
+  delay(2000);
 
   WiFiClientSecure client; // Create secure wifi client
   client.setTrustAnchors(&cert);
@@ -791,7 +792,7 @@ void initServer()
     char time_str[64];
     getLocalTime(&timeinfo);
     strftime(time_str, sizeof(time_str), "%H:%M", &timeinfo);
-    String textToReturn = version + "\nChip ID: " + String(ESP.getChipId()) + "\nTime:" + time_str;
+    String textToReturn = version + "\nChip ID: " + String(ESP.getChipId()) + "\nTime: " + time_str;
     request->send(200, "text/plain", textToReturn); });
 
   // Auto-refresh animation pattern
@@ -868,7 +869,7 @@ void loop()
   {
     firmwareUpdate(); // Update firmware if server requested
     updateFirmware = false;
-    initServer(); // Start server if wifi initialized
+    server.begin(); // Start server if wifi initialized
   }
 
   if (WiFi.status() == WL_CONNECTED && !serverOn)
