@@ -480,15 +480,15 @@ void cba()
 
 void flashlight(float brightness)
 {
-  strip.fill(strip.Color(brightness * 0.25 * 255, brightness * 0.25 * 255, brightness * 0.25 * 255));
+  strip.fill(strip.Color(brightness * 0.2 * 255, brightness * 0.2 * 255, brightness * 0.2 * 255));
   for (int s = 0; s < 8; s++)
-    strip.setPixelColor(led_map[0][s], strip.Color(brightness * 0.6 * 255, brightness * 0.6 * 255, brightness * 0.6 * 255));
+    strip.setPixelColor(led_map[0][s], strip.Color(brightness * 0.45 * 255, brightness * 0.45 * 255, brightness * 0.45 * 255));
   for (int e = 0; e < 8; e++)
-    strip.setPixelColor(led_map[7][e], strip.Color(brightness * 0.6 * 255, brightness * 0.6 * 255, brightness * 0.6 * 255));
+    strip.setPixelColor(led_map[7][e], strip.Color(brightness * 0.45 * 255, brightness * 0.45 * 255, brightness * 0.45 * 255));
   for (int x = 0; x < 8; x++)
-    strip.setPixelColor(led_map[x][0], strip.Color(brightness * 0.6 * 255, brightness * 0.6 * 255, brightness * 0.6 * 255));
+    strip.setPixelColor(led_map[x][0], strip.Color(brightness * 0.45 * 255, brightness * 0.45 * 255, brightness * 0.45 * 255));
   for (int y = 0; y < 8; y++)
-    strip.setPixelColor(led_map[y][7], strip.Color(brightness * 0.6 * 255, brightness * 0.6 * 255, brightness * 0.6 * 255));
+    strip.setPixelColor(led_map[y][7], strip.Color(brightness * 0.45 * 255, brightness * 0.45 * 255, brightness * 0.45 * 255));
   strip.show();
 }
 
@@ -587,6 +587,7 @@ void firmwareUpdate() // Updater
   strip.setPixelColor(led_map[0][0], LED_COLOR_UPD);
   strip.show();
 
+  serverOn=false;
   server.end();
   delay(2000);
 
@@ -598,6 +599,7 @@ void firmwareUpdate() // Updater
   if (!client.connect(host, httpsPort)) // Connect to github
   {
     Serial.println("[ERROR] Connection to github unavailable");
+    updateFirmware = false;
     return;
   }
 
@@ -606,6 +608,7 @@ void firmwareUpdate() // Updater
   int httpCode = http.GET();
   if (httpCode != HTTP_CODE_OK)
   {
+    http.end();
     Serial.println("[ERROR] Cannot check server versionfile");
     return;
   }
@@ -648,7 +651,10 @@ void firmwareUpdate() // Updater
 
   // If up-to-date
   if (!updateFirmware && !updateFS)
+  {
+    updateFirmware = false;
     return;
+  }
 
   // Set LEDs
   strip.setPixelColor(led_map[0][0], LED_COLOR_0);
@@ -857,19 +863,17 @@ void loop()
     alphabetAnim();
 
   else if (patternNum == -1)
-    flashlight(0.2);
+    flashlight(0.25);
   else if (patternNum == -2)
-    flashlight(0.35);
-  else if (patternNum == -3)
     flashlight(0.5);
+  else if (patternNum == -3)
+    flashlight(0.75);
   else if (patternNum == -4)
-    flashlight(0.8);
+    flashlight(1);
 
   if (updateFirmware)
   {
     firmwareUpdate(); // Update firmware if server requested
-    updateFirmware = false;
-    server.begin(); // Start server if wifi initialized
   }
 
   if (WiFi.status() == WL_CONNECTED && !serverOn)
