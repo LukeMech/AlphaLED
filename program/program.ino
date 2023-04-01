@@ -337,11 +337,11 @@ void cba() {
 }
 
 void flashlight(float brightness) {
-  strip.fill(strip.Color(brightness*0.2*255, brightness*0.2*255, brightness*0.2*255));
-  for(int i; i<8; i++) strip.setPixelColor(led_map[0][i], strip.Color(brightness*0.8*255, brightness*0.8*255, brightness*0.8*255));
-  for(int i; i<8; i++) strip.setPixelColor(led_map[7][i], strip.Color(brightness*0.8*255, brightness*0.8*255, brightness*0.8*255));
-  for(int i; i<8; i++) strip.setPixelColor(led_map[i][0], strip.Color(brightness*0.8*255, brightness*0.8*255, brightness*0.8*255));
-  for(int i; i<8; i++) strip.setPixelColor(led_map[i][7], strip.Color(brightness*0.8*255, brightness*0.8*255, brightness*0.8*255));
+  strip.fill(strip.Color(brightness*0.1*255, brightness*0.1*255, brightness*0.1*255));
+  for(int s=0; s<8; s++) strip.setPixelColor(led_map[0][s], strip.Color(brightness*0.8*255, brightness*0.8*255, brightness*0.8*255));
+  for(int e=0; e<8; e++) strip.setPixelColor(led_map[7][e], strip.Color(brightness*0.8*255, brightness*0.8*255, brightness*0.8*255));
+  for(int x=0; x<8; x++) strip.setPixelColor(led_map[x][0], strip.Color(brightness*0.8*255, brightness*0.8*255, brightness*0.8*255));
+  for(int y=0; y<8; y++) strip.setPixelColor(led_map[y][7], strip.Color(brightness*0.8*255, brightness*0.8*255, brightness*0.8*255));
   strip.show();
 }
 
@@ -683,10 +683,10 @@ void loop() {
   if (patternNum == 0) cba();
   else if (patternNum == 1) alphabetAnim();
 
-  else if (patternNum == -1) flashlight(0.25);
-  else if (patternNum == -2) flashlight(0.5);
-  else if (patternNum == -3) flashlight(0.75);
-  else if (patternNum == -4) flashlight(1);
+  else if (patternNum == -1) flashlight(0.2);
+  else if (patternNum == -2) flashlight(0.35);
+  else if (patternNum == -3) flashlight(0.5);
+  else if (patternNum == -4) flashlight(0.8);
 
   if (updateFirmware) {
     server.end();
