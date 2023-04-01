@@ -759,9 +759,9 @@ void initServer()
   server.on("/style/footer.css", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/style/footer.css", "text/css"); });
   server.on("/scripts/main.js", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/scripts/main.js", "text/js"); });
+            { request->send(SPIFFS, "/scripts/main.js", "text/javascript"); });
   server.on("/scripts/script.js", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/scripts/script.js", "text/js"); });
+            { request->send(SPIFFS, "/scripts/script.js", "text/javascript"); });
   server.on("/images/logo.png", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/images/logo.png", String(), true); });
   server.on("/images/blackhole.jpg", HTTP_GET, [](AsyncWebServerRequest *request)
@@ -771,7 +771,7 @@ void initServer()
   server.on("/info", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/html/info.html", "text/html"); });
   server.on("/scripts/info.js", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/scripts/info.js", "text/js"); });
+            { request->send(SPIFFS, "/scripts/info.js", "text/javascript"); });
   server.on("/images/cosmos.jpg", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/images/cosmos.jpg", String(), true); });
   
@@ -781,6 +781,7 @@ void initServer()
     File file = SPIFFS.open("/version.txt", "r");  // Read versions
     String version = file.readString();
     file.close();
+    time_t now = time(nullptr);
     struct tm timeinfo;
     char time_str[64];
     getLocalTime(&timeinfo);

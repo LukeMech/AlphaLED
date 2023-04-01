@@ -1,35 +1,34 @@
 // Check version number
-function connectionState() {
-  const connectionState = document.getElementById('connection')
-  const xhttp = new XMLHttpRequest();
+let connectionState, xhttp;
+const connErrMsg = '<i class="fa-solid fa-arrow-rotate-right fa-spin" style="color: #dc0909"></i> Reconnecting...';
+async function connectionState() {
+  connectionState = document.getElementById('connection')
+  xhttp = new XMLHttpRequest();
   xhttp.open("HEAD", "../functions/connCheck", true);
   xhttp.timeout = 3000;
   xhttp.send();
   function connError() {
-    const connErrMsg = '<i class="fa-solid fa-arrow-rotate-right fa-spin" style="color: #dc0909"></i> Reconnecting...'
     if (connectionState.innerHTML != connErrMsg) connectionState.innerHTML = connErrMsg;
   }
 
   xhttp.onreadystatechange = () => {
-    if (this.readyState == 4) {
-      if (this.status == 200) {
-        // Connection good
-        connectionState.innerHTML = '<i class="fa-solid fa-check" style="color: #0cdf4b;"></i> Connected';
+    if (this.status == 200) {
+      // Connection good
+      connectionState.innerHTML = '<i class="fa-solid fa-check" style="color: #0cdf4b;"></i> Connected';
 
-        // Connection error
-      } else connError();
-    }
+      // Connection error
+    } else connError();
   };
   xhttp.onerror = () => connError();
   xhttp.ontimeout = () => connError();
 }
-connectionState()
-setInterval(connectionState, 500);
+await connectionState()
+setInterval(connectionState, 2000);
 
 // Here paste announcments
 const globalAnnouncment = '<i class="fa-solid fa-wrench"></i> Work in progress'
 
-const announcment = document.getElementById('announcment')
+let announcment = document.getElementById('announcment')
 announcment.innerHTML = globalAnnouncment
 
 // Navigator, on show show, on hide hide
@@ -83,7 +82,7 @@ setTimeout(() => {
 }, 300);
 
 // Remove loading screen, show content
-window.onload = function () {
+window.onload = () => {
   loading.style.display = 'none'
   main.style.display = 'block'
 }

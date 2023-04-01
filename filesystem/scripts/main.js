@@ -1,9 +1,9 @@
 // Get LEDs pattern
-function getLEDsPattern() {
+async function getLEDsPattern() {
 
     let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = () => {
-        if (this.readyState == 4 && this.status == 200) {
+        if (this.status == 200) {
             if (this.responseText != "0" && this.responseText != "-1" && this.responseText != "-2" && this.responseText != "-3") {
                 document.getElementById("patternNum").innerHTML = 'CHANGE (' + this.responseText + ')';
                 document.getElementById("flashlight").innerHTML = 'FLASHLIGHT';
@@ -36,7 +36,7 @@ function getLEDsPattern() {
     xhttp.open("GET", "../functions/getLedsPattern", true);
     xhttp.send();
 }
-getLEDsPattern();
+await getLEDsPattern();
 setInterval(getLEDsPattern, 500);
 
 function request(cmd) {
