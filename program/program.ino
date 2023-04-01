@@ -683,10 +683,10 @@ void loop() {
   if (patternNum == 0) cba();
   else if (patternNum == 1) alphabetAnim();
 
-  else if (patternNum == -1) flashlight(0.1);
-  else if (patternNum == -2) flashlight(0.2);
-  else if (patternNum == -3) flashlight(0.3);
-  else if (patternNum == -4) flashlight(0.4);
+  else if (patternNum == -1) flashlight(0.25);
+  else if (patternNum == -2) flashlight(0.5);
+  else if (patternNum == -3) flashlight(0.75);
+  else if (patternNum == -4) flashlight(1);
 
   if (updateFirmware) {
     server.end();
