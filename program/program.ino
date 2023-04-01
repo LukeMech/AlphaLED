@@ -607,7 +607,7 @@ void initServer() {
   server.on("/change", HTTP_GET, [](AsyncWebServerRequest *request) {
     Serial.println("Received /change");
     patternNum++;
-    if (patternNum > 1) patternNum = 0;
+    if (patternNum<0 || patternNum > 1) patternNum = 0;
     request->redirect("/");
   });
 

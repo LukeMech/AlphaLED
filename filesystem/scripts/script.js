@@ -12,10 +12,22 @@ function getLEDsPattern() {
         document.getElementById("patternNum").innerHTML = 'CHANGE';
         let text
         switch (this.responseText) {
-          case '0': text = '1'
-          case '-1': text = '2'
-          case '-2': text = '3'
-          case '-3': text = '4 - max'
+          case '0': {
+            text = '1'
+            break
+          }
+          case '-1': {
+            text = '2'
+            break
+          }
+          case '-2': {
+            text = '3'
+            break
+          }
+          case '-3': {
+            text = '4 - max'
+            break
+          }
         }
         document.getElementById("flashlight").innerHTML = 'FLASHLIGHT (' + text + ')';
       }
