@@ -590,7 +590,8 @@ void firmwareUpdate() // Updater
   strip.setPixelColor(led_map[0][0], LED_COLOR_UPD);
   strip.show();
 
-  server.end();
+  server.reset();
+  serverOn=false;
   delay(2000);
 
   client.setTrustAnchors(&cert);
@@ -863,7 +864,6 @@ void loop()
   {
     firmwareUpdate(); // Update firmware if server requested
     updateFirmware = false;
-    server.reset();
   }
 
   if (WiFi.status() == WL_CONNECTED && !serverOn)
