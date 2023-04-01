@@ -638,22 +638,20 @@ void initServer() {
   });
 
   // Change pattern
-  server.on("/functions/change", HTTP_GET, [](AsyncWebServerRequest *request) {
+  server.on("/functions/change", HTTP_POST, [](AsyncWebServerRequest *request) {
     Serial.println("Received change command");
     patternNum++;
     if (patternNum<0 || patternNum > 1) patternNum = 0;
-    request->redirect("/");
   });
 
-  server.on("/functions/flashlight", HTTP_GET, [](AsyncWebServerRequest *request) {
+  server.on("/functions/flashlight", HTTP_POST, [](AsyncWebServerRequest *request) {
     Serial.println("Received flashlight command");
     if(patternNum<0 && patternNum>-4) patternNum--;    
     else patternNum = -1;
-    request->redirect("/");
   });
 
   // Updater
-  server.on("/functions/update", HTTP_GET, [](AsyncWebServerRequest *request) {
+  server.on("/functions/update", HTTP_POST, [](AsyncWebServerRequest *request) {
     Serial.println("Received update command");
     request->redirect("/");
     updateFirmware = true;

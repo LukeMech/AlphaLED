@@ -1,7 +1,7 @@
 // Get LEDs pattern
 function getLEDsPattern() {
 
-    var xhttp = new XMLHttpRequest();
+    let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
             if (this.responseText != "0" && this.responseText != "-1" && this.responseText != "-2" && this.responseText != "-3") {
@@ -10,7 +10,7 @@ function getLEDsPattern() {
             }
             else {
                 document.getElementById("patternNum").innerHTML = 'CHANGE';
-                let text
+                let text;
                 switch (this.responseText) {
                     case '0': {
                         text = '1'
@@ -36,5 +36,11 @@ function getLEDsPattern() {
     xhttp.open("GET", "../functions/getLedsPattern", true);
     xhttp.send();
 }
-getLEDsPattern()
-setInterval(getLEDsPattern, 5000)
+getLEDsPattern();
+setInterval(getLEDsPattern, 500);
+
+function request(cmd) {
+    let xhttp = new XMLHttpRequest();
+    xhttp.open("POST", `../functions/${cmd}`);
+    xhttp.send();
+}
