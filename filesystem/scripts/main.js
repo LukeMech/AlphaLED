@@ -33,7 +33,7 @@ function getLEDsPattern() {
             }
         }
     };
-    xhttp.open("GET", "/functions/getLedsPattern", true);
+    xhttp.open("GET", "../functions/getLedsPattern", true);
     xhttp.send();
 }
 getLEDsPattern()

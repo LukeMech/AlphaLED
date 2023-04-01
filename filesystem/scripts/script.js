@@ -1,7 +1,7 @@
 // Check version number
 async function versionNum() {
   var versionNum = document.getElementById('version')
-  const response = await fetch('version.txt')
+  const response = await fetch('../version.txt')
   const text = await response.text();
   const lines = text.split('\n');
   let FSversion, Fvversion;

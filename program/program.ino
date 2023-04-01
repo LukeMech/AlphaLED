@@ -572,9 +572,9 @@ void initServer() {
 
   // Home site and reuired additional htmls, csss and jss
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(SPIFFS, "/index.html", String(), false);
+    request->send(SPIFFS, "/html/index.html", String(), false);
   });
-  server.on("version.txt", HTTP_GET, [](AsyncWebServerRequest *request) {
+  server.on("/version.txt", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(SPIFFS, "/version.txt", "text/plain");
   });
   server.on("/html/footer.html", HTTP_GET, [](AsyncWebServerRequest *request) {
@@ -586,8 +586,8 @@ void initServer() {
   server.on("/style/footer.css", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(SPIFFS, "/style/footer.css", "text/css");
   });
-  server.on("/scripts/loading.js", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(SPIFFS, "/scripts/loading.js", "text/js");
+  server.on("/scripts/main.js", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(SPIFFS, "/scripts/main.js", "text/js");
   });
   server.on("/scripts/script.js", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(SPIFFS, "/scripts/script.js", "text/js");
