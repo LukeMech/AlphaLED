@@ -614,7 +614,7 @@ void initServer() {
     String version = file.readString();
     file.close();
     String textToReturn = version + "\n" + "Chip ID: " + String(ESP.getChipId());
-    request->send(200, textToReturn, "text/plain");
+    request->send(200, "text/plain", textToReturn);
   });
 
   // Auto-refresh animation pattern
