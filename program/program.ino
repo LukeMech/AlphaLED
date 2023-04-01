@@ -590,10 +590,6 @@ void firmwareUpdate() // Updater
   strip.setPixelColor(led_map[0][0], LED_COLOR_UPD);
   strip.show();
 
-  server.reset();
-  serverOn=false;
-  delay(2000);
-
   client.setTrustAnchors(&cert);
   time_t now = time(nullptr); // Set time via NTP, as required for x.509 validation
 
