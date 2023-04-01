@@ -580,6 +580,9 @@ void wiFiInit()
 
 //                      <--- Firmware updater --->
 
+WiFiClientSecure client; // Create secure wifi client
+HTTPClient http;         // Connect to release API
+
 void firmwareUpdate() // Updater
 {
 
@@ -587,28 +590,16 @@ void firmwareUpdate() // Updater
   strip.setPixelColor(led_map[0][0], LED_COLOR_UPD);
   strip.show();
 
-  serverOn=false;
   server.end();
   delay(2000);
 
-  WiFiClientSecure client; // Create secure wifi client
   client.setTrustAnchors(&cert);
-
   time_t now = time(nullptr); // Set time via NTP, as required for x.509 validation
 
-  if (!client.connect(host, httpsPort)) // Connect to github
-  {
-    Serial.println("[ERROR] Connection to github unavailable");
-    updateFirmware = false;
-    return;
-  }
-
-  HTTPClient http; // Connect to release API
   http.begin(client, updaterVersionCtrlUrl);
   int httpCode = http.GET();
   if (httpCode != HTTP_CODE_OK)
   {
-    http.end();
     Serial.println("[ERROR] Cannot check server versionfile");
     return;
   }
@@ -643,41 +634,41 @@ void firmwareUpdate() // Updater
   Serial.println("[INFO] Filesystem latest version: " + newFsVer);
 
   // Check if version is the same
-  bool updateFS = true, updateFirmware = true;
+  bool updateFS = true, updateFv = true;
   if (!strcmp(firmwareVer.c_str(), newFirmwareVer.c_str()) || (!newFirmwareVer.c_str() || newFirmwareVer.c_str() == ""))
-    updateFirmware = false;
+    updateFv = false;
   if (!strcmp(fsVer.c_str(), newFsVer.c_str()) || (!newFsVer.c_str() || newFsVer.c_str() == ""))
     updateFS = false;
 
   // If up-to-date
-  if (!updateFirmware && !updateFS)
-  {
-    updateFirmware = false;
+  if (!updateFv && !updateFS)
     return;
-  }
 
+  bool secStage = false, dualUpdate = false;
   // Set LEDs
   strip.setPixelColor(led_map[0][0], LED_COLOR_0);
-  if (updateFirmware && updateFS)
+  if (updateFv && updateFS)
   {
-    for (uint8_t i; i < 8; i++)
+    for (uint8_t i = 0; i < 8; i++)
       strip.setPixelColor(led_map[0][i], LED_COLOR_UPD);
-    for (uint8_t i; i < 8; i++)
+    for (uint8_t i = 0; i < 8; i++)
       strip.setPixelColor(led_map[3][i], LED_COLOR_UPD);
-    for (uint8_t i; i < 8; i++)
+    for (uint8_t i = 0; i < 8; i++)
       strip.setPixelColor(led_map[4][i], LED_COLOR_UPD);
-    for (uint8_t i; i < 8; i++)
+    for (uint8_t i = 0; i < 8; i++)
       strip.setPixelColor(led_map[7][i], LED_COLOR_UPD);
-    for (uint8_t i; i < 8; i++)
+    for (uint8_t i = 0; i < 8; i++)
       strip.setPixelColor(led_map[i][0], LED_COLOR_UPD);
-    for (uint8_t i; i < 8; i++)
+    for (uint8_t i = 0; i < 8; i++)
       strip.setPixelColor(led_map[i][7], LED_COLOR_UPD);
+
+    dualUpdate = true;
   }
   else
   {
-    for (uint8_t i; i < 8; i++)
+    for (uint8_t i = 0; i < 8; i++)
       strip.setPixelColor(led_map[2][i], LED_COLOR_UPD);
-    for (uint8_t i; i < 8; i++)
+    for (uint8_t i = 0; i < 8; i++)
       strip.setPixelColor(led_map[5][i], LED_COLOR_UPD);
     strip.setPixelColor(led_map[3][0], LED_COLOR_UPD);
     strip.setPixelColor(led_map[4][0], LED_COLOR_UPD);
@@ -687,9 +678,6 @@ void firmwareUpdate() // Updater
   strip.show();
 
   // Update progress - change leds
-  bool secStage = false, dualUpdate = false;
-  if (updateFirmware && updateFS)
-    dualUpdate = true;
   ESPhttpUpdate.rebootOnUpdate(false);
   ESPhttpUpdate.onStart([]()
                         { Serial.println("Starting update..."); });
@@ -721,12 +709,12 @@ void firmwareUpdate() // Updater
     strip.show(); });
 
   t_httpUpdate_return ret;
-  if (updateFirmware)
+  if (updateFv)
     ret = ESPhttpUpdate.update(client, updaterFirmwareUrl); // Update firmware
   secStage = true;
   SPIFFS.end();
 
-  if (updateFS && (!updateFirmware || ret == HTTP_UPDATE_OK || ret == 0))
+  if (updateFS && (!updateFv || ret == HTTP_UPDATE_OK || ret == 0))
     ret = ESPhttpUpdate.updateFS(client, updaterFSUrl); // Update filesystem
 
   if (ret != HTTP_UPDATE_OK && ret != 0)
@@ -874,6 +862,8 @@ void loop()
   if (updateFirmware)
   {
     firmwareUpdate(); // Update firmware if server requested
+    updateFirmware = false;
+    server.reset();
   }
 
   if (WiFi.status() == WL_CONNECTED && !serverOn)
