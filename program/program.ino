@@ -580,9 +580,6 @@ void wiFiInit()
 
 //                      <--- Firmware updater --->
 
-WiFiClientSecure client; // Create secure wifi client
-HTTPClient http;         // Connect to release API
-
 void firmwareUpdate() // Updater
 {
 
@@ -590,14 +587,21 @@ void firmwareUpdate() // Updater
   strip.setPixelColor(led_map[0][0], LED_COLOR_UPD);
   strip.show();
 
+  server.end();
+  serverOn = false;
+  delay(1000);
+
+  WiFiClientSecure client; // Create secure wifi client
   client.setTrustAnchors(&cert);
   time_t now = time(nullptr); // Set time via NTP, as required for x.509 validation
 
+  HTTPClient http; // Connect to release API
   http.begin(client, updaterVersionCtrlUrl);
   int httpCode = http.GET();
   if (httpCode != HTTP_CODE_OK)
   {
     Serial.println("[ERROR] Cannot check server versionfile");
+    client.abort();
     return;
   }
 
@@ -639,7 +643,10 @@ void firmwareUpdate() // Updater
 
   // If up-to-date
   if (!updateFv && !updateFS)
+  {
+    client.abort();
     return;
+  }
 
   bool secStage = false, dualUpdate = false;
   // Set LEDs
@@ -860,8 +867,12 @@ void loop()
   {
     firmwareUpdate(); // Update firmware if server requested
     updateFirmware = false;
+    delay(500);
   }
 
   if (WiFi.status() == WL_CONNECTED && !serverOn)
+  {
+    server.reset();
     initServer(); // Start server if wifi initialized
+  }
 }
