@@ -344,11 +344,11 @@ void cba() {
 }
 
 void flashlight(float brightness) {
-  strip.fill(strip.Color(brightness*0.1*255, brightness*0.1*255, brightness*0.1*255));
-  for(int s=0; s<8; s++) strip.setPixelColor(led_map[0][s], strip.Color(brightness*0.8*255, brightness*0.8*255, brightness*0.8*255));
-  for(int e=0; e<8; e++) strip.setPixelColor(led_map[7][e], strip.Color(brightness*0.8*255, brightness*0.8*255, brightness*0.8*255));
-  for(int x=0; x<8; x++) strip.setPixelColor(led_map[x][0], strip.Color(brightness*0.8*255, brightness*0.8*255, brightness*0.8*255));
-  for(int y=0; y<8; y++) strip.setPixelColor(led_map[y][7], strip.Color(brightness*0.8*255, brightness*0.8*255, brightness*0.8*255));
+  strip.fill(strip.Color(brightness*0.25*255, brightness*0.25*255, brightness*0.25*255));
+  for(int s=0; s<8; s++) strip.setPixelColor(led_map[0][s], strip.Color(brightness*0.6*255, brightness*0.6*255, brightness*0.6*255));
+  for(int e=0; e<8; e++) strip.setPixelColor(led_map[7][e], strip.Color(brightness*0.6*255, brightness*0.6*255, brightness*0.6*255));
+  for(int x=0; x<8; x++) strip.setPixelColor(led_map[x][0], strip.Color(brightness*0.6*255, brightness*0.6*255, brightness*0.6*255));
+  for(int y=0; y<8; y++) strip.setPixelColor(led_map[y][7], strip.Color(brightness*0.6*255, brightness*0.6*255, brightness*0.6*255));
   strip.show();
 }
 
@@ -450,12 +450,18 @@ void firmwareUpdate() {  // Updater
 
   timeClient.update();
 
-  if (!client.connect(host, httpsPort)) return;  // Connect to github
+  if (!client.connect(host, httpsPort)) { // Connect to github
+    Serial.println("[ERROR] Connection to github unavailable");
+    return;  
+  }
 
   HTTPClient http;  // Connect to release API
   http.begin(client, updaterVersionCtrlUrl);
   int httpCode = http.GET();
-  if (httpCode != HTTP_CODE_OK) return;
+  if (httpCode != HTTP_CODE_OK) {
+    Serial.println("[ERROR] Cannot check server versionfile");
+    return;
+  }
 
   String new_version = http.getString();  //Download version tag
   int firmware_pos = new_version.indexOf("Firmware: ") + 10;
