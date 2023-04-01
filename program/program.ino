@@ -336,10 +336,10 @@ void cba() {
   if(!updateFirmware) animate(alphabet.B, alphabet.C, 3, 120, strip.Color(25, 0, 0));
 }
 
-bool flashlight(float brightness) {
+void flashlight(float brightness) {
   strip.fill(strip.Color(brightness*255, brightness*255, brightness*255));
   strip.show();
-  return true;
+  delay(1000);
 }
 
 
@@ -660,7 +660,7 @@ void loop() {
 
   if (patternNum == 0) cba();
   else if (patternNum == 1) alphabetAnim();
-  else if (patternNum == -1 && !flashLightActive) flashLightActive = flashlight(1);
+  else if (patternNum == -1) flashlight(1);
 
   if (updateFirmware) {
     delay(1000);
