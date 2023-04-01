@@ -572,7 +572,7 @@ void initServer() {
 
   // Home site and reuired additional htmls, csss and jss
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(SPIFFS, "/html/index.html", String(), false);
+    request->send(SPIFFS, "/html/index.html", "text/html");
   });
   server.on("/version.txt", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(SPIFFS, "/version.txt", "text/plain");
