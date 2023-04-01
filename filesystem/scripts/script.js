@@ -11,10 +11,10 @@ function getLEDsPattern() {
       else {
         document.getElementById("patternNum").innerHTML = 'CHANGE';
         switch (this.responseText) {
-          case 0: this.responseText = '1'
-          case -1: this.responseText = '2'
-          case -2: this.responseText = '3'
-          case -3: this.responseText = '4 - max'
+          case '0': this.responseText = '1'
+          case '-1': this.responseText = '2'
+          case '-2': this.responseText = '3'
+          case '-3': this.responseText = '4 - max'
         }
         document.getElementById("flashlight").innerHTML = 'FLASHLIGHT (' + this.responseText + ')';
       }

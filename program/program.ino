@@ -613,7 +613,7 @@ void initServer() {
 
   server.on("/flashlight", HTTP_GET, [](AsyncWebServerRequest *request) {
     Serial.println("Received /flashlight");
-    if(patternNum<0 && patternNum>-5) patternNum--;    
+    if(patternNum<0 && patternNum>-4) patternNum--;    
     else patternNum = -1;
     request->redirect("/");
   });
@@ -667,10 +667,10 @@ void loop() {
   else if (patternNum == -4) flashlight(0.4);
 
   if (updateFirmware) {
-    delay(1000);
     server.end();
     firmwareUpdate();  // Update firmware if server requested
     updateFirmware = false;
+    delay(2000);
     server.begin();
   }
 
