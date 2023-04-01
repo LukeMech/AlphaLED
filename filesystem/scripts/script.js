@@ -22,7 +22,7 @@ async function connectionState() {
   xhttp.onerror = () => connError();
   xhttp.ontimeout = () => connError();
 }
-await connectionState()
+connectionState()
 setInterval(connectionState, 2000);
 
 // Here paste announcments
