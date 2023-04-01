@@ -337,7 +337,11 @@ void cba() {
 }
 
 void flashlight(float brightness) {
-  strip.fill(strip.Color(brightness*255, brightness*255, brightness*255));
+  strip.fill(strip.Color(brightness*0.2*255, brightness*0.2*255, brightness*0.2*255));
+  for(int i; i<8; i++) strip.setPixelColor(led_map[0][i], strip.Color(brightness*0.8*255, brightness*0.8*255, brightness*0.8*255));
+  for(int i; i<8; i++) strip.setPixelColor(led_map[7][i], strip.Color(brightness*0.8*255, brightness*0.8*255, brightness*0.8*255));
+  for(int i; i<8; i++) strip.setPixelColor(led_map[i][0], strip.Color(brightness*0.8*255, brightness*0.8*255, brightness*0.8*255));
+  for(int i; i<8; i++) strip.setPixelColor(led_map[i][7], strip.Color(brightness*0.8*255, brightness*0.8*255, brightness*0.8*255));
   strip.show();
 }
 
@@ -658,7 +662,6 @@ void initServer() {
 // ----- Setup & loop -----
 // ------------------------
 
-bool flashLightActive;
 void setup() {
   Serial.begin(9600);  // Begin serial
   Serial.println("[STATUS] Start!");
