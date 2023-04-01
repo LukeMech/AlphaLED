@@ -336,7 +336,7 @@ void cba() {
   if(!updateFirmware) animate(alphabet.B, alphabet.C, 3, 120, strip.Color(25, 0, 0));
 }
 
-void flashlight(float brightness) {
+bool flashlight(float brightness) {
   strip.fill(strip.Color(brightness*255, brightness*255, brightness*255));
   strip.show();
   return true;
