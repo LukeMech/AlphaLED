@@ -4,7 +4,7 @@ function getLEDsPattern() {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-      if(this.responseText != "-1") document.getElementById("patternNum").innerHTML = 'CHANGE (' + this.responseText + ')';
+      if(this.responseText != "0") document.getElementById("patternNum").innerHTML = 'CHANGE (' + this.responseText + ')';
       else document.getElementById("patternNum").innerHTML = 'CHANGE';
     }
   };

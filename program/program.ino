@@ -665,7 +665,7 @@ void loop() {
     server.end();
     firmwareUpdate();  // Update firmware if server requested
     updateFirmware = false;
-    initServer();
+    server.begin();
   }
 
   if (WiFi.status() == WL_CONNECTED && !serverOn) initServer();  // Start server if wifi initialized
