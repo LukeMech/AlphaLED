@@ -593,21 +593,21 @@ void initServer() {
     request->send(SPIFFS, "/scripts/script.js", "text/js");
   });
   server.on("/images/logo.png", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(SPIFFS, "/images/logo.png", String(), false);
+    request->send(SPIFFS, "/images/logo.png", String(), true);
   });
   server.on("/images/blackhole.jpg", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(SPIFFS, "/images/blackhole.jpg", String(), false);
+    request->send(SPIFFS, "/images/blackhole.jpg", String(), true);
   });
 
   // Info site
   server.on("/html/info.html", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(SPIFFS, "/info.html", "text/html");
+    request->send(SPIFFS, "/html/info.html", "text/html");
   });
   server.on("/scripts/info.js", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(SPIFFS, "/scripts/info.js", "text/js");
   });
   server.on("/images/cosmos.jpg", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(SPIFFS, "/images/cosmos.jpg", String(), false);
+    request->send(SPIFFS, "/images/cosmos.jpg", String(), true);
   });
   server.on("/getOSinfo", HTTP_GET, [](AsyncWebServerRequest *request) {
     File file = SPIFFS.open("/version.txt", "r");  // Read versions
