@@ -571,9 +571,11 @@ void firmwareUpdate() {  // Updater
 void initServer() {
 
   // Home site and reuired additional htmls, csss and jss
-
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(SPIFFS, "/index.html", String(), false);
+  });
+  server.on("/version.txt", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(SPIFFS, "/version.txt", "text/plain");
   });
   server.on("/html/footer.html", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(SPIFFS, "/html/footer.html", "text/html");
@@ -593,15 +595,32 @@ void initServer() {
   server.on("/images/logo.png", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(SPIFFS, "/images/logo.png", String(), false);
   });
-  server.on("/version.txt", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(SPIFFS, "/version.txt", "text/plain");
+  server.on("/images/blackhole.jpg", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(SPIFFS, "/images/blackhole.jpg", String(), false);
+  });
+
+  // Info site
+  server.on("/html/info.html", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(SPIFFS, "/info.html", "text/html");
+  });
+  server.on("/scripts/info.js", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(SPIFFS, "/scripts/info.js", "text/js");
+  });
+  server.on("/images/cosmos.jpg", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(SPIFFS, "/images/cosmos.jpg", String(), false);
+  });
+  server.on("/getOSinfo", HTTP_GET, [](AsyncWebServerRequest *request) {
+    File file = SPIFFS.open("/version.txt", "r");  // Read versions
+    String version = file.readString();
+    file.close();
+    String textToReturn = version + "\n" + "Chip ID: " + String(ESP.getChipId());
+    request->send(200, textToReturn, "text/plain");
   });
 
   // Auto-refresh animation pattern
   server.on("/getledspattern", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(200, "text/plain", String(patternNum + 1));
   });
-
 
   // Change pattern
   server.on("/change", HTTP_GET, [](AsyncWebServerRequest *request) {

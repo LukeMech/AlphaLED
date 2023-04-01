@@ -230,7 +230,7 @@
   .header {
     min-height: 100vh;
     width: 100%;
-    background-image: linear-gradient(rgba(4,9,30,0.6),rgba(4,9,30,0.6)), url(https://raw.githubusercontent.com/Bicycle-LEDs/Bicycle-LEDs.github.io/main/images/blackhole.jpg);
+    background-image: linear-gradient(rgba(4,9,30,0.6),rgba(4,9,30,0.6)), url(../images/blackhole.jpg);
     background-position: center;
     background-size: cover;
     position: relative;
@@ -292,3 +292,178 @@
       margin: 5px;
     }
   }
+
+
+  /* 
+--------------------------------------------------------
+---------------------- INFO PAGE -----------------------
+--------------------------------------------------------
+*/
+
+.infopage-header {
+  height: 400px;
+  width: 100%;
+  background-image: linear-gradient(rgba(4,9,30,0.6),rgba(4,9,30,0.6)), url(../images/cosmos.jpg);
+  background-position: center;
+  background-size: cover;
+  text-align: center;
+  color: #fff;
+}
+.infopage-header h3 {
+  margin-top: 80px;
+  font-size: 40px;
+}
+
+.infopage {
+  min-height: calc(100vh - 400px - 150px);
+  width: 100%;
+  background: rgb(26, 25, 25);
+  margin: auto;
+  padding: 20px;
+  display: none;
+}
+.infopage .grid::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+.infopage a {
+  text-decoration: none;
+}
+.infopage .box {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 13px 50px 15px 20px;
+  float: left;
+  border: lightblue 5px solid;
+  border-radius: 30px;
+  position: relative;
+}
+
+.infopage .info {
+  float: left;
+  width: 30%;
+}
+.infopage .info .p {
+  font-size: 20px;
+  color: rgb(9, 165, 9);
+  position: relative;
+}
+.infopage .info h1 {
+  font-size: 25px;
+  line-height: 20px;
+  color: yellow;
+  display: inline-block;
+}
+.infopage .info h2 {
+  font-size: 20px;
+  color: white;
+}
+.infopage .info .issues {
+  font-size: 15px;
+  color: cornflowerblue;
+}
+
+.infopage .branch-ctrl {
+  float: left;
+  margin-left: 10px;
+  font-size: 20px;
+  width: 157px;
+}
+
+.infopage .branch-ctrl .branch {
+  color: white;
+  cursor: pointer;
+}
+.infopage .branch-ctrl .active-branch {
+  color: yellow;
+}
+
+.infopage .loading {
+  visibility: hidden;
+  float: left;
+  top: 50%;
+  position: absolute;
+  transform: translateY(-50%);
+  left: calc(30% + 10px + 157px + 20px);
+  font-size: 40px;
+  color: white;
+}
+
+.infopage .branch-info {
+  position: relative;
+  float: left;
+  text-align: left;
+  margin-left: 70px;
+  width: calc(100% - 30% - 157px - 80px);
+}
+
+.infopage .branch-info .av {
+  margin-top: 7px;
+  margin-right: 10px;
+  width: 40px;
+  float: left;
+  border-radius: 50%;
+}
+.infopage .branch-info .commInfo {
+  top: -5px;
+  font-size: 15px;
+  color: white;
+}
+.infopage .branch-info .commSha {
+  color: brown;
+}
+.infopage .branch-info h1 {
+  margin-top: -25px;
+  font-size: 20px;
+  color: white;
+  font-weight: normal;
+}
+
+.infopage .repoBtn {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 30px;
+  color: lightblue;
+  padding: 20px;
+  transition: 0.2s;
+}
+.infopage .repoBtn:hover {
+  font-size: 40px;
+  padding-right: 30px;
+}
+
+@media(max-width: 700px) {
+  .infopage-header {
+    height: 250px;
+  }
+  .infopage-header h3 {
+    margin-top: 50px;
+  }
+  .infopage {
+    min-height: calc(100vh - 250px - 100px);
+    padding: 5px;
+  }
+  .infopage .info {
+    width: 100%;
+  }
+  .infopage .branch-ctrl {
+    display: none;
+  }
+  .infopage .branch-info {
+    display: none;
+  }
+  .infopage .repoBtn {
+    transform: none;
+    padding: 0;
+    right: 7px;
+    top: calc(100% - 45px);
+  }
+  .infopage .repoBtn:hover {
+    font-size: 30px;
+    padding-right: 0;
+  }
+  
+}

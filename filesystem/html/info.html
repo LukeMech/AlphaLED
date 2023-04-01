@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../style/style.css" />
+  
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.2.0/css/all.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;600;700&display=swap" rel="stylesheet" type='text/css'>
+
+  <title>LED Controller - info</title>
+
+</head>
+
+<body>
+
+  <section class="infopage-header">
+
+    <nav>
+      <i id="version"><i class="i fa-solid fa-gears"></i></i>
+
+      <div class="nav-links" id="navLinks">
+        <i class="fa-regular fa-square-minus" onclick="hideMenu()"></i>
+        <ul>
+          <li><a href="../index.html" class="link">HOME</a></li>
+          <li><a onclick="reload()" class="here">INFO</a></li>
+        </ul>
+      </div>
+      <i class="fa-regular fa-square-plus" onclick="showMenu()"></i>
+    </nav>
+
+    <div class="announcment">
+      <p id="announcment"></p>
+    </div>
+
+    <h3 id="title">Informations</h3>
+
+  </section>
+
+  <div id="loading"></div>
+
+  <!--  Info content  -->
+
+  <!-- TEMP -->
+  <section class="info" id="mainSection">
+        
+  </section>
+  
+  <iframe src="./footer.html" seamless scrolling="no"></iframe>
+
+  <script src="../scripts/script.js"></script>
+  <script src="../scripts/info.js"></script>
+
+</body>
+</html>
