@@ -586,10 +586,7 @@ void firmwareUpdate() // Updater
   display(characters.space);
   strip.setPixelColor(led_map[0][0], LED_COLOR_UPD);
   strip.show();
-
   server.end();
-  serverOn = false;
-  delay(1000);
 
   WiFiClientSecure client; // Create secure wifi client
   client.setTrustAnchors(&cert);
@@ -740,8 +737,6 @@ void firmwareUpdate() // Updater
     animate(characters.space, characters.updater, 2, 100, LED_COLOR_CONN);
     delay(500);
   }
-
-  ESP.restart(); // End update
 }
 
 // ------------------------
@@ -866,13 +861,11 @@ void loop()
   if (updateFirmware)
   {
     firmwareUpdate(); // Update firmware if server requested
-    updateFirmware = false;
-    delay(500);
+    ESP.restart(); // End update
   }
 
   if (WiFi.status() == WL_CONNECTED && !serverOn)
   {
-    server.reset();
     initServer(); // Start server if wifi initialized
   }
 }
