@@ -1,9 +1,8 @@
 // Check version number
-let connectionStatus, xhttp;
 const connErrMsg = '<i class="fa-solid fa-arrow-rotate-right fa-spin" style="color: #dc0909"></i> Reconnecting...';
-async function connectionState() {
-  connectionStatus = document.getElementById('connection')
-  xhttp = new XMLHttpRequest();
+function connectionState() {
+  const connectionStatus = document.getElementById('connection')
+  const xhttp = new XMLHttpRequest();
   xhttp.open("HEAD", "../functions/connCheck", true);
   xhttp.timeout = 3000;
   xhttp.send();
@@ -11,9 +10,9 @@ async function connectionState() {
     if (connectionStatus.innerHTML != connErrMsg) connectionStatus.innerHTML = connErrMsg;
   }
 
-  xhttp.onreadystatechange = () => {
+  xhttp.onreadystatechange = function () {
     console.log(this.status)
-    if (this.status == 200) {
+    if (this.readyState == 4 && this.status == 200) {
       // Connection good
       connectionStatus.innerHTML = '<i class="fa-solid fa-check" style="color: #0cdf4b;"></i> Connected';
 
@@ -29,7 +28,7 @@ setInterval(connectionState, 2000);
 // Here paste announcments
 const globalAnnouncment = '<i class="fa-solid fa-wrench"></i> Work in progress'
 
-let announcment = document.getElementById('announcment')
+const announcment = document.getElementById('announcment')
 announcment.innerHTML = globalAnnouncment
 
 // Navigator, on show show, on hide hide

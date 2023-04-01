@@ -3,20 +3,16 @@ let fvVersionDoc = document.getElementById('fvVersion')
 let FSVersionDoc = document.getElementById('fsVersion')
 let chipIDDoc = document.getElementById('chipID')
 
-let fvVer, fsVer, chipID, xhhtp
 async function getSystemInfo() {
 
-    xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = () => {
-        if (this.status == 200) {
+    const xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
             let lines = this.responseText.split("\n");
-            fsVer = lines[0].replace("Filesystem: ", "").trim();
-            fvVer = lines[1].replace("Firmware: ", "").trim();
-            chipID = lines[2].replace("Chip ID: ", "").trim();
+            const fsVer = lines[0].replace("Filesystem: ", "").trim();
+            const fvVer = lines[1].replace("Firmware: ", "").trim();
+            const chipID = lines[2].replace("Chip ID: ", "").trim();
 
-            console.log(fsVer)
-            console.log(fvVer)
-            console.log(chipID)
             FSVersionDoc.innerHTML = fsVer;
             fvVersionDoc.innerHTML = fvVer;
             chipIDDoc.innerHTML = chipID;
