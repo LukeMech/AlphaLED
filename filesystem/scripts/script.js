@@ -10,13 +10,14 @@ function getLEDsPattern() {
       }
       else {
         document.getElementById("patternNum").innerHTML = 'CHANGE';
+        let text
         switch (this.responseText) {
-          case '0': this.responseText = '1'
-          case '-1': this.responseText = '2'
-          case '-2': this.responseText = '3'
-          case '-3': this.responseText = '4 - max'
+          case '0': text = '1'
+          case '-1': text = '2'
+          case '-2': text = '3'
+          case '-3': text = '4 - max'
         }
-        document.getElementById("flashlight").innerHTML = 'FLASHLIGHT (' + this.responseText + ')';
+        document.getElementById("flashlight").innerHTML = 'FLASHLIGHT (' + text + ')';
       }
     }
   };

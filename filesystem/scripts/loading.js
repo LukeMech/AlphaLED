@@ -16,8 +16,6 @@ setTimeout(() => {
 
 // Remove loading screen, show content
 window.onload = function() {
-  setTimeout(() => {
-    loading.style.display = 'none'
-    main.style.display = 'block'
-  }, 600);
+  loading.style.display = 'none'
+  main.style.display = 'block'
 }
