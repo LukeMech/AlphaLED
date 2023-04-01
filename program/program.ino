@@ -441,8 +441,7 @@ void firmwareUpdate() {  // Updater
   WiFiClientSecure client;  // Create secure wifi client
   client.setTrustAnchors(&cert);
 
-  configTime(0, 0, "pool.ntp.org", "time.nist.gov");  // Set time via NTP, as required for x.509 validation
-  time_t now = time(nullptr);
+  time_t now = time(nullptr); // Set time via NTP, as required for x.509 validation
 
   if (!client.connect(host, httpsPort)) { // Connect to github
     Serial.println("[ERROR] Connection to github unavailable");
@@ -580,6 +579,8 @@ void firmwareUpdate() {  // Updater
 
 void initServer() {
 
+  configTime(2*3600, 0, "pool.ntp.org", "time.nist.gov");  
+
   // Home site and reuired additional htmls, csss and jss
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(SPIFFS, "/html/index.html", "text/html");
@@ -623,7 +624,11 @@ void initServer() {
     File file = SPIFFS.open("/version.txt", "r");  // Read versions
     String version = file.readString();
     file.close();
-    String textToReturn = version + "\n" + "Chip ID: " + String(ESP.getChipId());
+    struct tm timeinfo;
+    char time_str[64];
+    getLocalTime(&timeinfo);
+    strftime(time_str, sizeof(time_str), "%H:%M", &timeinfo);
+    String textToReturn = version + "\nChip ID: " + String(ESP.getChipId()) + "\nTime:" + time_str;
     request->send(200, "text/plain", textToReturn);
   });
 
