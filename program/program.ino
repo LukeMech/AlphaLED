@@ -574,7 +574,7 @@ void initServer() {
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(SPIFFS, "/index.html", String(), false);
   });
-  server.on("/version.txt", HTTP_GET, [](AsyncWebServerRequest *request) {
+  server.on("version.txt", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(SPIFFS, "/version.txt", "text/plain");
   });
   server.on("/html/footer.html", HTTP_GET, [](AsyncWebServerRequest *request) {
@@ -600,7 +600,7 @@ void initServer() {
   });
 
   // Info site
-  server.on("/html/info.html", HTTP_GET, [](AsyncWebServerRequest *request) {
+  server.on("/info", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(SPIFFS, "/html/info.html", "text/html");
   });
   server.on("/scripts/info.js", HTTP_GET, [](AsyncWebServerRequest *request) {
@@ -609,7 +609,7 @@ void initServer() {
   server.on("/images/cosmos.jpg", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(SPIFFS, "/images/cosmos.jpg", String(), true);
   });
-  server.on("/getOSinfo", HTTP_GET, [](AsyncWebServerRequest *request) {
+  server.on("/functions/getOSinfo", HTTP_GET, [](AsyncWebServerRequest *request) {
     File file = SPIFFS.open("/version.txt", "r");  // Read versions
     String version = file.readString();
     file.close();
@@ -618,28 +618,28 @@ void initServer() {
   });
 
   // Auto-refresh animation pattern
-  server.on("/getledspattern", HTTP_GET, [](AsyncWebServerRequest *request) {
+  server.on("/functions/getLedsPattern", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(200, "text/plain", String(patternNum + 1));
   });
 
   // Change pattern
-  server.on("/change", HTTP_GET, [](AsyncWebServerRequest *request) {
-    Serial.println("Received /change");
+  server.on("/functions/change", HTTP_GET, [](AsyncWebServerRequest *request) {
+    Serial.println("Received change command");
     patternNum++;
     if (patternNum<0 || patternNum > 1) patternNum = 0;
     request->redirect("/");
   });
 
-  server.on("/flashlight", HTTP_GET, [](AsyncWebServerRequest *request) {
-    Serial.println("Received /flashlight");
+  server.on("/functions/flashlight", HTTP_GET, [](AsyncWebServerRequest *request) {
+    Serial.println("Received flashlight command");
     if(patternNum<0 && patternNum>-4) patternNum--;    
     else patternNum = -1;
     request->redirect("/");
   });
 
   // Updater
-  server.on("/update", HTTP_GET, [](AsyncWebServerRequest *request) {
-    Serial.println("Received /update");
+  server.on("/functions/update", HTTP_GET, [](AsyncWebServerRequest *request) {
+    Serial.println("Received update command");
     request->redirect("/");
     updateFirmware = true;
   });
