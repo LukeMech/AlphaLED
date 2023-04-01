@@ -752,8 +752,6 @@ void initServer()
 
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/html/index.html", "text/html"); });
-  server.on("/version.txt", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/version.txt", "text/plain"); });
   server.on("/html/footer.html", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/html/footer.html", "text/html"); });
   server.on("/style/style.css", HTTP_GET, [](AsyncWebServerRequest *request)
@@ -776,7 +774,9 @@ void initServer()
             { request->send(SPIFFS, "/scripts/info.js", "text/js"); });
   server.on("/images/cosmos.jpg", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/images/cosmos.jpg", String(), true); });
-  server.on("/functions/getOSinfo", HTTP_GET, [](AsyncWebServerRequest *request)
+  
+  // Functions
+  server.on("/functions/getSystemInfo", HTTP_GET, [](AsyncWebServerRequest *request)
             {
     File file = SPIFFS.open("/version.txt", "r");  // Read versions
     String version = file.readString();
@@ -788,29 +788,26 @@ void initServer()
     String textToReturn = version + "\nChip ID: " + String(ESP.getChipId()) + "\nTime: " + time_str;
     request->send(200, "text/plain", textToReturn); });
 
-  // Auto-refresh animation pattern
   server.on("/functions/getLedsPattern", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(200, "text/plain", String(patternNum + 1)); });
-
-  // Change pattern
   server.on("/functions/change", HTTP_POST, [](AsyncWebServerRequest *request)
             {
     Serial.println("Received change command");
     patternNum++;
     if (patternNum<0 || patternNum > 1) patternNum = 0; });
-
   server.on("/functions/flashlight", HTTP_POST, [](AsyncWebServerRequest *request)
             {
     Serial.println("Received flashlight command");
     if(patternNum<0 && patternNum>-4) patternNum--;    
     else patternNum = -1; });
-
-  // Updater
   server.on("/functions/update", HTTP_POST, [](AsyncWebServerRequest *request)
             {
     Serial.println("Received update command");
     request->redirect("/");
     updateFirmware = true; });
+
+  server.on("/functions/connCheck", HTTP_HEAD, [](AsyncWebServerRequest *request)
+            { request->send(200, "text/plain", "OK"); });
 
   Serial.print("[INFO] Server IP: ");
   Serial.println(WiFi.localIP());
@@ -861,7 +858,7 @@ void loop()
   if (updateFirmware)
   {
     firmwareUpdate(); // Update firmware if server requested
-    ESP.restart(); // End update
+    ESP.restart();    // End update
   }
 
   if (WiFi.status() == WL_CONNECTED && !serverOn)

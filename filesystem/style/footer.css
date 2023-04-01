@@ -4,7 +4,7 @@
   }
   
   .footer {
-    min-height: 150px;
+    min-height: 100px;
     width: 100%;
     text-align: center;
     padding: 30px 0;
@@ -28,6 +28,5 @@
     .footer {
       background: black;
       color: white;
-      min-height: 100px;
     }
   }

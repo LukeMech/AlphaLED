@@ -1,17 +1,30 @@
 // Check version number
-async function versionNum() {
-  var versionNum = document.getElementById('version')
-  const response = await fetch('../version.txt')
-  const text = await response.text();
-  const lines = text.split('\n');
-  let FSversion, Fvversion;
-  for (const line of lines) {
-    if (line.startsWith('Filesystem: ')) FSversion = line.substring('Filesystem: '.length);
-    else if (line.startsWith('Firmware: ')) Fvversion = line.substring('Firmware: '.length);
+function connectionState() {
+  const connectionState = document.getElementById('connection')
+  const xhttp = new XMLHttpRequest();
+  xhttp.open("HEAD", "../functions/connCheck", true);
+  xhttp.timeout = 3000;
+  xhttp.send();
+  function connError() {
+    const connErrMsg = '<i class="fa-solid fa-arrow-rotate-right fa-spin" style="color: #dc0909"></i> Reconnecting...'
+    if (connectionState.innerHTML != connErrMsg) connectionState.innerHTML = connErrMsg;
   }
-  versionNum.innerHTML = versionNum.innerHTML + ` CPU: v${Fvversion} / Files: v${FSversion}`
+
+  xhttp.onreadystatechange = () => {
+    if (this.readyState == 4) {
+      if (this.status == 200) {
+        // Connection good
+        connectionState.innerHTML = '<i class="fa-solid fa-check" style="color: #0cdf4b;"></i> Connected';
+
+        // Connection error
+      } else connError();
+    }
+  };
+  xhttp.onerror = () => connError();
+  xhttp.ontimeout = () => connError();
 }
-versionNum()
+connectionState()
+setInterval(connectionState, 500);
 
 // Here paste announcments
 const globalAnnouncment = '<i class="fa-solid fa-wrench"></i> Work in progress'
@@ -35,17 +48,18 @@ function reload() {
 
 // Change anim style
 const anims = [
-  { a: 'solid', b: 'sync' },
-  { a: 'solid', b: 'circle-notch' },
-  { a: 'solid', b: 'spinner' },
-  { a: 'solid', b: 'gear' },
-  { a: 'solid', b: 'compact-disc' }
+  'sync',
+  'circle-notch',
+  'spinner',
+  'gear',
+  'compact-disc',
+  'cog'
 ]
 let lastAnim, anim
 function changeAnim() {
   while (lastAnim == anim) anim = anims[Math.floor(Math.random() * anims.length)];
   const loading = document.getElementById('loading')
-  loading.innerHTML = `<i class="fa-${anim.a} fa-${anim.b}" id="emojiInLoading"></i> Loading`
+  loading.innerHTML = `<i class="fas fa-${anim}" id="emojiInLoading"></i> Loading`
   const emojiInLoading = document.getElementById('emojiInLoading')
   emojiInLoading.style.animation = 'spinner 0.5s infinite'
   loading.style.animation = 'loading 2s infinite'

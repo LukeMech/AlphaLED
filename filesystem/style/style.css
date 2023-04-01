@@ -66,19 +66,18 @@
   nav .fa-regular {
     display: none;
   }
-  #version {
+
+  #connection {
     color: white;
     float: left;
     text-align: left;
     font-style: normal;
     cursor: not-allowed;
-    font-weight: bold;
+    font-weight: normal;
     padding: 1% 1%;
     font-size: 20px;
   }
-  #version .i {
-    color: green;
-  }
+
   .announcment {
     text-align: center;
     font-size: 25px;
@@ -152,7 +151,7 @@
     nav {
       font-size: 13px;
     }
-    #version {
+    #connection {
       font-size: 15px;
     }
     .announcment {
@@ -245,14 +244,14 @@
     display: none;
   }
   .text-box h1 {
-    font-size: 62px;
+    font-size: 45px;
   }
   .text-box p {
     margin: 2px auto 15px;
-    font-size: 18px;
+    font-size: 15px;
   }
   .text-box img {
-    margin-top: 20vh;
+    margin-top: 15vh;
     height: 20vh;
   }
   
@@ -261,36 +260,16 @@
     text-decoration: none;
     color: #fff;
     border: 3px solid #fff;
-    padding: 12px 34px;
+    padding: 10px 20px;
     font-size: 15px;
     background: transparent;
     cursor: pointer;
     transition: 0.5s;
-    margin: 10px;
+    margin: 5px;
   }
   .organ-btn:hover {
     border: 3px solid #f44336;
     transition: 0.5s;
-  }
-  
-  @media(max-width: 700px) {
-    .text-box h1 {
-      font-size: 45px;
-    }
-    .text-box p {
-      font-size: 15px;
-      margin: 2px auto 15px;
-    }
-    .text-box img {
-      height: 20vh;
-      margin-top: 15vh;
-    }
-  
-    .organ-btn {
-      padding: 10px 20px;
-      font-size: 15px;
-      margin: 5px;
-    }
   }
 
 
@@ -301,7 +280,7 @@
 */
 
 .infopage-header {
-  height: 400px;
+  height: 250px;
   width: 100%;
   background-image: linear-gradient(rgba(4,9,30,0.6),rgba(4,9,30,0.6)), url(../images/cosmos.jpg);
   background-position: center;
@@ -310,29 +289,31 @@
   color: #fff;
 }
 .infopage-header h3 {
-  margin-top: 80px;
+  margin-top: 50px;
   font-size: 40px;
 }
 
 .infopage {
-  min-height: calc(100vh - 400px - 150px);
+  min-height: calc(100vh - 250px - 100px - 50px);
   width: 100%;
   background: rgb(26, 25, 25);
   margin: auto;
-  padding: 20px;
+  padding: 5px;
   display: none;
 }
 
+.infopage .versionTitle {
+  color: #fff;
+  font-size: 25px;
+  text-align: center;
+  margin-top: 15px;
+}
+.infopage .versionTitle .i {
+  color: #0ad826;
+}
 
-@media(max-width: 700px) {
-  .infopage-header {
-    height: 250px;
-  }
-  .infopage-header h3 {
-    margin-top: 50px;
-  }
-  .infopage {
-    min-height: calc(100vh - 250px - 100px);
-    padding: 5px;
-  }
+.infopage .versionInfo {
+  color: #e5ff00;
+  font-size: 35px;
+  text-align: center;
 }

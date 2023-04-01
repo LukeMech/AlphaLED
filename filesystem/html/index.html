@@ -3,11 +3,14 @@
 
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" type="text/css" href="style/style.css">
+  <link rel="stylesheet" type="text/css" href="/style/style.css">
 
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.2.0/css/all.css">
+  <script src="https://kit.fontawesome.com/d73fbba09b.js" crossorigin="anonymous"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;600;700&display=swap"
+    rel="stylesheet" type='text/css'>
+
   <title>LED Controller</title>
 
 </head>
@@ -17,7 +20,7 @@
   <section class="header">
 
     <nav>
-      <i id="version"><i class="i fa-solid fa-gears"></i></i>
+      <i id="connection"><i class="fa-solid fa-arrow-rotate-right fa-spin" style="color: #33dc09"></i> Connecting...</i>
 
       <div class="nav-links" id="navLinks">
         <i class="fa-regular fa-square-minus" onclick="hideMenu()"></i>
@@ -39,7 +42,7 @@
     <div class="text-box" id="mainSection">
       <img src="/images/logo.png">
       <h1 id="title">Noice LEDs</h1>
-      <p><i class="fa-solid fa-fire"></i> Small project with high goals</p>
+      <p><i class="fas fa-fire"></i> Small project with high goals</p>
       <a onclick="request('change')" class="organ-btn" id="patternNum">CHANGE</a>
       <a onclick="request('update')" class="organ-btn">UPDATE</a>
       <a onclick="request('flashlight')" class="organ-btn" id="flashlight">FLASHLIGHT</a>

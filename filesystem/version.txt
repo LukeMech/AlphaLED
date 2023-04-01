@@ -1,2 +1,2 @@
-Filesystem: 23.04.01-10
-Firmware: 23.04.01-25
+Filesystem: 23.04.02
+Firmware: 23.04.02

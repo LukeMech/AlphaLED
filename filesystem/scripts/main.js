@@ -2,7 +2,7 @@
 function getLEDsPattern() {
 
     let xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function () {
+    xhttp.onreadystatechange = () => {
         if (this.readyState == 4 && this.status == 200) {
             if (this.responseText != "0" && this.responseText != "-1" && this.responseText != "-2" && this.responseText != "-3") {
                 document.getElementById("patternNum").innerHTML = 'CHANGE (' + this.responseText + ')';
