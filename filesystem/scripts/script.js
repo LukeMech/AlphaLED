@@ -57,9 +57,9 @@ const loading = document.getElementById('loading')
 const main = document.getElementById('mainSection')
 
 // Change animation style if it's main page
-if(loading.classList.contains('mainPageLoading')) {
-    loading.style.lineHeight = '80vh'
-    loading.style.height = '100vh'
+if (loading.classList.contains('mainPageLoading')) {
+  loading.style.lineHeight = '80vh'
+  loading.style.height = '100vh'
 }
 
 // Run animation
@@ -69,7 +69,7 @@ setTimeout(() => {
 }, 300);
 
 // Remove loading screen, show content
-window.onload = function() {
+window.onload = function () {
   loading.style.display = 'none'
   main.style.display = 'block'
 }
