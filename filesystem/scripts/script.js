@@ -12,6 +12,7 @@ async function connectionState() {
   }
 
   xhttp.onreadystatechange = () => {
+    console.log(this.status)
     if (this.status == 200) {
       // Connection good
       connectionStatus.innerHTML = '<i class="fa-solid fa-check" style="color: #0cdf4b;"></i> Connected';

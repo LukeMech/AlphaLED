@@ -14,6 +14,9 @@ async function getSystemInfo() {
             fvVer = lines[1].replace("Firmware: ", "").trim();
             chipID = lines[2].replace("Chip ID: ", "").trim();
 
+            console.log(fsVer)
+            console.log(fvVer)
+            console.log(chipID)
             FSVersionDoc.innerHTML = fsVer;
             fvVersionDoc.innerHTML = fvVer;
             chipIDDoc.innerHTML = chipID;
