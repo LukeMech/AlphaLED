@@ -10,9 +10,8 @@
 #include <ESP8266httpUpdate.h>
 #include <ESP8266WiFi.h>
 #include "FS.h"
-#include <NTPClient.h>
+#include <time.h>
 #include <WiFiClientSecure.h>
-#include <WiFiUdp.h>
 
 const bool WiFi_UpdateCredentialsFile = false;  // Update network_config.txt in filesystem?
 const char* ssid = "";                          // Network name
@@ -20,9 +19,6 @@ const char* password = "";                      // Network password
 
 const char* host = "github.com";  // Host to check connection, leave as is if using github
 const int httpsPort = 443;        // Host port
-
-const char* ntpServerName = "pl.pool.ntp.org";
-const int timeZone = 1;
 
 const char* updaterVersionCtrlUrl = "https://raw.githubusercontent.com/LukeMech/AlphaLED/main/updater/build-version.txt";  // Link to version.txt
 const char* updaterFirmwareUrl = "https://raw.githubusercontent.com/LukeMech/AlphaLED/main/updater/firmware.bin";          // File to firmware.bin
@@ -106,9 +102,6 @@ struct {
 } numbers;
 
 AsyncWebServer server(80);
-
-WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP, ntpServerName, timeZone);
 
 int8_t patternNum = 0;
 bool serverOn = false, updateFirmware = false;
@@ -448,7 +441,8 @@ void firmwareUpdate() {  // Updater
   WiFiClientSecure client;  // Create secure wifi client
   client.setTrustAnchors(&cert);
 
-  timeClient.update();
+  configTime(0, 0, "pool.ntp.org", "time.nist.gov");  // Set time via NTP, as required for x.509 validation
+  time_t now = time(nullptr);
 
   if (!client.connect(host, httpsPort)) { // Connect to github
     Serial.println("[ERROR] Connection to github unavailable");
@@ -629,8 +623,7 @@ void initServer() {
     File file = SPIFFS.open("/version.txt", "r");  // Read versions
     String version = file.readString();
     file.close();
-    timeClient.update();
-    String textToReturn = version + "\n" + "Chip ID: " + String(ESP.getChipId()) + "\n" + String(timeClient.getFormattedTime());
+    String textToReturn = version + "\n" + "Chip ID: " + String(ESP.getChipId());
     request->send(200, "text/plain", textToReturn);
   });
 
@@ -709,11 +702,5 @@ void loop() {
     server.begin();
   }
 
-  if (WiFi.status() == WL_CONNECTED && !serverOn) {
-    timeClient.begin();
-    while(!timeClient.update()) {
-      timeClient.forceUpdate();
-    }
-    initServer();  // Start server if wifi initialized
-  }
+  if (WiFi.status() == WL_CONNECTED && !serverOn) initServer();  // Start server if wifi initialized
 }
