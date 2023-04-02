@@ -37,7 +37,7 @@ function getLEDsPattern() {
     xhttp.send();
 }
 getLEDsPattern();
-setInterval(getLEDsPattern, 2000);
+setInterval(getLEDsPattern, 500);
 
 function request(cmd) {
     const xhttp = new XMLHttpRequest();
