@@ -4,7 +4,7 @@ function connectionState() {
   const connectionStatus = document.getElementById('connection')
   const xhttp = new XMLHttpRequest();
   xhttp.open("HEAD", "../functions/connCheck", true);
-  xhttp.timeout = 3000;
+  xhttp.timeout = 500;
   xhttp.send();
   function connError() {
     if (connectionStatus.innerHTML != connErrMsg) connectionStatus.innerHTML = connErrMsg;
@@ -23,7 +23,7 @@ function connectionState() {
   xhttp.ontimeout = () => connError();
 }
 connectionState()
-setInterval(connectionState, 2000);
+setInterval(connectionState, 500);
 
 // Here paste announcments
 const globalAnnouncment = '<i class="fa-solid fa-wrench"></i> Work in progress'
