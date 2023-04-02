@@ -778,17 +778,14 @@ void initServer()
   // Functions
   server.on("/functions/getSystemInfo", HTTP_GET, [](AsyncWebServerRequest *request)
             {
-    yield();
     File file = SPIFFS.open("/version.txt", "r");  // Read versions
     String version = file.readString();
     file.close();
-    yield();
     struct tm timeinfo;
     char time_str[64];
     getLocalTime(&timeinfo);
     strftime(time_str, sizeof(time_str), "%H:%M", &timeinfo);
     String textToReturn = version + "\nChip ID: " + String(ESP.getChipId()) + "\nTime: " + time_str;
-    yield();
     request->send(200, "text/plain", textToReturn); });
 
   server.on("/functions/getLedsPattern", HTTP_GET, [](AsyncWebServerRequest *request)
