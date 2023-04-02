@@ -38,12 +38,3 @@ function getLEDsPattern() {
 }
 getLEDsPattern();
 setInterval(getLEDsPattern, 500);
-
-function request(cmd) {
-    const xhttp = new XMLHttpRequest();
-    xhttp.open("POST", `/functions/${cmd}`);
-    xhttp.send();
-    setTimeout(() => {
-        getLEDsPattern();
-    }, 100); 
-}

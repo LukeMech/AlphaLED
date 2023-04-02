@@ -1,30 +1,3 @@
-// Check version number
-const connErrMsg = '<i class="fa-solid fa-arrow-rotate-right fa-spin" style="color: #dc0909"></i> Reconnecting...';
-function connectionState() {
-  const connectionStatus = document.getElementById('connection')
-  const xhttp = new XMLHttpRequest();
-  xhttp.open("HEAD", "../functions/connCheck", true);
-  xhttp.timeout = 500;
-  xhttp.send();
-  function connError() {
-    if (connectionStatus.innerHTML != connErrMsg) connectionStatus.innerHTML = connErrMsg;
-  }
-
-  xhttp.onreadystatechange = function () {
-    console.log(this.status)
-    if (this.readyState == 4 && this.status == 200) {
-      // Connection good
-      connectionStatus.innerHTML = '<i class="fa-solid fa-check" style="color: #0cdf4b;"></i> Connected';
-
-      // Connection error
-    } else connError();
-  };
-  xhttp.onerror = () => connError();
-  xhttp.ontimeout = () => connError();
-}
-connectionState()
-setInterval(connectionState, 500);
-
 // Here paste announcments
 const globalAnnouncment = '<i class="fa-solid fa-wrench"></i> Work in progress'
 
@@ -85,4 +58,38 @@ setTimeout(() => {
 window.onload = () => {
   loading.style.display = 'none'
   main.style.display = 'block'
+}
+
+// Check connection state
+const connErrMsg = '<i class="fa-solid fa-arrow-rotate-right fa-spin" style="color: #dc0909"></i> Reconnecting...';
+function connectionState() {
+  const connectionStatus = document.getElementById('connection')
+  const xhttp = new XMLHttpRequest();
+  xhttp.open("HEAD", "../functions/connCheck", true);
+  xhttp.timeout = 3000;
+  xhttp.send();
+  function connError() {
+    if (connectionStatus.innerHTML != connErrMsg) connectionStatus.innerHTML = connErrMsg;
+  }
+
+  xhttp.onreadystatechange = function () {
+    console.log(this.status)
+    if (this.readyState == 4 && this.status == 200) {
+      // Connection good
+      connectionStatus.innerHTML = '<i class="fa-solid fa-check" style="color: #0cdf4b;"></i> Connected';
+
+      // Connection error
+    } else connError();
+  };
+  xhttp.onerror = () => connError();
+  xhttp.ontimeout = () => connError();
+}
+connectionState()
+setInterval(connectionState, 500);
+
+// Request cmd
+function request(cmd) {
+  const xhttp = new XMLHttpRequest();
+  xhttp.open("POST", `/functions/${cmd}`);
+  xhttp.send();
 }

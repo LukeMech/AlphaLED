@@ -3,7 +3,8 @@ let fvVersionDoc = document.getElementById('fvVersion')
 let FSVersionDoc = document.getElementById('fsVersion')
 let chipIDDoc = document.getElementById('chipID')
 
-async function getSystemInfo() {
+// Get system info
+function getSystemInfo() {
 
     const xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
@@ -23,3 +24,12 @@ async function getSystemInfo() {
 }
 
 getSystemInfo();
+
+function callUpdater() {
+    const xhttp = new XMLHttpRequest();
+  xhttp.open("POST", `/functions/update`);
+  xhttp.send();
+  setTimeout(() => {
+      getLEDsPattern();
+  }, 100); 
+}

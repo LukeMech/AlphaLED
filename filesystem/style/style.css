@@ -226,7 +226,7 @@
   --------------------------------------------------------
   */
   
-  .header {
+  .mainpage {
     min-height: 100vh;
     width: 100%;
     background-image: linear-gradient(rgba(4,9,30,0.6),rgba(4,9,30,0.6)), url(../images/blackhole.jpg);
@@ -235,7 +235,7 @@
     position: relative;
   }
   
-  .text-box {
+  .mainpage .text-box {
     color: white;
     top: 50%;
     left: 50%;
@@ -243,19 +243,19 @@
     justify-content: center;
     display: none;
   }
-  .text-box h1 {
+  .mainpage .text-box h1 {
     font-size: 45px;
   }
-  .text-box p {
+  .mainpage .text-box p {
     margin: 2px auto 15px;
     font-size: 15px;
   }
-  .text-box img {
+  .mainpage .text-box img {
     margin-top: 15vh;
     height: 20vh;
   }
   
-  .organ-btn {
+  .mainpage .btn {
     display: inline-block;
     text-decoration: none;
     color: #fff;
@@ -267,7 +267,7 @@
     transition: 0.5s;
     margin: 5px;
   }
-  .organ-btn:hover {
+  .mainpage .btn:hover {
     border: 3px solid #f44336;
     transition: 0.5s;
   }
@@ -300,12 +300,13 @@
   margin: auto;
   padding: 5px;
   display: none;
+  align-items: center;
+  text-align: center;
 }
 
 .infopage .versionTitle {
   color: #fff;
   font-size: 25px;
-  text-align: center;
   margin-top: 15px;
 }
 .infopage .versionTitle .i {
@@ -315,5 +316,21 @@
 .infopage .versionInfo {
   color: #e5ff00;
   font-size: 35px;
-  text-align: center;
+}
+
+.infopage .btn {
+  display: inline-block;
+  text-decoration: none;
+  color: #fff;
+  border: 3px solid #0ad826;
+  padding: 10px 20px;
+  font-size: 15px;
+  background: transparent;
+  cursor: pointer;
+  transition: 0.5s;
+  margin: 15px;
+}
+.infopage .btn:hover {
+  border: 3px solid #f8f800;
+  transition: 0.5s;
 }
