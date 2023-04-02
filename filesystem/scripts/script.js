@@ -94,6 +94,6 @@ function request(cmd, args=null) {
   params=JSON.stringify(args)
   const xhttp = new XMLHttpRequest();
   xhttp.open("POST", `/functions/${cmd}`);
-  xhttp.setRequestHeader("Content-type", "application/json");
+  xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
   xhttp.send(params);
 }

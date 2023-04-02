@@ -105,7 +105,7 @@ struct
 
 AsyncWebServer server(80);
 
-int8_t patternNum = 0, flashlightBrightness=0;
+int8_t patternNum = 0, flashlightBrightness = 0;
 bool serverOn = false, updateFirmware = false;
 
 // ------------------------
@@ -806,14 +806,7 @@ void initServer()
 
   server.on("/functions/flashlight", HTTP_POST, [](AsyncWebServerRequest *request)
             {
-              String params;
-              if (request->hasParam("brightness", true)) {
-                AsyncWebParameter* param = request->getParam("brightness", true);
-                params = param->value();
-                Serial.print("Brightness level: ");
-                Serial.println(params);
-                flashlightBrightness=params.toInt();
-              }
+              if(request->hasParam("brightness", true)) Serial.println(request->getParam("brightness", true)->value());
     patternNum = -1; });
   server.on("/functions/update", HTTP_POST, [](AsyncWebServerRequest *request)
             {
@@ -863,7 +856,7 @@ void loop()
     alphabetAnim();
 
   else if (patternNum == -1)
-    flashlight(flashlightBrightness*0.01);
+    flashlight(flashlightBrightness * 0.01);
 
   if (updateFirmware)
   {
