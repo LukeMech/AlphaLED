@@ -35,12 +35,14 @@ function callUpdater() {
         updButton.innerHTML = "Checking..."
         updButton.style.borderColor = "#0e3814"
         updButton.setAttribute("updating", true)
-        setInterval(() => {
-            if (connectionStatus.hasAttribute("Connected")) {
-                setTimeout(() => {
-                    reload()
-                }, 1000);
-            }
-        }, 100);
+        setTimeout(() => {
+            setInterval(() => {
+                if (connectionStatus.hasAttribute("Connected")) {
+                    setTimeout(() => {
+                        reload()
+                    }, 1000);
+                }
+            }, 100);
+        }, 2000);
     }
 }
