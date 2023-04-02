@@ -70,6 +70,7 @@ function connectionState() {
   xhttp.send();
   function connError() {
     if (connectionStatus.innerHTML != connErrMsg) connectionStatus.innerHTML = connErrMsg;
+    connectionStatus.removeAttribute("Connnected")
   }
 
   xhttp.onreadystatechange = function () {
@@ -77,6 +78,7 @@ function connectionState() {
     if (this.readyState == 4 && this.status == 200) {
       // Connection good
       connectionStatus.innerHTML = '<i class="fa-solid fa-check" style="color: #0cdf4b;"></i> Connected';
+      connectionStatus.setAttribute("Connected", true)
 
       // Connection error
     } else connError();

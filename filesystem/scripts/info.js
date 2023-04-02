@@ -1,7 +1,9 @@
 // Get document elements
-let fvVersionDoc = document.getElementById('fvVersion')
-let FSVersionDoc = document.getElementById('fsVersion')
-let chipIDDoc = document.getElementById('chipID')
+const fvVersionDoc = document.getElementById('fvVersion')
+const FSVersionDoc = document.getElementById('fsVersion')
+const chipIDDoc = document.getElementById('chipID')
+const updButton = document.getElementById('updButton')
+const connectionStatus = document.getElementById('connection')
 
 // Get system info
 function getSystemInfo() {
@@ -22,14 +24,33 @@ function getSystemInfo() {
     xhttp.open("GET", "../functions/getSystemInfo", true);
     xhttp.send();
 }
-
 getSystemInfo();
 
+// Revert button
+let updBtnInterval
+function updButtonRevert() {
+    if (connectionStatus.hasAttribute("Connected")) {
+        updButton.innerHTML = "Check for updates"
+        updButton.style.borderColor = ""
+        updButton.removeAttribute("updating")
+        clearInterval(updBtnInterval)
+    }
+}
+
+// Call updater
 function callUpdater() {
-    const xhttp = new XMLHttpRequest();
-  xhttp.open("POST", `/functions/update`);
-  xhttp.send();
-  setTimeout(() => {
-      getLEDsPattern();
-  }, 100); 
+    if(updButton.hasAttribute("updating")) return;
+    if (confirm("Call updater? It'll stop the device for a while and then restart it")) {
+        const xhttp = new XMLHttpRequest();
+        xhttp.open("POST", `/functions/update`);
+        xhttp.send();
+        setTimeout(() => {
+            updButton.innerHTML = "Checking..."
+            updButton.style.borderColor = "#0e3814"
+            updButton.setAttribute("updating", true)
+            updBtnInterval = setInterval(() => {
+                updButtonRevert()
+            }, 500);
+        }, 1000);
+    }
 }
