@@ -8,8 +8,8 @@
     width: 100%;
     text-align: center;
     padding: 30px 0;
-    background: rgb(83, 80, 80);
-    color: rgb(255, 255, 255);
+    background: black;
+    color: white;
   }
   
   .icons .fa-brands {
@@ -22,11 +22,4 @@
   
   .i {
     color: #f44336;
-  }
-  
-  @media (prefers-color-scheme: dark) {
-    .footer {
-      background: black;
-      color: white;
-    }
   }

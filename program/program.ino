@@ -771,9 +771,6 @@ void initServer()
   server.on("/style/footer.css", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/style/footer.css", "text/css"); });
 
-  server.on("/images/cosmos.jpg", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/images/cosmos.jpg", String(), true); });
-
   // Javascript
   server.on("/scripts/script.js", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/scripts/script.js", "text/javascript"); });
@@ -791,6 +788,8 @@ void initServer()
             { request->send(SPIFFS, "/images/blackhole.jpg", String(), true); });
   server.on("/images/cosmos.jpg", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/images/cosmos.jpg", String(), true); });
+  server.on("/images/space.jpg", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(SPIFFS, "/images/space.jpg", String(), true); });
 
   // Functions
   server.on("/functions/getSystemInfo", HTTP_GET, [](AsyncWebServerRequest *request)
