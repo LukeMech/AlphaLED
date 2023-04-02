@@ -107,7 +107,7 @@ struct
 AsyncWebServer server(80);
 
 int8_t patternNum = 0;
-uint8_t flashlightColorR = 255, flashlightColorG = 255, flashlightColorB = 255;
+byte flashlightColorR = 255, flashlightColorG = 255, flashlightColorB = 255;
 float flashlightBrightness = 0;
 bool serverOn = false, updateFirmware = false;
 
