@@ -105,6 +105,17 @@ struct
 
 AsyncWebServer server(80);
 
+String getCurrentTime()
+{
+  configTime(2 * 3600, 0, "pool.ntp.org", "time.nist.gov");
+  time_t now = time(nullptr);
+  struct tm timeinfo;
+  char time_str[64];
+  getLocalTime(&timeinfo);
+  strftime(time_str, sizeof(time_str), "%H:%M", &timeinfo);
+  return time_str;
+}
+
 int8_t patternNum = 0;
 bool serverOn = false, updateFirmware = false;
 
@@ -590,7 +601,7 @@ void firmwareUpdate() // Updater
 
   WiFiClientSecure client; // Create secure wifi client
   client.setTrustAnchors(&cert);
-  time_t now = time(nullptr); // Set time via NTP, as required for x.509 validation
+  getCurrentTime();
 
   HTTPClient http; // Connect to release API
   http.begin(client, updaterVersionCtrlUrl);
@@ -745,8 +756,6 @@ void firmwareUpdate() // Updater
 
 void initServer()
 {
-  configTime(2 * 3600, 0, "pool.ntp.org", "time.nist.gov");
-  server.begin();
 
   // Home site and reuired additional htmls, csss and jss
 
@@ -774,19 +783,15 @@ void initServer()
             { request->send(SPIFFS, "/scripts/info.js", "text/javascript"); });
   server.on("/images/cosmos.jpg", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/images/cosmos.jpg", String(), true); });
-  
+
   // Functions
   server.on("/functions/getSystemInfo", HTTP_GET, [](AsyncWebServerRequest *request)
             {
     File file = SPIFFS.open("/version.txt", "r");  // Read versions
     String version = file.readString();
     file.close();
-    time_t now = time(nullptr);
-    struct tm timeinfo;
-    char time_str[64];
-    getLocalTime(&timeinfo);
-    strftime(time_str, sizeof(time_str), "%H:%M", &timeinfo);
-    String textToReturn = version + "\nChip ID: " + String(ESP.getChipId()) + "\nTime: " + time_str;
+    
+    String textToReturn = version + "\nChip ID: " + String(ESP.getChipId()) + "\nTime: " + getCurrentTime();
     request->send(200, "text/plain", textToReturn); });
 
   server.on("/functions/getLedsPattern", HTTP_GET, [](AsyncWebServerRequest *request)
@@ -810,9 +815,11 @@ void initServer()
   server.on("/functions/connCheck", HTTP_HEAD, [](AsyncWebServerRequest *request)
             { request->send(200, "text/plain", "OK"); });
 
+  server.begin();
+  serverOn = true;
+
   Serial.print("[INFO] Server IP: ");
   Serial.println(WiFi.localIP());
-  serverOn = true;
 }
 
 // ------------------------

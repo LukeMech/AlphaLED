@@ -7,7 +7,6 @@ const connectionStatus = document.getElementById('connection')
 
 // Get system info
 function getSystemInfo() {
-
     const xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
@@ -38,7 +37,11 @@ function callUpdater() {
             updButton.style.borderColor = "#0e3814"
             updButton.setAttribute("updating", true)
             setInterval(() => {
-                if (connectionStatus.hasAttribute("Connected")) reload()
+                if (connectionStatus.hasAttribute("Connected")) {
+                    setTimeout(() => {
+                        reload()
+                    }, 1000);
+                }
             }, 100);
         }, 1000);
     }
