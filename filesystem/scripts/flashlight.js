@@ -1,11 +1,10 @@
-let brightnessLvl = 0.25;
+let brightnessLvl = 0;
 const flashlightBtn = document.getElementById("flashlight-button");
 
 flashlightBtn.addEventListener("click", function () {
-    brightnessLvl = brightnessLvl + 0.25
-    if (brightnessLvl > 1) brightnessLvl = 0.25
+    brightnessLvl = brightnessLvl + 25
+    if (brightnessLvl > 100) brightnessLvl = 25
     const args = { brightness: brightnessLvl };
     request("flashlight", args);
-
-    flashlightBtn.innerHTML = 'FLASHLIGHT (' + brightnessLvl*100 + '%)'
+    flashlightBtn.innerHTML = 'FLASHLIGHT (' + brightnessLvl.toString() + '%)'
 });
