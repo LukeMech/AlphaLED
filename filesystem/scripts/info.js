@@ -5,6 +5,9 @@ const chipIDDoc = document.getElementById('chipID')
 const updButton = document.getElementById('updButton')
 const connectionStatus = document.getElementById('connection')
 
+const loadingversions='<i class="fa-solid fa-ellipsis fa-bounce"></i>'
+const updbuttonhtml='Check for updates'
+
 // Get system info
 function getSystemInfo() {
     const xhttp = new XMLHttpRequest();
@@ -35,11 +38,17 @@ function callUpdater() {
         updButton.innerHTML = "Checking..."
         updButton.style.borderColor = "#0e3814"
         updButton.setAttribute("updating", true)
+        FSVersionDoc.innerHTML=loadingversions
+        fvVersionDoc.innerHTML=loadingversions
+        chipIDDoc.innerHTML=loadingversions
         setTimeout(() => {
             setInterval(() => {
                 if (connectionStatus.hasAttribute("Connected")) {
                     setTimeout(() => {
-                        reload()
+                        updButton.innerHTML = updbuttonhtml
+                        updButton.style.borderColor = ""
+                        updButton.removeAttribute("updating")
+                        getSystemInfo()
                     }, 1000);
                 }
             }, 100);
