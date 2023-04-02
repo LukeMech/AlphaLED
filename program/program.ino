@@ -789,6 +789,8 @@ void initServer()
             { request->send(SPIFFS, "/images/logo.png", String(), true); });
   server.on("/images/blackhole.jpg", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/images/blackhole.jpg", String(), true); });
+  server.on("/images/cosmos.jpg", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(SPIFFS, "/images/cosmos.jpg", String(), true); });
 
   // Functions
   server.on("/functions/getSystemInfo", HTTP_GET, [](AsyncWebServerRequest *request)
@@ -830,8 +832,7 @@ void initServer()
               if (request->hasParam("green", true))
                 flashlightColorG = request->getParam("green", true)->value().toInt();
               if (request->hasParam("blue", true))
-                flashlightColorB = request->getParam("blue", true)->value().toInt();
-            });
+                flashlightColorB = request->getParam("blue", true)->value().toInt(); });
   server.on("/functions/update", HTTP_POST, [](AsyncWebServerRequest *request)
             {
     Serial.println("Received update command");
