@@ -7,6 +7,18 @@ const blueControl = document.getElementById("blue");
 
 // Refresh buttons
 function refreshFlashlight() {
+
+    if (flashlightBtn.hasAttribute("on")) {
+        const params = {
+            brightness: brightnessControl.value,
+            red: redControl.value,
+            green: greenControl.value,
+            blue: blueControl.value
+        };
+        const urlSearchParams = new URLSearchParams(params).toString();
+        request("flashlight", urlSearchParams)
+    }
+
     const xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
@@ -35,16 +47,6 @@ function refreshFlashlight() {
 
     xhttp.open("GET", "../functions/checkLEDs", true);
     xhttp.send();
-
-    if (!flashlightBtn.hasAttribute("on")) return;
-    const params = {
-        brightness: brightnessControl.value,
-        red: redControl.value,
-        green: greenControl.value,
-        blue: blueControl.value
-    };
-    const urlSearchParams = new URLSearchParams(params).toString();
-    request("flashlight", urlSearchParams)
 }
 
 // Flashlight functions
@@ -54,19 +56,13 @@ flashlightBtn.addEventListener("click", function () {
             brightness: 0
         };
         const urlSearchParams = new URLSearchParams(params).toString();
-        request("flashlight", urlSearchParams)
-    }
-    else {
-        const params = {
-            brightness: brightnessControl.value
-        };
-        const urlSearchParams = new URLSearchParams(params).toString();
-        request("flashlight", urlSearchParams)
         flashlightBtn.removeAttribute("on")
+        request("flashlight", urlSearchParams)
     }
+    else flashlightBtn.setAttribute("on", true)
     refreshFlashlight()
 });
 
 setInterval(() => {
     refreshFlashlight()
-}, 400);
+}, 500);
