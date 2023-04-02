@@ -26,6 +26,8 @@
         <i class="fa-regular fa-square-minus" onclick="hideMenu()"></i>
         <ul>
           <li><a onclick="reload()" class="here">HOME</a></li>
+          <li><a class="disabled">PATTERNS</a></li>
+          <li><a class="disabled">FLASHLIGHT</a></li>
           <li><a href="/info" class="link">INFO</a></li>
         </ul>
       </div>
@@ -43,7 +45,7 @@
       <img src="/images/logo.png">
       <h1 id="title">Noice LEDs</h1>
       <p><i class="fas fa-fire"></i> Small project with high goals</p>
-      <a onclick="request('change')" class="btn" id="patternNum">CHANGE</a>
+      <a class="btn" id="pattern-button">CHANGE</a>
       <a class="btn" id="flashlight-button">FLASHLIGHT</a>
     </div>
 
@@ -52,9 +54,8 @@
 
   <iframe src="../html/footer.html" seamless scrolling="no"></iframe>
 
-  <script src="/scripts/flashlight.js"></script>
-  <script src="/scripts/main.js"></script>
-  <script src="/scripts/script.js"></script>
+  <script src="../scripts/TEMPindex.js"></script>
+  <script src="../scripts/script.js"></script>
 
 </body>
 
