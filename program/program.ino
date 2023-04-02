@@ -756,7 +756,7 @@ void initServer()
             { request->redirect("/home"); });
   server.on("/home", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/html/index.html", "text/html"); });
-  server.on("/info", HTTP_GET, [](AsyncWebServerRequest *request)
+  server.on("/settings", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/html/info.html", "text/html"); });
   server.on("/patterns", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/html/patterns.html", "text/html"); });
