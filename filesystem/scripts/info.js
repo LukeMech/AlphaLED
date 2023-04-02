@@ -26,20 +26,9 @@ function getSystemInfo() {
 }
 getSystemInfo();
 
-// Revert button
-let updBtnInterval
-function updButtonRevert() {
-    if (connectionStatus.hasAttribute("Connected")) {
-        updButton.innerHTML = "Check for updates"
-        updButton.style.borderColor = ""
-        updButton.removeAttribute("updating")
-        clearInterval(updBtnInterval)
-    }
-}
-
 // Call updater
 function callUpdater() {
-    if(updButton.hasAttribute("updating")) return;
+    if (updButton.hasAttribute("updating")) return;
     if (confirm("Call updater? It'll stop the device for a while and then restart it")) {
         const xhttp = new XMLHttpRequest();
         xhttp.open("POST", `/functions/update`);
@@ -48,9 +37,9 @@ function callUpdater() {
             updButton.innerHTML = "Checking..."
             updButton.style.borderColor = "#0e3814"
             updButton.setAttribute("updating", true)
-            updBtnInterval = setInterval(() => {
-                updButtonRevert()
-            }, 500);
+            setInterval(() => {
+                if (connectionStatus.hasAttribute("Connected")) reload()
+            }, 100);
         }, 1000);
     }
 }

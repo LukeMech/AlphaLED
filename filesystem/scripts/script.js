@@ -69,16 +69,16 @@ function connectionState() {
   xhttp.timeout = 3000;
   xhttp.send();
   function connError() {
-    if (connectionStatus.innerHTML != connErrMsg) connectionStatus.innerHTML = connErrMsg;
     connectionStatus.removeAttribute("Connected")
+    if (connectionStatus.innerHTML != connErrMsg) connectionStatus.innerHTML = connErrMsg;
   }
 
   xhttp.onreadystatechange = function () {
     console.log(this.status)
     if (this.readyState == 4 && this.status == 200) {
       // Connection good
-      connectionStatus.innerHTML = '<i class="fa-solid fa-check" style="color: #0cdf4b;"></i> Connected';
       connectionStatus.setAttribute("Connected", true)
+      connectionStatus.innerHTML = '<i class="fa-solid fa-check" style="color: #0cdf4b;"></i> Connected';
 
       // Connection error
     } else connError();
