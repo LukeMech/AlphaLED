@@ -6,7 +6,9 @@ function refreshPatternsButton() {
     const xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
-            if (this.responseText != "0") patternBtn.innerHTML = `CHANGE (${this.responseText})`;
+            const response = JSON.parse(this.responseText);
+            const pattern = response.pattern;
+            if (pattern != 0) patternBtn.innerHTML = `CHANGE (${(pattern+1).toString()})`;
             else patternBtn.innerHTML = 'CHANGE';
         }
     };

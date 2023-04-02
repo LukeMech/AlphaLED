@@ -3,6 +3,7 @@
 // ------------------------
 
 #include <Adafruit_NeoPixel.h>
+#include <ArduinoJson.h>
 #include <EEPROM.h>
 #include <ESPAsyncTCP.h>
 #include <ESPAsyncWebSrv.h>
@@ -106,6 +107,7 @@ struct
 AsyncWebServer server(80);
 
 int8_t patternNum = 0;
+uint8_t flashlightColorR = 255, flashlightColorG = 255, flashlightColorB = 255;
 float flashlightBrightness = 0;
 bool serverOn = false, updateFirmware = false;
 
@@ -479,17 +481,17 @@ void cba()
     animate(alphabet.B, alphabet.C, 3, 120, strip.Color(25, 0, 0));
 }
 
-void flashlight(float brightness)
+void flashlight()
 {
-  strip.fill(strip.Color(brightness * 0.2 * 255, brightness * 0.2 * 255, brightness * 0.2 * 255));
+  strip.fill(strip.Color(flashlightBrightness * 0.2 * flashlightColorR, flashlightBrightness * 0.2 * flashlightColorG, flashlightBrightness * 0.2 * flashlightColorB));
   for (int s = 0; s < 8; s++)
-    strip.setPixelColor(led_map[0][s], strip.Color(brightness * 0.4 * 255, brightness * 0.4 * 255, brightness * 0.4 * 255));
+    strip.setPixelColor(led_map[0][s], strip.Color(flashlightBrightness * 0.4 * flashlightColorR, flashlightBrightness * 0.4 * flashlightColorG, flashlightBrightness * 0.4 * flashlightColorB));
   for (int e = 0; e < 8; e++)
-    strip.setPixelColor(led_map[7][e], strip.Color(brightness * 0.4 * 255, brightness * 0.4 * 255, brightness * 0.4 * 255));
+    strip.setPixelColor(led_map[7][e], strip.Color(flashlightBrightness * 0.4 * flashlightColorR, flashlightBrightness * 0.4 * flashlightColorG, flashlightBrightness * 0.4 * flashlightColorB));
   for (int x = 0; x < 8; x++)
-    strip.setPixelColor(led_map[x][0], strip.Color(brightness * 0.4 * 255, brightness * 0.4 * 255, brightness * 0.4 * 255));
+    strip.setPixelColor(led_map[x][0], strip.Color(flashlightBrightness * 0.4 * flashlightColorR, flashlightBrightness * 0.4 * flashlightColorG, flashlightBrightness * 0.4 * flashlightColorB));
   for (int y = 0; y < 8; y++)
-    strip.setPixelColor(led_map[y][7], strip.Color(brightness * 0.4 * 255, brightness * 0.4 * 255, brightness * 0.4 * 255));
+    strip.setPixelColor(led_map[y][7], strip.Color(flashlightBrightness * 0.4 * flashlightColorR, flashlightBrightness * 0.4 * flashlightColorG, flashlightBrightness * 0.4 * flashlightColorB));
   strip.show();
 }
 
@@ -751,6 +753,8 @@ void initServer()
 
   // Sites
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->redirect("/home"); });
+  server.on("/home", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/html/index.html", "text/html"); });
   server.on("/info", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/html/info.html", "text/html"); });
@@ -780,10 +784,6 @@ void initServer()
   server.on("/scripts/patterns.js", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/scripts/patterns.js", "text/javascript"); });
 
-  // Temporary
-  server.on("/scripts/TEMPindex.js", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/scripts/TEMPindex.js", "text/javascript"); });
-
   // Photos
   server.on("/images/logo.png", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/images/logo.png", String(), true); });
@@ -804,7 +804,16 @@ void initServer()
     request->send(200, "text/plain", textToReturn); });
 
   server.on("/functions/checkLEDs", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(200, "text/plain", String(patternNum + 1)); });
+            {
+    DynamicJsonDocument json(128);
+    json["pattern"] = patternNum;
+    json["flashlightBrightness"] = flashlightBrightness;
+    json["flashlightColor"]["R"] = flashlightColorR;
+    json["flashlightColor"]["G"] = flashlightColorG;
+    json["flashlightColor"]["B"] = flashlightColorB;
+    String jsonString;
+    serializeJson(json, jsonString);
+    request->send(200, "application/json", jsonString); });
 
   server.on("/functions/changePattern", HTTP_POST, [](AsyncWebServerRequest *request)
             {
@@ -814,11 +823,15 @@ void initServer()
 
   server.on("/functions/flashlight", HTTP_POST, [](AsyncWebServerRequest *request)
             {
-              String params;
-              if (request->hasParam("brightness", true)) {
+              if (request->hasParam("brightness", true))
                 flashlightBrightness = request->getParam("brightness", true)->value().toFloat();
-                patternNum = -1;
-            } });
+              if (request->hasParam("red", true))
+                flashlightColorR = request->getParam("red", true)->value().toInt();
+              if (request->hasParam("green", true))
+                flashlightColorG = request->getParam("green", true)->value().toInt();
+              if (request->hasParam("blue", true))
+                flashlightColorB = request->getParam("blue", true)->value().toInt();
+            });
   server.on("/functions/update", HTTP_POST, [](AsyncWebServerRequest *request)
             {
     Serial.println("Received update command");
@@ -860,14 +873,12 @@ void setup()
 
 void loop()
 {
-
-  if (patternNum == 0)
+  if (flashlightBrightness)
+    flashlight();
+  else if (patternNum == 0)
     cba();
   else if (patternNum == 1)
     alphabetAnim();
-
-  else if (patternNum == -1)
-    flashlight(flashlightBrightness);
 
   if (updateFirmware)
   {
