@@ -32,17 +32,15 @@ function callUpdater() {
         const xhttp = new XMLHttpRequest();
         xhttp.open("POST", `/functions/update`);
         xhttp.send();
-        setTimeout(() => {
-            updButton.innerHTML = "Checking..."
-            updButton.style.borderColor = "#0e3814"
-            updButton.setAttribute("updating", true)
-            setInterval(() => {
-                if (connectionStatus.hasAttribute("Connected")) {
-                    setTimeout(() => {
-                        reload()
-                    }, 1000);
-                }
-            }, 100);
-        }, 1000);
+        updButton.innerHTML = "Checking..."
+        updButton.style.borderColor = "#0e3814"
+        updButton.setAttribute("updating", true)
+        setInterval(() => {
+            if (connectionStatus.hasAttribute("Connected")) {
+                setTimeout(() => {
+                    reload()
+                }, 1000);
+            }
+        }, 100);
     }
 }
