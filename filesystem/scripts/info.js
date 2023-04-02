@@ -40,7 +40,6 @@ function callUpdater() {
         updButton.setAttribute("updating", true)
         FSVersionDoc.innerHTML=loadingversions
         fvVersionDoc.innerHTML=loadingversions
-        chipIDDoc.innerHTML=loadingversions
         setTimeout(() => {
             const tempinterval = setInterval(() => {
                 if (connectionStatus.hasAttribute("Connected")) {
