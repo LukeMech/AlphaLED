@@ -5,10 +5,27 @@ const chipIDDoc = document.getElementById('chipID')
 const updButton = document.getElementById('updButton')
 const connectionStatus = document.getElementById('connection')
 
-const loadingversions='<i class="fa-solid fa-ellipsis fa-bounce"></i>'
-const updbuttonhtml='Check for updates'
+const loadingversions = '<i class="fa-solid fa-ellipsis fa-bounce"></i>'
+const updbuttonhtml = 'Check for updates'
 
-const confirmUpdateText = "❓ Call updater? That's the procedure:\n1. 😴 Server will turn off, status 'reconnecting will' be displayed\n2. 🔎 The device will check for updates\n3. 🔄️ If no updates found, it'll reboot\n4. 🪄 If updates found, required files will be downloaded displaying progress on LEDs\n5. 🛠️ Update will be applied on auto reboot\n6. ⚡ Connection will be restored, you will see 'connected' status on top of the screen\n❗⚠️ Make sure to NOT turn off the device during update! Refreshing the page is also not recommended, as it'll automatically reconnect to device after its reboot ⚠️❗"
+const Q_MARK = "\u2753"             // ❓
+const ZZZ = "\ud83d\ude34"          // 😴
+const SEARCH = "\ud83d\udd0d"       // 🔍
+const ARROW_SPIN = "\ud83d\udd04"   // 🔄️
+const MAGIC_WAND = "\ud83e\udda4"   // 🪄
+const TOOLS = "\ud83d\udee0"        // 🛠️
+const BOLT = "\u26A1"               // ⚡
+const EXCLAM_MARK = "\u2757"        // ❗
+const WARNING_SIGN = "\u26A0"       // ⚠️
+
+const confirmUpdateText = `${Q_MARK} Call updater? That's the procedure:\n
+1. ${ZZZ} Server will turn off, status 'reconnecting will' be displayed\n
+2. ${SEARCH} The device will check for updates\n
+3. ${ARROW_SPIN} If no updates found, it'll reboot\n
+4. ${MAGIC_WAND} If updates found, required files will be downloaded displaying progress on LEDs\n
+5. ${TOOLS} Update will be applied on auto reboot\n
+6. ${BOLT} Connection will be restored, you will see 'connected' status on top of the screen\n
+${EXCLAM_MARK}${WARNING_SIGN} Make sure to NOT turn off the device during update! Refreshing the page is also not recommended, as it'll automatically reconnect to device after its reboot ${WARNING_SIGN}${EXCLAM_MARK}`
 
 // Get system info
 function getSystemInfo() {
@@ -40,8 +57,8 @@ function callUpdater() {
         updButton.innerHTML = "Updating..."
         updButton.style.borderColor = "#0e3814"
         updButton.setAttribute("updating", true)
-        FSVersionDoc.innerHTML=loadingversions
-        fvVersionDoc.innerHTML=loadingversions
+        FSVersionDoc.innerHTML = loadingversions
+        fvVersionDoc.innerHTML = loadingversions
         setTimeout(() => {
             const tempinterval = setInterval(() => {
                 if (connectionStatus.hasAttribute("Connected")) {

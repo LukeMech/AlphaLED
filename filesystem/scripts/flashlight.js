@@ -7,7 +7,7 @@ function refreshFlashlightButton() {
     xhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
             if (this.responseText != "0") flashlightBtn.innerHTML = 'FLASHLIGHT';
-            else flashlightBtn.innerHTML = `FLASHLIGHT (${(brightnessLvl*100).toString()})`;
+            else flashlightBtn.innerHTML = `FLASHLIGHT (${(brightnessLvl*100).toString()}%)`;
         }
     };
 
