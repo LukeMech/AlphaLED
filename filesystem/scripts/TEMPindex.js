@@ -13,7 +13,7 @@ function refreshButtons() {
             }
             else {
                 patternBtn.innerHTML = 'CHANGE';
-                flashlightBtn.innerHTML = `FLASHLIGHT (${(brightnessLvl*100).toString()})`;
+                flashlightBtn.innerHTML = `FLASHLIGHT (${(brightnessLvl*100).toString()}%)`;
             }
         }
     };
