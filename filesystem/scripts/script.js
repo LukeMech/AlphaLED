@@ -90,8 +90,9 @@ connectionState()
 setInterval(connectionState, 500);
 
 // Request cmd
-function request(cmd) {
+function request(cmd, args=null) {
   const xhttp = new XMLHttpRequest();
   xhttp.open("POST", `/functions/${cmd}`);
-  xhttp.send();
+  xhttp.setRequestHeader("Content-Type", "application/json");
+  xhttp.send(JSON.stringify(args));
 }

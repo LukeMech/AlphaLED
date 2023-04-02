@@ -106,6 +106,7 @@ struct
 AsyncWebServer server(80);
 
 int8_t patternNum = 0;
+float flashlightBrightness;
 bool serverOn = false, updateFirmware = false;
 
 // ------------------------
@@ -748,32 +749,39 @@ void initServer()
 
   configTime(2 * 3600, 0, "pool.ntp.org", "time.nist.gov");
 
-  // Home site and reuired additional htmls, csss and jss
-
+  // Sites
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/html/index.html", "text/html"); });
+  server.on("/info", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(SPIFFS, "/html/info.html", "text/html"); });
+
+  // Additional html & css
   server.on("/html/footer.html", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/html/footer.html", "text/html"); });
   server.on("/style/style.css", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/style/style.css", "text/css"); });
   server.on("/style/footer.css", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/style/footer.css", "text/css"); });
-  server.on("/scripts/main.js", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/scripts/main.js", "text/javascript"); });
+
+  server.on("/images/cosmos.jpg", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(SPIFFS, "/images/cosmos.jpg", String(), true); });
+
+  // Javascript
   server.on("/scripts/script.js", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/scripts/script.js", "text/javascript"); });
+
+  server.on("/scripts/main.js", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(SPIFFS, "/scripts/main.js", "text/javascript"); });
+  server.on("/scripts/flashlight.js", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(SPIFFS, "/scripts/flashlight.js", "text/javascript"); });
+  server.on("/scripts/info.js", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(SPIFFS, "/scripts/info.js", "text/javascript"); });
+
+  // Photos
   server.on("/images/logo.png", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/images/logo.png", String(), true); });
   server.on("/images/blackhole.jpg", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/images/blackhole.jpg", String(), true); });
-
-  // Info site
-  server.on("/info", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/html/info.html", "text/html"); });
-  server.on("/scripts/info.js", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/scripts/info.js", "text/javascript"); });
-  server.on("/images/cosmos.jpg", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/images/cosmos.jpg", String(), true); });
 
   // Functions
   server.on("/functions/getSystemInfo", HTTP_GET, [](AsyncWebServerRequest *request)
@@ -781,25 +789,27 @@ void initServer()
     File file = SPIFFS.open("/version.txt", "r");  // Read versions
     String version = file.readString();
     file.close();
-    struct tm timeinfo;
-    char time_str[64];
-    getLocalTime(&timeinfo);
-    strftime(time_str, sizeof(time_str), "%H:%M", &timeinfo);
-    String textToReturn = version + "\nChip ID: " + String(ESP.getChipId()) + "\nTime: " + time_str;
+    // struct tm timeinfo;
+    // char time_str[64];
+    // getLocalTime(&timeinfo);
+    // strftime(time_str, sizeof(time_str), "%H:%M", &timeinfo);
+    String textToReturn = version + "\nChip ID: " + String(ESP.getChipId());
     request->send(200, "text/plain", textToReturn); });
 
   server.on("/functions/getLedsPattern", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(200, "text/plain", String(patternNum + 1)); });
+
   server.on("/functions/change", HTTP_POST, [](AsyncWebServerRequest *request)
             {
     Serial.println("Received change command");
     patternNum++;
     if (patternNum<0 || patternNum > 1) patternNum = 0; });
+
   server.on("/functions/flashlight", HTTP_POST, [](AsyncWebServerRequest *request)
             {
-    Serial.println("Received flashlight command");
-    if(patternNum<0 && patternNum>-4) patternNum--;    
-    else patternNum = -1; });
+    flashlightBrightness = request->getParam("brightness")->value().toFloat();
+    Serial.println("Received flashlight command with brightness: " + String(flashlightBrightness*100) + "%");  
+    patternNum = -1; });
   server.on("/functions/update", HTTP_POST, [](AsyncWebServerRequest *request)
             {
     Serial.println("Received update command");
@@ -848,13 +858,7 @@ void loop()
     alphabetAnim();
 
   else if (patternNum == -1)
-    flashlight(0.25);
-  else if (patternNum == -2)
-    flashlight(0.5);
-  else if (patternNum == -3)
-    flashlight(0.75);
-  else if (patternNum == -4)
-    flashlight(1);
+    flashlight(flashlightBrightness);
 
   if (updateFirmware)
   {
