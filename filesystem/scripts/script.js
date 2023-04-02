@@ -93,7 +93,7 @@ setInterval(connectionState, 500);
 function request(cmd, params=null) {
   const xhttp = new XMLHttpRequest();
   xhttp.open("POST", `/functions/${cmd}`);
-  if(!args) xhttp.send();
+  if(!params) xhttp.send();
   else {
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhttp.send(params);
