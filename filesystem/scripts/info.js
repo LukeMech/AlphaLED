@@ -42,13 +42,14 @@ function callUpdater() {
         fvVersionDoc.innerHTML=loadingversions
         chipIDDoc.innerHTML=loadingversions
         setTimeout(() => {
-            setInterval(() => {
+            const tempinterval = setInterval(() => {
                 if (connectionStatus.hasAttribute("Connected")) {
                     setTimeout(() => {
                         updButton.innerHTML = updbuttonhtml
                         updButton.style.borderColor = ""
                         updButton.removeAttribute("updating")
                         getSystemInfo()
+                        clearInterval(tempinterval)
                     }, 1000);
                 }
             }, 100);
