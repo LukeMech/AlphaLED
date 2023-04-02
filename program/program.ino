@@ -105,17 +105,6 @@ struct
 
 AsyncWebServer server(80);
 
-String getCurrentTime()
-{
-  configTime(2 * 3600, 0, "pool.ntp.org", "time.nist.gov");
-  time_t now = time(nullptr);
-  struct tm timeinfo;
-  char time_str[64];
-  getLocalTime(&timeinfo);
-  strftime(time_str, sizeof(time_str), "%H:%M", &timeinfo);
-  return time_str;
-}
-
 int8_t patternNum = 0;
 bool serverOn = false, updateFirmware = false;
 
@@ -601,7 +590,7 @@ void firmwareUpdate() // Updater
 
   WiFiClientSecure client; // Create secure wifi client
   client.setTrustAnchors(&cert);
-  getCurrentTime();
+  time_t now = time(nullptr);
 
   HTTPClient http; // Connect to release API
   http.begin(client, updaterVersionCtrlUrl);
@@ -757,6 +746,8 @@ void firmwareUpdate() // Updater
 void initServer()
 {
 
+  configTime(2 * 3600, 0, "pool.ntp.org", "time.nist.gov");
+
   // Home site and reuired additional htmls, csss and jss
 
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
@@ -787,11 +778,17 @@ void initServer()
   // Functions
   server.on("/functions/getSystemInfo", HTTP_GET, [](AsyncWebServerRequest *request)
             {
+    yield();
     File file = SPIFFS.open("/version.txt", "r");  // Read versions
     String version = file.readString();
     file.close();
-    
-    String textToReturn = version + "\nChip ID: " + String(ESP.getChipId()) + "\nTime: " + getCurrentTime();
+    yield();
+    struct tm timeinfo;
+    char time_str[64];
+    getLocalTime(&timeinfo);
+    strftime(time_str, sizeof(time_str), "%H:%M", &timeinfo);
+    String textToReturn = version + "\nChip ID: " + String(ESP.getChipId()) + "\nTime: " + time_str;
+    yield();
     request->send(200, "text/plain", textToReturn); });
 
   server.on("/functions/getLedsPattern", HTTP_GET, [](AsyncWebServerRequest *request)
@@ -809,7 +806,6 @@ void initServer()
   server.on("/functions/update", HTTP_POST, [](AsyncWebServerRequest *request)
             {
     Serial.println("Received update command");
-    request->redirect("/");
     updateFirmware = true; });
 
   server.on("/functions/connCheck", HTTP_HEAD, [](AsyncWebServerRequest *request)
