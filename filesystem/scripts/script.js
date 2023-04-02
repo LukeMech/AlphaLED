@@ -70,7 +70,7 @@ function connectionState() {
   xhttp.send();
   function connError() {
     if (connectionStatus.innerHTML != connErrMsg) connectionStatus.innerHTML = connErrMsg;
-    connectionStatus.removeAttribute("Connnected")
+    connectionStatus.removeAttribute("Connected")
   }
 
   xhttp.onreadystatechange = function () {
