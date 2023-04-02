@@ -12,14 +12,14 @@ const Q_MARK = "\u2753"             // ❓
 const ZZZ = "\ud83d\ude34"          // 😴
 const SEARCH = "\ud83d\udd0d"       // 🔍
 const ARROW_SPIN = "\ud83d\udd04"   // 🔄️
-const MAGIC_WAND = "\ud83e\udda4"   // 🪄
+const MAGIC_WAND = "\ud83e\ude84"   // 🪄
 const TOOLS = "\ud83d\udee0"        // 🛠️
 const BOLT = "\u26A1"               // ⚡
 const EXCLAM_MARK = "\u2757"        // ❗
 const WARNING_SIGN = "\u26A0"       // ⚠️
 
 const confirmUpdateText = `${Q_MARK} Call updater? That's the procedure:\n
-1. ${ZZZ} Server will turn off, status 'reconnecting will' be displayed\n
+1. ${ZZZ} Server will turn off, status 'reconnecting' will be displayed\n
 2. ${SEARCH} The device will check for updates\n
 3. ${ARROW_SPIN} If no updates found, it'll reboot\n
 4. ${MAGIC_WAND} If updates found, required files will be downloaded displaying progress on LEDs\n
