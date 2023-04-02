@@ -61,14 +61,22 @@ function changeColor(value, color) {
 
 // Flashlight functions
 flashlightBtn.addEventListener("click", function () {
+    let urlSearchParams
     if (flashlightBtn.hasAttribute("on")) {
         const params = {
             brightness: 0
         };
-        const urlSearchParams = new URLSearchParams(params).toString();
-        flashlightBtn.removeAttribute("on")
-        request("flashlight", urlSearchParams)
+        urlSearchParams = new URLSearchParams(params).toString();
     }
-    else flashlightBtn.setAttribute("on", true)
+    else {
+        const params = {
+            brightness: brightnessControl.value,
+            red: redControl.value,
+            green: greenControl.value,
+            blue: blueControl.value
+        };
+        urlSearchParams = new URLSearchParams(params).toString();
+    }
+    request("flashlight", urlSearchParams)
     refreshFlashlight()
 });
