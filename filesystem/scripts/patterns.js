@@ -20,9 +20,14 @@ submitBtn.addEventListener("click", function () {
             animSpeed: 120,
             delay: 0
         });
+
+        if (i%5 === 0) {                            // Send next request every 5 characters
+            request("changePattern", json);
+            json = [];
+        }
     }
 
-    json.push({
+    json.push({                                     // End parameter      
         to: characters[0],
         color: {
             R: 50,
@@ -31,10 +36,8 @@ submitBtn.addEventListener("click", function () {
         },
         animType: 0,
         animSpeed: 120,
-        delay: 0
-    })
-    
-    request("changePattern", json, true)
+        delay: 0,
+    }, "end")
 
     submitBtn.style.borderColor = "#0ad826"
     textInput.value = ""

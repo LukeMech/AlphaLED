@@ -714,11 +714,13 @@ void initServer()
       "/functions/changePattern", HTTP_POST, [](AsyncWebServerRequest *request) {}, NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total)
       {
         tempPatternData = tempPatternData + String((const char *)data);
-        if (String((const char *)data).indexOf("]") != -1)
-        {
+        if (String((const char *)data).indexOf("]") != -1) {
+          Serial.println((const char*)data);
           deserializeJson(displayPatternJson, tempPatternData);
-          tempPatternData = "";
-          patternNum = 1;
+          if(displayPatternJson.as<JsonArray>()[-1] == "end") {
+            tempPatternData = "";
+            patternNum = 1;
+          }
         } });
 
   server.on("/functions/update", HTTP_POST, [](AsyncWebServerRequest *request)
