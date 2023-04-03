@@ -41,33 +41,33 @@ refreshFlashlight()
 // Flashlight functions
 function changeBrightnessAndColor() {
     if (!flashlightBtn.hasAttribute("on")) return;
-    const params = {
+    const params = [{
         brightness: brightnessControl.value,
         color: {
             R: redControl.value,
             G: greenControl.value,
             B: blueControl.value
         }
-    };
+    }];
     request("flashlight", params)
 }
 
 flashlightBtn.addEventListener("click", function () {
     let params
     if (flashlightBtn.hasAttribute("on")) {
-        params = {
+        params = [{
             brightness: 0
-        };
+        }];
     }
     else {
-        params = {
+        params = [{
             brightness: brightnessControl.value,
             color: {
                 R: redControl.value,
                 G: greenControl.value,
                 B: blueControl.value
             }
-        };
+        }];
     }
     request("flashlight", params)
     refreshFlashlight()

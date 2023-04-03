@@ -7,6 +7,7 @@ submitBtn.addEventListener("click", function () {
 
     const characters = document.getElementById("text").value.toUpperCase().split("");
     let json = []
+
     for (let i = 0; i < characters.length; i++) {
         json.push({
             from: characters[i],
@@ -18,16 +19,17 @@ submitBtn.addEventListener("click", function () {
             },
             animType: 0,
             animSpeed: 120,
-            delay: 0
+            delay: 0,
+            start: i=0 ? true : false,
         });
 
-        if (i%5 === 0) {                            // Send next request every 5 characters
+        if (i%5 === 0 && i!=0) {                    // Send next request every 5 characters
             request("changePattern", json);
             json = [];
         }
     }
 
-    json.push({                                     // End parameter      
+    json.push({                                     // Additional animation      
         to: characters[0],
         color: {
             R: 50,
@@ -41,6 +43,7 @@ submitBtn.addEventListener("click", function () {
     })
 
     request("changePattern", json);
+
     submitBtn.style.borderColor = "#0ad826"
     textInput.value = ""
     setTimeout(() => {
