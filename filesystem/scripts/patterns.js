@@ -1,28 +1,37 @@
 
-const patternBtn = document.getElementById("pattern-button")
+const submitBtn = document.getElementById("submit")
+const textInput = document.getElementById("text")
 
-// Refresh buttons
-function refreshPatternsButton() {
-    const xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-            const response = JSON.parse(this.responseText);
-            const pattern = response.pattern;
-            if (pattern != 0) patternBtn.innerHTML = `CHANGE (${(pattern+1).toString()})`;
-            else patternBtn.innerHTML = 'CHANGE';
-        }
-    };
+submitBtn.addEventListener("click", function () {
+    if (!textInput.value) return;
 
-    xhttp.open("GET", "../functions/checkLEDs", true);
-    xhttp.send();
-}
+    const characters = document.getElementById("text").value.split("");
+    let json = []
+    for (let i = 0; i < characters.length; i++) {
+        json.push({
+            from: characters[i],
+            to: characters[i + 1],
+            color: {
+                R: 50,
+                G: 0,
+                B: 0
+            },
+            animType: 2,
+            animSpeed: 120,
+            delay: 0
+        });
+    }
 
-// Next pattern
-patternBtn.addEventListener("click", function () {
-    request('changePattern')
-    refreshPatternsButton()
+    request("changePattern", json, true)
+
+    submitBtn.style.borderColor = "#0ad826"
+    textInput.value = ""
+    setTimeout(() => {
+        submitBtn.style.borderColor = ""
+    }, 1000);
 });
 
-setInterval(() => {
-    refreshPatternsButton()
-}, 500);
+
+textInput.addEventListener('keydown', function (event) {
+    if (event.key === "Enter") submitBtn.click();
+});

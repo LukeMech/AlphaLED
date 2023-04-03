@@ -104,6 +104,76 @@ struct
 
 } numbers;
 
+// Return maps
+typedef uint8_t (*arrayPtr)[8];
+arrayPtr characterToMap(String value)
+{
+  if (value == "A")
+    return alphabet.A;
+  else if (value == "B")
+    return alphabet.B;
+  else if (value == "C")
+    return alphabet.C;
+  else if (value == "D")
+    return alphabet.D;
+  else if (value == "E")
+    return alphabet.E;
+  else if (value == "F")
+    return alphabet.F;
+  else if (value == "G")
+    return alphabet.G;
+  else if (value == "H")
+    return alphabet.H;
+  else if (value == "I")
+    return alphabet.I;
+  else if (value == "J")
+    return alphabet.J;
+  else if (value == "K")
+    return alphabet.K;
+  else if (value == "L")
+    return alphabet.L;
+  else if (value == "Ł")
+    return alphabet.Ł;
+  else if (value == "M")
+    return alphabet.M;
+  else if (value == "N")
+    return alphabet.N;
+  else if (value == "O")
+    return alphabet.O;
+  else if (value == "P")
+    return alphabet.P;
+  else if (value == "R")
+    return alphabet.R;
+  else if (value == "S")
+    return alphabet.S;
+  else if (value == "T")
+    return alphabet.T;
+  else if (value == "U")
+    return alphabet.U;
+  else if (value == "W")
+    return alphabet.W;
+  else if (value == "X")
+    return alphabet.X;
+  else if (value == "Y")
+    return alphabet.Y;
+  else if (value == "Z")
+    return alphabet.Z;
+  else if (value == "Ź")
+    return alphabet.Ź;
+  else if (value == "Ż")
+    return alphabet.Ż;
+
+  else if (value == " ")
+    return characters.space;
+  else if (value == "!")
+    return characters.exclam_mark;
+
+  else if (value == "1")
+    return numbers.one;
+
+  return nullptr;
+}
+
 AsyncWebServer server(80);
 
 int8_t patternNum = 0;
@@ -116,6 +186,8 @@ bool serverOn = false, updateFirmware = false;
 // ------------------------
 
 // Display static map
+DynamicJsonDocument displayPatternJson(1024);
+
 void display(uint8_t map[][8])
 {
   for (uint8_t i = 0; i < 8; i++)
@@ -279,206 +351,16 @@ void animate(uint8_t startMap[][8], uint8_t endMap[][8], uint8_t direction = 0, 
   }
 }
 
-void alphabetAnim(int gaps = 0, int animLength = 90)
-{
-
-  if (!updateFirmware)
-    animate(alphabet.A, alphabet.B, 0, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.B, alphabet.C, 0, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.C, alphabet.D, 0, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.D, alphabet.E, 0, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.E, alphabet.F, 0, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.F, alphabet.G, 0, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.G, alphabet.H, 0, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.H, alphabet.I, 0, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.I, alphabet.J, 0, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.J, alphabet.K, 0, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.K, alphabet.L, 0, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.L, alphabet.M, 0, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.M, alphabet.N, 0, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.N, alphabet.O, 0, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.O, alphabet.P, 0, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.P, alphabet.R, 0, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.R, alphabet.S, 0, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.S, alphabet.T, 0, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.T, alphabet.U, 0, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.U, alphabet.W, 0, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.W, alphabet.X, 0, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.X, alphabet.Y, 0, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.Y, alphabet.Z, 0, animLength);
-  if (!updateFirmware)
-    delay(gaps ? gaps * 2 : 200);
-
-  if (!updateFirmware)
-    animate(alphabet.Z, alphabet.Y, 1, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.Y, alphabet.X, 1, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.X, alphabet.W, 1, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.W, alphabet.U, 1, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.U, alphabet.T, 1, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.T, alphabet.S, 1, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.S, alphabet.R, 1, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.R, alphabet.P, 1, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.P, alphabet.O, 1, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.O, alphabet.N, 1, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.N, alphabet.M, 1, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.M, alphabet.L, 1, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.L, alphabet.K, 1, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.K, alphabet.J, 1, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.J, alphabet.I, 1, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.I, alphabet.H, 1, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.H, alphabet.G, 1, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.G, alphabet.F, 1, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.F, alphabet.E, 1, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.E, alphabet.D, 1, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.D, alphabet.C, 1, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.C, alphabet.B, 1, animLength);
-  if (!updateFirmware)
-    delay(gaps);
-  if (!updateFirmware)
-    animate(alphabet.B, alphabet.A, 1, animLength);
-  if (!updateFirmware)
-    delay(gaps ? gaps * 2 : 200);
-}
-
-void cba()
+void main()
 {
   if (!updateFirmware)
-    animate(alphabet.C, alphabet.B, 2, 120, strip.Color(0, 0, 25));
+    animate(characterToMap("C"), characterToMap("B"), 2, 120, strip.Color(0, 0, 25));
   if (!updateFirmware)
-    animate(alphabet.B, alphabet.A, 2, 120, strip.Color(0, 25, 0));
+    animate(characterToMap("B"), characterToMap("A"), 2, 120, strip.Color(0, 25, 0));
   if (!updateFirmware)
-    animate(alphabet.A, alphabet.B, 3, 120, strip.Color(0, 0, 25));
+    animate(characterToMap("A"), characterToMap("B"), 3, 120, strip.Color(0, 0, 25));
   if (!updateFirmware)
-    animate(alphabet.B, alphabet.C, 3, 120, strip.Color(25, 0, 0));
+    animate(characterToMap("B"), characterToMap("C"), 3, 120, strip.Color(25, 0, 0));
 }
 
 void flashlight()
@@ -797,41 +679,37 @@ void initServer()
     File file = SPIFFS.open("/version.txt", "r");  // Read versions
     String version = file.readString();
     file.close();
-    // struct tm timeinfo;
-    // char time_str[64];
-    // getLocalTime(&timeinfo);
-    // strftime(time_str, sizeof(time_str), "%H:%M", &timeinfo);
     String textToReturn = version + "\nChip ID: " + String(ESP.getChipId());
     request->send(200, "text/plain", textToReturn); });
 
-  server.on("/functions/checkLEDs", HTTP_GET, [](AsyncWebServerRequest *request)
+  server.on("/functions/checkFlashlight", HTTP_GET, [](AsyncWebServerRequest *request)
             {
-    DynamicJsonDocument json(128);
-    json["pattern"] = patternNum;
-    json["flashlightBrightness"] = flashlightBrightness;
-    json["flashlightColor"]["R"] = flashlightColorR;
-    json["flashlightColor"]["G"] = flashlightColorG;
-    json["flashlightColor"]["B"] = flashlightColorB;
+    StaticJsonDocument<64> json;
+    json["brightness"] = flashlightBrightness;
+    json["color"]["R"] = flashlightColorR;
+    json["color"]["G"] = flashlightColorG;
+    json["color"]["B"] = flashlightColorB;
     String jsonString;
     serializeJson(json, jsonString);
     request->send(200, "application/json", jsonString); });
 
-  server.on("/functions/changePattern", HTTP_POST, [](AsyncWebServerRequest *request)
+  server.on("/functions/changePattern", HTTP_GET, [](AsyncWebServerRequest *request)
             {
-    Serial.println("Received change command");
-    patternNum++;
-    if (patternNum<0 || patternNum > 1) patternNum = 0; });
+    deserializeJson(displayPatternJson, request->getParam("plain")->value());
+    patternNum=1;
+    Serial.println("Received change command"); });
 
   server.on("/functions/flashlight", HTTP_POST, [](AsyncWebServerRequest *request)
             {
-              if (request->hasParam("brightness", true))
-                flashlightBrightness = request->getParam("brightness", true)->value().toFloat();
-              if (request->hasParam("red", true))
-                flashlightColorR = request->getParam("red", true)->value().toInt();
-              if (request->hasParam("green", true))
-                flashlightColorG = request->getParam("green", true)->value().toInt();
-              if (request->hasParam("blue", true))
-                flashlightColorB = request->getParam("blue", true)->value().toInt(); });
+    if (request->hasParam("brightness", true))
+      flashlightBrightness = request->getParam("brightness", true)->value().toFloat();
+    if (request->hasParam("red", true))
+      flashlightColorR = request->getParam("red", true)->value().toInt();
+    if (request->hasParam("green", true))
+      flashlightColorG = request->getParam("green", true)->value().toInt();
+    if (request->hasParam("blue", true))
+      flashlightColorB = request->getParam("blue", true)->value().toInt(); });
+      
   server.on("/functions/update", HTTP_POST, [](AsyncWebServerRequest *request)
             {
     Serial.println("Received update command");
@@ -875,10 +753,20 @@ void loop()
 {
   if (flashlightBrightness)
     flashlight();
-  else if (patternNum == 0)
-    cba();
+  else if (!patternNum)
+    main();
+
   else if (patternNum == 1)
-    alphabetAnim();
+  {
+    JsonArray arr = displayPatternJson.as<JsonArray>();
+    for (JsonVariant obj : arr)
+    {
+      if (!updateFirmware)
+        animate(characterToMap(obj["from"].as<String>()), characterToMap(obj["to"].as<String>()), obj["animType"].as<int>(), obj["animSpeed"].as<int>(), strip.Color(obj["color"]["R"].as<int>(), obj["color"]["G"].as<int>(), obj["color"]["B"].as<int>()));
+      if (!updateFirmware)
+        delay(obj["delay"].as<int>());
+    }
+  }
 
   if (updateFirmware)
   {

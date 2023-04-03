@@ -11,10 +11,10 @@ function refreshFlashlight() {
     xhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
             const response = JSON.parse(this.responseText);
-            const flashlightBrightness = response.flashlightBrightness;
-            const flashlightColorR = response.flashlightColor.R;
-            const flashlightColorG = response.flashlightColor.G;
-            const flashlightColorB = response.flashlightColor.B;
+            const flashlightBrightness = response.brightness;
+            const flashlightColorR = response.color.R;
+            const flashlightColorG = response.color.G;
+            const flashlightColorB = response.color.B;
 
             if (flashlightBrightness > 0) {
                 flashlightBtn.innerHTML = 'TURN OFF';
@@ -33,7 +33,7 @@ function refreshFlashlight() {
         }
     };
 
-    xhttp.open("GET", "../functions/checkLEDs", true);
+    xhttp.open("GET", "../functions/checkFlashlight", true);
     xhttp.send();
 }
 refreshFlashlight()
