@@ -698,17 +698,15 @@ void initServer()
       "/functions/flashlight", HTTP_POST, [](AsyncWebServerRequest *request) {}, NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total)
       {
         tempFlashlightData = tempFlashlightData + String((const char *)data);
-        if (String((const char *)data).indexOf("]") != -1)
-        {
           StaticJsonDocument<128> json;
           deserializeJson(json, tempFlashlightData);
           tempFlashlightData = "";
           patternNum=0;
           flashlightBrightness = json["brightness"].as<float>();
-          flashlightColorR = json["red"].as<int>();
-          flashlightColorG = json["green"].as<int>();
-          flashlightColorB = json["blue"].as<int>(); 
-        } });
+          flashlightColorR = json["color"]["R"].as<int>();
+          flashlightColorG = json["color"]["G"].as<int>();
+          flashlightColorB = json["color"]["B"].as<int>(); 
+      });
 
   server.on(
       "/functions/changePattern", HTTP_POST, [](AsyncWebServerRequest *request) {}, NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total)

@@ -40,6 +40,7 @@ submitBtn.addEventListener("click", function () {
         end: true
     })
 
+    request("changePattern", json);
     submitBtn.style.borderColor = "#0ad826"
     textInput.value = ""
     setTimeout(() => {

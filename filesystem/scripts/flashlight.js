@@ -43,9 +43,11 @@ function changeBrightnessAndColor() {
     if (!flashlightBtn.hasAttribute("on")) return;
     const params = {
         brightness: brightnessControl.value,
-        red: redControl.value,
-        green: greenControl.value,
-        blue: blueControl.value
+        color: {
+            R: redControl.value,
+            G: greenControl.value,
+            B: blueControl.value
+        }
     };
     request("flashlight", params)
 }
@@ -54,15 +56,17 @@ flashlightBtn.addEventListener("click", function () {
     let params
     if (flashlightBtn.hasAttribute("on")) {
         params = {
-            "brightness": 0
+            brightness: 0
         };
     }
     else {
         params = {
-            "brightness": brightnessControl.value,
-            "red": redControl.value,
-            "green": greenControl.value,
-            "blue": blueControl.value
+            brightness: brightnessControl.value,
+            color: {
+                R: redControl.value,
+                G: greenControl.value,
+                B: blueControl.value
+            }
         };
     }
     request("flashlight", params)
