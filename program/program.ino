@@ -179,7 +179,7 @@ AsyncWebServer server(80);
 int8_t patternNum = 0;
 byte flashlightColorR = 255, flashlightColorG = 255, flashlightColorB = 255;
 float flashlightBrightness = 0;
-String tempDisplayPatternData, tempFlashlightData;
+String tempPatternData, tempFlashlightData;
 bool serverOn = false, updateFirmware = false;
 
 // ------------------------
@@ -724,39 +724,13 @@ void initServer()
   server.on(
       "/functions/changePattern", HTTP_POST, [](AsyncWebServerRequest *request) {}, NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total)
       {
-    tempDisplayPatternData = tempDisplayPatternData + String((const char *)data);
-    if (String((const char *)data).indexOf("]") != -1)
-    {
-      StaticJsonDocument<1024> tempPatternJSON;
-      deserializeJson(tempPatternJSON, tempDisplayPatternData);
-      tempDisplayPatternData = "";
-
-      String jsonString;
-      Serial.println("[INFO] Received pattern JSON:");
-
-      if (tempPatternJSON[0]["start"].as<bool>())
-      {
-        displayPatternJson.clear();
-        Serial.println("[INFO] 1st JSON:");
-      }
-
-      serializeJson(tempPatternJSON, jsonString);
-
-      for (JsonVariant v : tempPatternJSON.as<JsonArray>())
-      {
-        displayPatternJson.as<JsonArray>().add(v);
-
-        if (v["end"].as<bool>())
+        tempPatternData = tempPatternData + String((const char *)data);
+        if (String((const char *)data).indexOf("]") != -1)
         {
+          deserializeJson(displayPatternJson, tempPatternData);
+          tempPatternData = "";
           patternNum = 1;
-          Serial.println("[INFO] End:");
-        }
-      }
-
-      Serial.println(jsonString);
-
-      request->send(200, "text/plain", jsonString);
-    } });
+        } });
 
   server.on("/functions/update", HTTP_POST, [](AsyncWebServerRequest *request)
             { updateFirmware = true; });

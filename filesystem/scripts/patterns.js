@@ -2,7 +2,7 @@
 const submitBtn = document.getElementById("submit")
 const textInput = document.getElementById("text")
 
-submitBtn.addEventListener("click", async function () {
+submitBtn.addEventListener("click", function () {
     if (!textInput.value) return;
 
     submitBtn.style.borderColor = "#0ad826"
@@ -25,14 +25,9 @@ submitBtn.addEventListener("click", async function () {
             delay: 0,
             start: i===0 ? true : false,
         });
-
-        if (i%4 === 0 && i!=0) {                    // Send next request every 5 characters
-            await request("changePattern", json);
-            json = [];
-        }
     }
 
-    json.push({                                     // Additional animation      
+    json.push({
         to: characters[0],
         color: {
             R: 50,
@@ -41,11 +36,10 @@ submitBtn.addEventListener("click", async function () {
         },
         animType: 0,
         animSpeed: 120,
-        delay: 0,
-        end: true
+        delay: 0
     })
-
-    await request("changePattern", json);
+    
+    request("changePattern", json)
 
     setTimeout(() => {
         submitBtn.style.borderColor = ""
