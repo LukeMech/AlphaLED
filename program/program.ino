@@ -573,7 +573,6 @@ void firmwareUpdate() // Updater
                            {
     float progress = (float)current / (float)total;
     int value = round(progress * 4) + 1;
-    Serial.print("[PROGRESS] Updater: ");
     Serial.println(progress * 100);
 
     strip.setPixelColor(led_map[dualUpdate ? (secStage ? 5 : 1) : 3][value], LED_COLOR_CONN);
@@ -685,7 +684,7 @@ void initServer()
 
   server.on("/functions/checkFlashlight", HTTP_GET, [](AsyncWebServerRequest *request)
             {
-    StaticJsonDocument<128> json;
+    StaticJsonDocument<256> json;
     json["brightness"] = flashlightBrightness;
     json["color"]["R"] = flashlightColorR;
     json["color"]["G"] = flashlightColorG;
@@ -699,14 +698,14 @@ void initServer()
       {
         tempFlashlightData = tempFlashlightData + String((const char *)data);
         if (String((const char *)data).indexOf("]") != -1) {
-          StaticJsonDocument<128> json;
+          StaticJsonDocument<256> json;
           deserializeJson(json, tempFlashlightData);
           tempFlashlightData = "";
           patternNum=0;
-          flashlightBrightness = json.as<JsonArray>()[0]["brightness"].as<float>();
-          flashlightColorR = json.as<JsonArray>()[0]["color"]["R"].as<int>();
-          flashlightColorG = json.as<JsonArray>()[0]["color"]["G"].as<int>();
-          flashlightColorB = json.as<JsonArray>()[0]["color"]["B"].as<int>(); 
+          flashlightBrightness = json[0]["brightness"].as<float>();
+          flashlightColorR = json[0]["color"]["R"].as<int>();
+          flashlightColorG = json[0]["color"]["G"].as<int>();
+          flashlightColorB = json[0]["color"]["B"].as<int>(); 
         } });
 
   server.on(
@@ -719,13 +718,13 @@ void initServer()
           deserializeJson(tempPatternJSON, tempDisplayPatternData);
           tempDisplayPatternData="";
 
-          if (tempPatternJSON.as<JsonArray>()[0]["start"].as<bool>())
+          if (tempPatternJSON[0]["start"].as<bool>())
             displayPatternJson.clear();
 
           for (JsonVariant v : tempPatternJSON.as<JsonArray>())
             displayPatternJson.as<JsonArray>().add(v);
     
-          if (tempPatternJSON.as<JsonArray>()[-1]["end"].as<bool>())
+          if (tempPatternJSON[-1]["end"].as<bool>())
             patternNum = 1;
         }
       });

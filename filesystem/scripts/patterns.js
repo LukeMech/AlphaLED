@@ -20,7 +20,7 @@ submitBtn.addEventListener("click", function () {
             animType: 0,
             animSpeed: 120,
             delay: 0,
-            start: i=0 ? true : false,
+            start: i===0 ? true : false,
         });
 
         if (i%5 === 0 && i!=0) {                    // Send next request every 5 characters
