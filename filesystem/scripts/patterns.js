@@ -10,27 +10,27 @@ submitBtn.addEventListener("click", function () {
     for (let i = 0; i < characters.length; i++) {
         json.push({
             from: characters[i],
-            to: characters[i + 1] ? characters[i + 1] : " ",
+            to: characters[i + 1],
             color: {
                 R: 50,
                 G: 0,
                 B: 0
             },
-            animType: 1,
+            animType: 0,
             animSpeed: 120,
             delay: 0
         });
     }
 
     json.push({
-        from: characters[characters.length - 1],
+        from: " ",
         to: characters[0],
         color: {
             R: 50,
             G: 0,
             B: 0
         },
-        animType: 1,
+        animType: 0,
         animSpeed: 120,
         delay: 0
     })
