@@ -171,7 +171,7 @@ arrayPtr characterToMap(String value)
   else if (value == "1")
     return numbers.one;
 
-  return nullptr;
+  return characters.space;
 }
 
 AsyncWebServer server(80);
