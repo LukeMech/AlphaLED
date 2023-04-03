@@ -717,7 +717,7 @@ void initServer()
         if (String((const char *)data).indexOf("]") != -1) {
           Serial.println((const char*)data);
           deserializeJson(displayPatternJson, tempPatternData);
-          if(displayPatternJson.as<JsonArray>()[-1] == "end") {
+          if(displayPatternJson.as<JsonArray>()[-1]["end"]) {
             tempPatternData = "";
             patternNum = 1;
           }

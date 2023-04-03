@@ -54,15 +54,15 @@ flashlightBtn.addEventListener("click", function () {
     let params
     if (flashlightBtn.hasAttribute("on")) {
         params = {
-            brightness: 0
+            "brightness": 0
         };
     }
     else {
         params = {
-            brightness: brightnessControl.value,
-            red: redControl.value,
-            green: greenControl.value,
-            blue: blueControl.value
+            "brightness": brightnessControl.value,
+            "red": redControl.value,
+            "green": greenControl.value,
+            "blue": blueControl.value
         };
     }
     request("flashlight", params)

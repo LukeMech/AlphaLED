@@ -37,7 +37,8 @@ submitBtn.addEventListener("click", function () {
         animType: 0,
         animSpeed: 120,
         delay: 0,
-    }, "end")
+        end: true
+    })
 
     submitBtn.style.borderColor = "#0ad826"
     textInput.value = ""
