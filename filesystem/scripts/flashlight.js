@@ -74,4 +74,4 @@ flashlightBtn.addEventListener("click", function () {
 
 setInterval(() => {
     changeBrightnessAndColor()
-}, 1000);
+}, 300);
