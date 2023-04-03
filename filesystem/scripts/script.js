@@ -90,17 +90,10 @@ connectionState()
 setInterval(connectionState, 500);
 
 // Request cmd
-function request(cmd, params=null, get=false) {
-  const xhttp = new XMLHttpRequest();
-  if(!get) xhttp.open("POST", `/functions/${cmd}`);
-  else xhttp.open("GET", `/functions/${cmd}`);
-  if(!params) xhttp.send();
-  else if(!get) {
-    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhttp.send(params);
-  }
-  else {
-    xhttp.setRequestHeader("Content-type", "application/json");
-    xhttp.send(JSON.stringify(params));
-  }
+function request(cmd, params=null) {
+  fetch(`/functions/${cmd}`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(params),
+  })
 }

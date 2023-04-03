@@ -47,8 +47,7 @@ function changeBrightnessAndColor() {
         green: greenControl.value,
         blue: blueControl.value
     };
-    const urlSearchParams = new URLSearchParams(params).toString();
-    request("flashlight", urlSearchParams)
+    request("flashlight", params)
 }
 
 flashlightBtn.addEventListener("click", function () {
@@ -74,4 +73,4 @@ flashlightBtn.addEventListener("click", function () {
 
 setInterval(() => {
     changeBrightnessAndColor()
-}, 300);
+}, 1000);

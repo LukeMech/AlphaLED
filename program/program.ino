@@ -684,7 +684,7 @@ void initServer()
 
   server.on("/functions/checkFlashlight", HTTP_GET, [](AsyncWebServerRequest *request)
             {
-    StaticJsonDocument<64> json;
+    StaticJsonDocument<128> json;
     json["brightness"] = flashlightBrightness;
     json["color"]["R"] = flashlightColorR;
     json["color"]["G"] = flashlightColorG;
@@ -693,7 +693,7 @@ void initServer()
     serializeJson(json, jsonString);
     request->send(200, "application/json", jsonString); });
 
-  server.on("/functions/changePattern", HTTP_GET, [](AsyncWebServerRequest *request)
+  server.on("/functions/changePattern", HTTP_POST, [](AsyncWebServerRequest *request)
             {
     deserializeJson(displayPatternJson, request->getParam("plain")->value());
     patternNum=1;
@@ -701,15 +701,13 @@ void initServer()
 
   server.on("/functions/flashlight", HTTP_POST, [](AsyncWebServerRequest *request)
             {
-    if (request->hasParam("brightness", true))
-      flashlightBrightness = request->getParam("brightness", true)->value().toFloat();
-    if (request->hasParam("red", true))
-      flashlightColorR = request->getParam("red", true)->value().toInt();
-    if (request->hasParam("green", true))
-      flashlightColorG = request->getParam("green", true)->value().toInt();
-    if (request->hasParam("blue", true))
-      flashlightColorB = request->getParam("blue", true)->value().toInt(); });
-      
+    StaticJsonDocument<128> json;
+    deserializeJson(json, request->getParam("plain")->value());
+    flashlightBrightness = json["brightness"].as<float>();
+    flashlightColorR = json["red"].as<int>();
+    flashlightColorG = json["green"].as<int>();
+    flashlightColorB = json["blue"].as<int>(); });
+
   server.on("/functions/update", HTTP_POST, [](AsyncWebServerRequest *request)
             {
     Serial.println("Received update command");
