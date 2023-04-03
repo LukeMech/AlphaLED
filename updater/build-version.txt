@@ -1,2 +1,2 @@
-Filesystem: 23.04.04
-Firmware: 23.04.04
+Filesystem: 23.04.04-1
+Firmware: 23.04.04-1
