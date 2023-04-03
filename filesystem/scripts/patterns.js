@@ -5,23 +5,36 @@ const textInput = document.getElementById("text")
 submitBtn.addEventListener("click", function () {
     if (!textInput.value) return;
 
-    const characters = document.getElementById("text").value.split("");
+    const characters = document.getElementById("text").value.toUpperCase().split("");
     let json = []
     for (let i = 0; i < characters.length; i++) {
         json.push({
             from: characters[i],
-            to: characters[i + 1],
+            to: characters[i + 1] ? characters[i + 1] : " ",
             color: {
                 R: 50,
                 G: 0,
                 B: 0
             },
-            animType: 2,
+            animType: 1,
             animSpeed: 120,
             delay: 0
         });
     }
 
+    json.push({
+        from: characters[characters.length - 1],
+        to: characters[0],
+        color: {
+            R: 50,
+            G: 0,
+            B: 0
+        },
+        animType: 1,
+        animSpeed: 120,
+        delay: 0
+    })
+    
     request("changePattern", json, true)
 
     submitBtn.style.borderColor = "#0ad826"

@@ -179,6 +179,7 @@ AsyncWebServer server(80);
 int8_t patternNum = 0;
 byte flashlightColorR = 255, flashlightColorG = 255, flashlightColorB = 255;
 float flashlightBrightness = 0;
+String tempPatternData, tempFlashlightData;
 bool serverOn = false, updateFirmware = false;
 
 // ------------------------
@@ -693,25 +694,35 @@ void initServer()
     serializeJson(json, jsonString);
     request->send(200, "application/json", jsonString); });
 
-  server.on("/functions/changePattern", HTTP_POST, [](AsyncWebServerRequest *request)
-            {
-    deserializeJson(displayPatternJson, request->getParam("plain")->value());
-    patternNum=1;
-    Serial.println("Received change command"); });
+  server.on(
+      "/functions/flashlight", HTTP_POST, [](AsyncWebServerRequest *request) {}, NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total)
+      {
+        tempFlashlightData = tempFlashlightData + String((const char *)data);
+        if (String((const char *)data).indexOf("]") != -1)
+        {
+          StaticJsonDocument<128> json;
+          deserializeJson(json, tempFlashlightData);
+          tempFlashlightData = "";
+          patternNum=0;
+          flashlightBrightness = json["brightness"].as<float>();
+          flashlightColorR = json["red"].as<int>();
+          flashlightColorG = json["green"].as<int>();
+          flashlightColorB = json["blue"].as<int>(); 
+        } });
 
-  server.on("/functions/flashlight", HTTP_POST, [](AsyncWebServerRequest *request)
-            {
-    StaticJsonDocument<128> json;
-    deserializeJson(json, request->getParam("plain")->value());
-    flashlightBrightness = json["brightness"].as<float>();
-    flashlightColorR = json["red"].as<int>();
-    flashlightColorG = json["green"].as<int>();
-    flashlightColorB = json["blue"].as<int>(); });
+  server.on(
+      "/functions/changePattern", HTTP_POST, [](AsyncWebServerRequest *request) {}, NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total)
+      {
+        tempPatternData = tempPatternData + String((const char *)data);
+        if (String((const char *)data).indexOf("]") != -1)
+        {
+          deserializeJson(displayPatternJson, tempPatternData);
+          tempPatternData = "";
+          patternNum = 1;
+        } });
 
   server.on("/functions/update", HTTP_POST, [](AsyncWebServerRequest *request)
-            {
-    Serial.println("Received update command");
-    updateFirmware = true; });
+            { updateFirmware = true; });
 
   server.on("/functions/connCheck", HTTP_HEAD, [](AsyncWebServerRequest *request)
             { request->send(200, "text/plain", "OK"); });
