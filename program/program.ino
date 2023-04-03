@@ -351,7 +351,7 @@ void animate(uint8_t startMap[][8], uint8_t endMap[][8], uint8_t direction = 0, 
   }
 }
 
-void main()
+void mainAnimation()
 {
   if (!updateFirmware)
     animate(characterToMap("C"), characterToMap("B"), 2, 120, strip.Color(0, 0, 25));
@@ -754,7 +754,7 @@ void loop()
   if (flashlightBrightness)
     flashlight();
   else if (!patternNum)
-    main();
+    mainAnimation();
 
   else if (patternNum == 1)
   {
