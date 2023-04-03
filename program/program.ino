@@ -179,7 +179,7 @@ AsyncWebServer server(80);
 int8_t patternNum = 0;
 byte flashlightColorR = 255, flashlightColorG = 255, flashlightColorB = 255;
 float flashlightBrightness = 0;
-String tempFlashlightData, tempDisplayPatternData;
+String tempDisplayPatternData, tempFlashlightData;
 bool serverOn = false, updateFirmware = false;
 
 // ------------------------
@@ -691,43 +691,71 @@ void initServer()
     json["color"]["B"] = flashlightColorB;
     String jsonString;
     serializeJson(json, jsonString);
+    Serial.println("[INFO] Received flashlight informations request:");
+    Serial.println(jsonString);
+    json.clear();
     request->send(200, "application/json", jsonString); });
 
   server.on(
       "/functions/flashlight", HTTP_POST, [](AsyncWebServerRequest *request) {}, NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total)
       {
-        tempFlashlightData = tempFlashlightData + String((const char *)data);
-        if (String((const char *)data).indexOf("]") != -1) {
-          StaticJsonDocument<256> json;
-          deserializeJson(json, tempFlashlightData);
-          tempFlashlightData = "";
-          patternNum=0;
-          flashlightBrightness = json[0]["brightness"].as<float>();
-          flashlightColorR = json[0]["color"]["R"].as<int>();
-          flashlightColorG = json[0]["color"]["G"].as<int>();
-          flashlightColorB = json[0]["color"]["B"].as<int>(); 
-        } });
+    tempFlashlightData = tempFlashlightData + String((const char *)data);
+    if (String((const char *)data).indexOf("]") != -1)
+    {
+      StaticJsonDocument<256> tempFlashlightJSON;
+      deserializeJson(tempFlashlightJSON, tempFlashlightData);
+      tempFlashlightData = "";
+      patternNum = 0;
+
+      flashlightBrightness = tempFlashlightJSON[0]["brightness"].as<float>();
+      flashlightColorR = tempFlashlightJSON[0]["color"]["R"].as<byte>();
+      flashlightColorG = tempFlashlightJSON[0]["color"]["G"].as<byte>();
+      flashlightColorB = tempFlashlightJSON[0]["color"]["B"].as<byte>();
+
+      Serial.println("[INFO] Received flashlight command with JSON:");
+
+      String jsonString;
+      serializeJson(tempFlashlightJSON, jsonString);
+      Serial.println(jsonString);
+
+    } });
 
   server.on(
       "/functions/changePattern", HTTP_POST, [](AsyncWebServerRequest *request) {}, NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total)
       {
-        patternNum = -1;
-        tempDisplayPatternData = tempDisplayPatternData + String((const char *)data);
-        if (String((const char *)data).indexOf("]") != -1) {
-          StaticJsonDocument<1024> tempPatternJSON;
-          deserializeJson(tempPatternJSON, tempDisplayPatternData);
-          tempDisplayPatternData="";
+    tempDisplayPatternData = tempDisplayPatternData + String((const char *)data);
+    if (String((const char *)data).indexOf("]") != -1)
+    {
+      StaticJsonDocument<1024> tempPatternJSON;
+      deserializeJson(tempPatternJSON, tempDisplayPatternData);
+      tempDisplayPatternData = "";
 
-          if (tempPatternJSON[0]["start"].as<bool>())
-            displayPatternJson.clear();
+      String jsonString;
+      Serial.println("[INFO] Received pattern JSON:");
 
-          for (JsonVariant v : tempPatternJSON.as<JsonArray>())
-            displayPatternJson.as<JsonArray>().add(v);
-    
-          if (tempPatternJSON[-1]["end"].as<bool>())
-            patternNum = 1;
+      if (tempPatternJSON[0]["start"].as<bool>())
+      {
+        displayPatternJson.clear();
+        Serial.println("[INFO] 1st JSON:");
+      }
+
+      serializeJson(tempPatternJSON, jsonString);
+
+      for (JsonVariant v : tempPatternJSON.as<JsonArray>())
+      {
+        displayPatternJson.as<JsonArray>().add(v);
+
+        if (v["end"].as<bool>())
+        {
+          patternNum = 1;
+          Serial.println("[INFO] Whole JSON:");
+          serializeJson(displayPatternJson, jsonString);
         }
-      });
+      }
+
+      Serial.println(jsonString);
+
+    } });
 
   server.on("/functions/update", HTTP_POST, [](AsyncWebServerRequest *request)
             { updateFirmware = true; });
@@ -770,6 +798,7 @@ void loop()
 {
   if (flashlightBrightness)
     flashlight();
+
   else if (!patternNum)
     mainAnimation();
 

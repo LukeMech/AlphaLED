@@ -39,7 +39,7 @@ function refreshFlashlight() {
 refreshFlashlight()
 
 // Flashlight functions
-function changeBrightnessAndColor() {
+async function changeBrightnessAndColor() {
     if (!flashlightBtn.hasAttribute("on")) return;
     const params = [{
         brightness: brightnessControl.value,
@@ -49,10 +49,10 @@ function changeBrightnessAndColor() {
             B: blueControl.value
         }
     }];
-    request("flashlight", params)
+    await request("flashlight", params)
 }
 
-flashlightBtn.addEventListener("click", function () {
+flashlightBtn.addEventListener("click", async function () {
     let params
     if (flashlightBtn.hasAttribute("on")) {
         params = [{
@@ -69,10 +69,10 @@ flashlightBtn.addEventListener("click", function () {
             }
         }];
     }
-    request("flashlight", params)
+    await request("flashlight", params)
     refreshFlashlight()
 });
 
-setInterval(() => {
-    changeBrightnessAndColor()
+setInterval(async () => {
+    await changeBrightnessAndColor()
 }, 1000);

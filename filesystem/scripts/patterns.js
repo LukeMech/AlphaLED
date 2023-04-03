@@ -2,7 +2,7 @@
 const submitBtn = document.getElementById("submit")
 const textInput = document.getElementById("text")
 
-submitBtn.addEventListener("click", function () {
+submitBtn.addEventListener("click", async function () {
     if (!textInput.value) return;
 
     const characters = document.getElementById("text").value.toUpperCase().split("");
@@ -23,8 +23,8 @@ submitBtn.addEventListener("click", function () {
             start: i===0 ? true : false,
         });
 
-        if (i%5 === 0 && i!=0) {                    // Send next request every 5 characters
-            request("changePattern", json);
+        if (i%4 === 0 && i!=0) {                    // Send next request every 5 characters
+            await request("changePattern", json);
             json = [];
         }
     }
@@ -42,7 +42,7 @@ submitBtn.addEventListener("click", function () {
         end: true
     })
 
-    request("changePattern", json);
+    await request("changePattern", json);
 
     submitBtn.style.borderColor = "#0ad826"
     textInput.value = ""

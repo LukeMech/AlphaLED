@@ -90,8 +90,8 @@ connectionState()
 setInterval(connectionState, 500);
 
 // Request cmd
-function request(cmd, params=null) {
-  fetch(`/functions/${cmd}`, {
+async function request(cmd, params=null) {
+  await fetch(`/functions/${cmd}`, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(params),
