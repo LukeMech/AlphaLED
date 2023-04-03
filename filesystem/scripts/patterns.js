@@ -23,7 +23,6 @@ submitBtn.addEventListener("click", function () {
     }
 
     json.push({
-        from: " ",
         to: characters[0],
         color: {
             R: 50,
