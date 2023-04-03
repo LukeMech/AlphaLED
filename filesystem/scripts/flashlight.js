@@ -12,9 +12,9 @@ function refreshFlashlight() {
         if (this.readyState == 4 && this.status == 200) {
             const response = JSON.parse(this.responseText);
             const flashlightBrightness = response.flashlightBrightness;
-            const flashlightColorR = response.flashlightColorR;
-            const flashlightColorG = response.flashlightColorG;
-            const flashlightColorB = response.flashlightColorB;
+            const flashlightColorR = response.flashlightColor.R;
+            const flashlightColorG = response.flashlightColor.G;
+            const flashlightColorB = response.flashlightColor.B;
 
             if (flashlightBrightness > 0) {
                 flashlightBtn.innerHTML = 'TURN OFF';
@@ -36,30 +36,21 @@ function refreshFlashlight() {
     xhttp.open("GET", "../functions/checkLEDs", true);
     xhttp.send();
 }
+refreshFlashlight()
 
-function changeBrightness(brightnessLvl) {
+// Flashlight functions
+function changeBrightnessAndColor() {
     if (!flashlightBtn.hasAttribute("on")) return;
     const params = {
-        brightness: brightnessLvl
+        brightness: brightnessControl.value,
+        red: redControl.value,
+        green: greenControl.value,
+        blue: blueControl.value
     };
     const urlSearchParams = new URLSearchParams(params).toString();
     request("flashlight", urlSearchParams)
-    refreshFlashlight()
 }
 
-function changeColor(value, color) {
-    if (!flashlightBtn.hasAttribute("on")) return;
-    let params
-    if (color == "red")  params = {brightness: brightnessControl.value, red: value};
-    else if (color == "green")  params = {brightness: brightnessControl.value, green: value};
-    else if (color == "blue")   params = {brightness: brightnessControl.value, blue: value};
-    const urlSearchParams = new URLSearchParams(params).toString();
-    request("flashlight", urlSearchParams)
-    refreshFlashlight()
-}
-
-
-// Flashlight functions
 flashlightBtn.addEventListener("click", function () {
     let urlSearchParams
     if (flashlightBtn.hasAttribute("on")) {
@@ -80,3 +71,7 @@ flashlightBtn.addEventListener("click", function () {
     request("flashlight", urlSearchParams)
     refreshFlashlight()
 });
+
+setInterval(() => {
+    changeBrightnessAndColor()
+}, 1000);
