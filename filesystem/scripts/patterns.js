@@ -5,6 +5,9 @@ const textInput = document.getElementById("text")
 submitBtn.addEventListener("click", async function () {
     if (!textInput.value) return;
 
+    submitBtn.style.borderColor = "#0ad826"
+    textInput.value = ""
+    
     const characters = document.getElementById("text").value.toUpperCase().split("");
     let json = []
 
@@ -44,8 +47,6 @@ submitBtn.addEventListener("click", async function () {
 
     await request("changePattern", json);
 
-    submitBtn.style.borderColor = "#0ad826"
-    textInput.value = ""
     setTimeout(() => {
         submitBtn.style.borderColor = ""
     }, 1000);

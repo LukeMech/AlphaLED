@@ -718,7 +718,8 @@ void initServer()
       serializeJson(tempFlashlightJSON, jsonString);
       Serial.println(jsonString);
 
-    } });
+      request->send(200, "text/plain", jsonString);
+    }});
 
   server.on(
       "/functions/changePattern", HTTP_POST, [](AsyncWebServerRequest *request) {}, NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total)
@@ -748,13 +749,13 @@ void initServer()
         if (v["end"].as<bool>())
         {
           patternNum = 1;
-          Serial.println("[INFO] Whole JSON:");
-          serializeJson(displayPatternJson, jsonString);
+          Serial.println("[INFO] End:");
         }
       }
 
       Serial.println(jsonString);
 
+      request->send(200, "text/plain", jsonString);
     } });
 
   server.on("/functions/update", HTTP_POST, [](AsyncWebServerRequest *request)
