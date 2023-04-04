@@ -186,7 +186,7 @@ int8_t patternNum = 0;
 byte flashlightColorR = 255, flashlightColorG = 255, flashlightColorB = 255;
 float flashlightBrightness = 0;
 bool serverOn = false;
-String updateFS, updateFv, versionString;
+String updateFS = "", updateFv = "", versionString;
 
 // ------------------------
 // --------- LEDs ---------
@@ -734,7 +734,7 @@ void loop()
     }
   }
 
-  if (updateFv || updateFS)
+  if (updateFv != "" || updateFS != "")
   {
     firmwareUpdate(); // Update firmware if server requested
     ESP.restart();    // End update
