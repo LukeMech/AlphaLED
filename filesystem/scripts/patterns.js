@@ -24,7 +24,7 @@ submitBtn.addEventListener("click", async function () {
 
         if(i===0) params.append("start", true)
 
-        const urlSearchParams = new URLSearchParams(params);
+        const urlSearchParams = new URLSearchParams(params).toString();
         await request("changePattern", urlSearchParams)
     }
 
@@ -39,7 +39,7 @@ submitBtn.addEventListener("click", async function () {
         end: true
     })
 
-    const urlSearchParams = new URLSearchParams(params);
+    const urlSearchParams = new URLSearchParams(params).toString();
     await request("changePattern", urlSearchParams)
 
     setTimeout(() => {

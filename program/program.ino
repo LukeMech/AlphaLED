@@ -694,23 +694,31 @@ void initServer()
     {
       patternNum = 0;
       flashlightBrightness = request->getParam("brightness", true)->value().toFloat();
-      if(request->hasParam("color[R]", true))flashlightColorR = request->getParam("color[R]", true)->value().toInt();
-      if(request->hasParam("color[G]", true))flashlightColorG = request->getParam("color[G]", true)->value().toInt();
-      if(request->hasParam("color[B]", true))flashlightColorB = request->getParam("color[B]", true)->value().toInt();
+      if(request->hasParam("color[R]", true))
+        flashlightColorR = request->getParam("color[R]", true)->value().toInt();
+      if(request->hasParam("color[G]", true))
+        flashlightColorG = request->getParam("color[G]", true)->value().toInt();
+      if(request->hasParam("color[B]", true))
+        flashlightColorB = request->getParam("color[B]", true)->value().toInt();
 
       Serial.println("[INFO] Received flashlight command with data:");
-      Serial.print(flashlightBrightness);
-      Serial.print(flashlightColorR);
-      Serial.print(flashlightColorG);
-      Serial.print(flashlightColorB);
+      Serial.print("Brightness:");
+      Serial.println(flashlightBrightness);
+      Serial.print("Red:");
+      Serial.println(flashlightColorR);
+      Serial.print("Green:");
+      Serial.println(flashlightColorG);
+      Serial.print("Blue:");
+      Serial.println(flashlightColorB);
 
       request->send(200, "text/plain", "OK");
     } });
 
   server.on(
-      "/functions/changePattern", HTTP_POST, [](AsyncWebServerRequest *request) {
+      "/functions/changePattern", HTTP_POST, [](AsyncWebServerRequest *request)
+      {
 
-    Serial.println("[INFO] Received pattern command");
+    Serial.println("[INFO] Received pattern command with data:");
 
     JsonObject obj;
     if(request->hasParam("start", true)) displayPatternJson.clear();
@@ -725,24 +733,21 @@ void initServer()
     if(request->hasParam("end", true)) patternNum=1;
 
     displayPatternJson.as<JsonArray>().add(obj);
+    Serial.println(String(obj));
 
-    request->send(200, "text/plain", "OK");
-});
-      
-        
+    request->send(200, "text/plain", "OK"); });
 
   server.on("/functions/update", HTTP_POST, [](AsyncWebServerRequest *request)
-            {
-  updateFirmware = true; });
+            { updateFirmware = true; });
 
-server.on("/functions/connCheck", HTTP_HEAD, [](AsyncWebServerRequest *request)
-          { request->send(200, "text/plain", "OK"); });
+  server.on("/functions/connCheck", HTTP_HEAD, [](AsyncWebServerRequest *request)
+            { request->send(200, "text/plain", "OK"); });
 
-server.begin();
-serverOn = true;
+  server.begin();
+  serverOn = true;
 
-Serial.print("[INFO] Server IP: ");
-Serial.println(WiFi.localIP());
+  Serial.print("[INFO] Server IP: ");
+  Serial.println(WiFi.localIP());
 }
 
 // ------------------------
