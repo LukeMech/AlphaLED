@@ -1,7 +1,6 @@
 // Get document elements
 const fvVersionDoc = document.getElementById('fvVersion')
 const FSVersionDoc = document.getElementById('fsVersion')
-const chipIDDoc = document.getElementById('chipID')
 const updButton = document.getElementById('updButton')
 const connectionStatus = document.getElementById('connection')
 
@@ -53,23 +52,21 @@ async function callUpdater() {
         let urlSearchParams = new URLSearchParams();
         urlSearchParams.append("filesystem", await fsUrl.replace("{branch}", await currentBranch))
         FSVersionDoc.innerHTML = newFsVer + ' <i class="fa-solid fa-cloud-arrow-down"></i>'
-            urlSearchParams.append("firmware", await fvUrl.replace("{branch}", await currentBranch))
+        urlSearchParams.append("firmware", await fvUrl.replace("{branch}", await currentBranch))
         fvVersionDoc.innerHTML = newFvVer + ' <i class="fa-solid fa-cloud-arrow-down"></i>'
+
+        request("updater/update", urlSearchParams);
     }
     
     setTimeout(() => {
-        const tempinterval = setInterval(() => {
+        setInterval(() => {
             if (connectionStatus.hasAttribute("Connected")) {
                 setTimeout(() => {
-                    updButton.innerHTML = updbuttonhtml
-                    updButton.style.borderColor = ""
-                    updButton.removeAttribute("updating")
-                    getSystemInfo()
-                    clearInterval(tempinterval)
+                    window.reload()
                 }, 1000);
             }
         }, 100);
-    }, timeout);
+    }, 6000);
     
 }
 callUpdater();
