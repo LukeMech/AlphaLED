@@ -68,8 +68,8 @@ flashlightBtn.addEventListener("click", function () {
         };
         urlSearchParams = new URLSearchParams(params).toString();
     }
-    request("flashlight", urlSearchParams)
     refreshFlashlight()
+    request("flashlight", urlSearchParams)
 });
 
 setInterval(() => {
