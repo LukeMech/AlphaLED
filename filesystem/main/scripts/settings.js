@@ -49,13 +49,13 @@ getSystemInfo();
 // Call updater
 async function callUpdater() {
     if (updButton.hasAttribute("updating")) return;
-    updButton.innerHTML = "Updating..."
-    updButton.style.borderColor = "#0e3814"
-    updButton.setAttribute("updating", true)
-    FSVersionDoc.innerHTML = loadingversions
-    fvVersionDoc.innerHTML = loadingversions
-
     if (confirm(confirmUpdateText)) {
+        updButton.innerHTML = "Updating..."
+        updButton.style.borderColor = "#0e3814"
+        updButton.setAttribute("updating", true)
+        FSVersionDoc.innerHTML = loadingversions
+        fvVersionDoc.innerHTML = loadingversions
+
         const response = await fetch("../updater.json")
         const updaterSettings = await response.json()
         const currentBranch = await updaterSettings.currentBranch

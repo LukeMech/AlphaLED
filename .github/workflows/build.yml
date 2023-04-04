@@ -5,7 +5,7 @@ on:
   # On sketch change 
   push:
     paths:
-      - "filesystem/version.txt"
+      - "filesystem/main/version.txt"
       
   # On workflow dispatch
   workflow_dispatch:
@@ -43,7 +43,7 @@ jobs:
       - name: Compile sketch and pack filesystems
         run: |
           mkdir ./program/build || true
-          /home/runner/.arduino15/packages/esp8266/tools/mkspiffs/**/mkspiffs -c ./filesystem/backup -b 8192 -p 256 -s 102400 -- ./program/build/backup-filesystem.bin
+          /home/runner/.arduino15/packages/esp8266/tools/mkspiffs/**/mkspiffs -c ./filesystem/backup -b 8192 -p 256 -s 524288 -- ./program/build/backup-filesystem.bin
           /home/runner/.arduino15/packages/esp8266/tools/mkspiffs/**/mkspiffs -c ./filesystem/main -b 8192 -p 256 -s 524288 -- ./program/build/filesystem.bin
           arduino-cli compile -b "esp8266:esp8266:nodemcuv2" -e './program'
           
