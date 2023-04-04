@@ -22,9 +22,9 @@ submitBtn.addEventListener("click", function () {
             delay: 0,
         });
 
-        const urlSearchParams = new URLSearchParams(params);
         if(i===0) params.append("start", true)
 
+        const urlSearchParams = new URLSearchParams(params);
         request("changePattern", urlSearchParams)
     }
 
@@ -38,7 +38,8 @@ submitBtn.addEventListener("click", function () {
         delay: 0,
         end: true
     })
-    
+
+    const urlSearchParams = new URLSearchParams(params);
     request("changePattern", urlSearchParams)
 
     setTimeout(() => {
