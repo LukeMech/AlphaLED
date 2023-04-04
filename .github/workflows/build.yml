@@ -54,7 +54,7 @@ jobs:
           cp ./program/build/**/*.ino.bin ./updater/firmware.bin
           cp ./program/build/backup-filesystem.bin ./updater/backup-filesystem.bin
           cp ./program/build/filesystem.bin ./updater/filesystem.bin
-          cp ./filesystem/version.txt ./updater/build-version.txt
+          cp ./filesystem/main/version.txt ./updater/build-version.txt
           rm -rf ./program/build
           git config --global user.name github-actions
           git config --global user.email github-actions@github.com
