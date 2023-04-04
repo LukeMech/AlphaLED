@@ -717,7 +717,7 @@ void initServer()
       "/functions/changePattern", HTTP_POST, [](AsyncWebServerRequest *request)
       {
 
-    Serial.println("[INFO] Received pattern command with data:");
+    Serial.println("[INFO] Received pattern command");
 
     StaticJsonDocument<256> obj;
     if(request->hasParam("start", true)) displayPatternJson.clear();
@@ -732,6 +732,9 @@ void initServer()
     if(request->hasParam("end", true)) patternNum=1;
 
     displayPatternJson.as<JsonArray>().add(obj);
+    String jsonString;
+    serializeJson(obj, jsonString);
+    Serial.println(jsonString);
 
     request->send(200, "text/plain", "OK"); });
 
@@ -782,9 +785,6 @@ void loop()
 
   else if (patternNum == 1)
   {
-    String json;
-    serializeJson(displayPatternJson, json);
-    Serial.println(json);
     for (JsonVariant obj : displayPatternJson.as<JsonArray>())
     {
       if (!updateFirmware)

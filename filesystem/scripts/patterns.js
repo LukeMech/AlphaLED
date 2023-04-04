@@ -2,13 +2,13 @@
 const submitBtn = document.getElementById("submit")
 const textInput = document.getElementById("text")
 
-submitBtn.addEventListener("click", async function () {
+submitBtn.addEventListener("click", function () {
     if (!textInput.value) return;
 
     submitBtn.style.borderColor = "#0ad826"
     textInput.value = ""
     
-    const characters = await document.getElementById("text").value.toUpperCase().split("");
+    const characters = document.getElementById("text").value.toUpperCase().split("");
 
     for (let i = 0; i < characters.length; i++) {
         const params = ({
@@ -22,10 +22,10 @@ submitBtn.addEventListener("click", async function () {
             delay: 0,
         });
 
-        if(i===0) await params.append("start", true);
+        if(i===0) params.append("start", true);
 
         const urlSearchParams = new URLSearchParams(params).toString();
-        await request("changePattern", urlSearchParams)
+        request("changePattern", urlSearchParams)
     }
 
     const params = ({
@@ -40,7 +40,7 @@ submitBtn.addEventListener("click", async function () {
     })
 
     const urlSearchParams = new URLSearchParams(params).toString();
-    await request("changePattern", urlSearchParams)
+    request("changePattern", urlSearchParams)
 
     setTimeout(() => {
         submitBtn.style.borderColor = ""
