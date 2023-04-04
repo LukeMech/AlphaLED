@@ -14,6 +14,7 @@
 #include <time.h>
 #include <WiFiClientSecure.h>
 
+const char *backupURLFS = "https://raw.githubusercontent.com/LukeMech/AlphaLED/main/updater/filesystem.bin";
 const bool WiFi_UpdateCredentialsFile = false; // Update network_config.txt in filesystem?
 const char *ssid = "";                         // Network name
 const char *password = "";                     // Network password
@@ -588,7 +589,13 @@ void initServer()
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->redirect("/home"); });
   server.on("/home", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/html/index.html", "text/html"); });
+            {
+    if (SPIFFS.exists("/html/index.html"))
+      request->send(SPIFFS, "/html/index.html", "text/html");
+    else {
+      strcpy(updateFS, backupURLFS);
+      request->send(404, "text/plain", "Re-downloading FS!");
+    } });
   server.on("/settings", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/html/settings.html", "text/html"); });
   server.on("/patterns", HTTP_GET, [](AsyncWebServerRequest *request)
