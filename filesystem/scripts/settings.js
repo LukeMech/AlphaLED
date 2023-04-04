@@ -4,7 +4,6 @@ const FSVersionDoc = document.getElementById('fsVersion')
 const chipIDDoc = document.getElementById('chipID')
 const updButton = document.getElementById('updButton')
 const connectionStatus = document.getElementById('connection')
-const updaterSettings = fetch("../updater.json").then(res => res.json())
 
 const loadingversions = '<i class="fa-solid fa-ellipsis fa-bounce"></i>'
 const updbuttonhtml = 'Check for updates'
@@ -33,14 +32,15 @@ let fsVer, fvVer;
 async function getSystemInfo() {
     req = await request("getSystemInfo")
     if(req.ok) {
-        const lines = req.text().split("\n");
-        fsVer = lines[0].replace("Filesystem: ", "").trim();
-        fvVer = lines[1].replace("Firmware: ", "").trim();
-        const chipID = lines[2].replace("Chip ID: ", "").trim();
+        const text = await req.text()
+        const lines = await text.split("\n");
+        fsVer = await lines[0].replace("Filesystem: ", "").trim();
+        fvVer = await lines[1].replace("Firmware: ", "").trim();
+        const chipID = await lines[2].replace("Chip ID: ", "").trim();
 
-        FSVersionDoc.innerHTML = fsVer;
-        fvVersionDoc.innerHTML = fvVer;
-        chipIDDoc.innerHTML = chipID;
+        FSVersionDoc.innerHTML = await fsVer;
+        fvVersionDoc.innerHTML = await fvVer;
+        chipIDDoc.innerHTML = await chipID;
         
     }            
 }
@@ -56,28 +56,37 @@ async function callUpdater() {
     fvVersionDoc.innerHTML = loadingversions
 
     if (confirm(confirmUpdateText)) {
-        req = await fetch(await updaterSettings.versionControl.replace("{branch}", await updaterSettings.currentBranch))
+        const response = await fetch("../updater.json")
+        const updaterSettings = await response.json()
+        const currentBranch = await updaterSettings.currentBranch
+        const verCtrl = await updaterSettings.versionControl
+        console.log(await updaterSettings)
+        const versionCtrlUrl = await verCtrl.replace("{branch}", await currentBranch)
+
+        req = await fetch(await versionCtrlUrl)
 
         await getSystemInfo();
 
         if(!req.ok) return
-        const lines = req.text().split("\n");
-        const newFsVer = lines[0].replace("Filesystem: ", "").trim()
-        const newFvVer = lines[1].replace("Firmware: ", "").trim()
-
+        const text = await req.text()
+        const lines = await text.split("\n");
+        const newFsVer = await lines[0].replace("Filesystem: ", "").trim()
+        const newFvVer = await lines[1].replace("Firmware: ", "").trim()
+        fsUrl = await updaterSettings.filesystemUrl
+        fvUrl = await updaterSettings.firmwareUrl
         let urlSearchParams = new URLSearchParams();
         if(newFsVer !== fsVer) {
-            urlSearchParams.append("filesystem", await updaterSettings.filesystemUrl.replace("{branch}", await updaterSettings.currentBranch))
+            urlSearchParams.append("filesystem", await fsUrl.replace("{branch}", await currentBranch))
             FSVersionDoc.innerHTML = newFsVer + ' <i class="fa-solid fa-cloud-arrow-down"></i>'
         }
         else {
-            urlSearchParams.append("versions", req.text())
+            urlSearchParams.append("versions", await req.text())
         }
         if(newFvVer !== fvVer) {
-            urlSearchParams.append("firmware", await updaterSettings.firmwareUrl.replace("{branch}", await updaterSettings.currentBranch))
+            urlSearchParams.append("firmware", await fvUrl.replace("{branch}", await currentBranch))
             fvVersionDoc.innerHTML = newFvVer + ' <i class="fa-solid fa-cloud-arrow-down"></i>'
         }
-        if(newFsVer === fsVer && newFvVer === fvVer) return getSystemInfo();
+        if(newFsVer === fsVer && newFvVer === fvVer) return await getSystemInfo();
 
         await request("updater/update", urlSearchParams);
 

@@ -6,10 +6,10 @@ const greenControl = document.getElementById("green");
 const blueControl = document.getElementById("blue");
 
 // Refresh buttons
-function refreshFlashlight() {
-    const req = request("functions/checkFlashlight")
+async function refreshFlashlight() {
+    const req = await request("functions/checkFlashlight")
     if(req.ok) {
-        const response = new URLSearchParams(req.text());
+        const response = new URLSearchParams(await req.text());
         const flashlightBrightness = response.get("brightness");
         const flashlightColorR = parseInt(response.get("color[R]"));
         const flashlightColorG = parseInt(response.get("color[G]"));
