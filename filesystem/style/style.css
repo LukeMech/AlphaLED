@@ -431,7 +431,7 @@
 --------------------------------------------------------
 */
 
-.infopage-header {
+.settingspage-header {
   height: 250px;
   width: 100%;
   background-image: linear-gradient(rgba(4,9,30,0.6),rgba(4,9,30,0.6)), url(../images/cosmos.jpg);
@@ -440,12 +440,12 @@
   text-align: center;
   color: #fff;
 }
-.infopage-header h3 {
+.settingspage-header h3 {
   margin-top: 50px;
   font-size: 40px;
 }
 
-.infopage {
+.settingspage {
   min-height: calc(100vh - 250px - 100px - 50px);
   width: 100%;
   background: rgb(26, 25, 25);
@@ -456,21 +456,21 @@
   text-align: center;
 }
 
-.infopage .versionTitle {
+.settingspage .versionTitle {
   color: #fff;
   font-size: 25px;
   margin-top: 15px;
 }
-.infopage .versionTitle .i {
+.settingspage .versionTitle .i {
   color: #0ad826;
 }
 
-.infopage .versionInfo {
+.settingspage .versionInfo {
   color: #e5ff00;
   font-size: 35px;
 }
 
-.infopage .btn {
+.settingspage .btn {
   display: inline-block;
   text-decoration: none;
   color: #fff;

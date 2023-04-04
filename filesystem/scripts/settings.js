@@ -4,6 +4,7 @@ const FSVersionDoc = document.getElementById('fsVersion')
 const chipIDDoc = document.getElementById('chipID')
 const updButton = document.getElementById('updButton')
 const connectionStatus = document.getElementById('connection')
+const updaterSettings = await (await fetch("../updater.json")).json()
 
 const loadingversions = '<i class="fa-solid fa-ellipsis fa-bounce"></i>'
 const updbuttonhtml = 'Check for updates'
@@ -28,37 +29,58 @@ const confirmUpdateText = `${Q_MARK} Call updater? That's the procedure:\n
 ${EXCLAM_MARK}${WARNING_SIGN} Make sure to NOT turn off the device during update! Refreshing the page is also not recommended, as it'll automatically reconnect to device after its reboot ${WARNING_SIGN}${EXCLAM_MARK}`
 
 // Get system info
-function getSystemInfo() {
-    const xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-            let lines = this.responseText.split("\n");
-            const fsVer = lines[0].replace("Filesystem: ", "").trim();
-            const fvVer = lines[1].replace("Firmware: ", "").trim();
-            const chipID = lines[2].replace("Chip ID: ", "").trim();
+let fsVer, fvVer;
+async function getSystemInfo() {
+    req = await request("getSystemInfo")
+    if(req.ok) {
+        const lines = req.text().split("\n");
+        fsVer = lines[0].replace("Filesystem: ", "").trim();
+        fvVer = lines[1].replace("Firmware: ", "").trim();
+        const chipID = lines[2].replace("Chip ID: ", "").trim();
 
-            FSVersionDoc.innerHTML = fsVer;
-            fvVersionDoc.innerHTML = fvVer;
-            chipIDDoc.innerHTML = chipID;
-        }
-    };
-    xhttp.open("GET", "../functions/getSystemInfo", true);
-    xhttp.send();
+        FSVersionDoc.innerHTML = fsVer;
+        fvVersionDoc.innerHTML = fvVer;
+        chipIDDoc.innerHTML = chipID;
+        
+    }            
 }
 getSystemInfo();
 
 // Call updater
-function callUpdater() {
+async function callUpdater() {
     if (updButton.hasAttribute("updating")) return;
+    updButton.innerHTML = "Updating..."
+    updButton.style.borderColor = "#0e3814"
+    updButton.setAttribute("updating", true)
+    FSVersionDoc.innerHTML = loadingversions
+    fvVersionDoc.innerHTML = loadingversions
+
     if (confirm(confirmUpdateText)) {
-        const xhttp = new XMLHttpRequest();
-        xhttp.open("POST", `/functions/update`);
-        xhttp.send();
-        updButton.innerHTML = "Updating..."
-        updButton.style.borderColor = "#0e3814"
-        updButton.setAttribute("updating", true)
-        FSVersionDoc.innerHTML = loadingversions
-        fvVersionDoc.innerHTML = loadingversions
+        req = await fetch(updaterSettings.versionControl.replace("{branch}", updaterSettings.currentBranch))
+
+        await getSystemInfo();
+
+        if(!req.ok) return
+        const lines = req.text().split("\n");
+        const newFsVer = lines[0].replace("Filesystem: ", "").trim()
+        const newFvVer = lines[1].replace("Firmware: ", "").trim()
+
+        let urlSearchParams = new URLSearchParams();
+        if(newFsVer !== fsVer) {
+            urlSearchParams.append("filesystem", updaterSettings.filesystemUrl.replace("{branch}", updaterSettings.currentBranch))
+            FSVersionDoc.innerHTML = newFsVer + ' <i class="fa-solid fa-cloud-arrow-down"></i>'
+        }
+        else {
+            urlSearchParams.append("versions", req.text())
+        }
+        if(newFvVer !== fvVer) {
+            urlSearchParams.append("firmware", updaterSettings.firmwareUrl.replace("{branch}", updaterSettings.currentBranch))
+            fvVersionDoc.innerHTML = newFvVer + ' <i class="fa-solid fa-cloud-arrow-down"></i>'
+        }
+        if(newFsVer === fsVer && newFvVer === fvVer) return getSystemInfo();
+
+        await request("updater/update", urlSearchParams);
+
         setTimeout(() => {
             const tempinterval = setInterval(() => {
                 if (connectionStatus.hasAttribute("Connected")) {
@@ -71,6 +93,6 @@ function callUpdater() {
                     }, 1000);
                 }
             }, 100);
-        }, 2000);
+        }, 3000);
     }
 }

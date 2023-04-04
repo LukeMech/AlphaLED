@@ -25,7 +25,7 @@ submitBtn.addEventListener("click", async function () {
         let urlSearchParams = new URLSearchParams(params);
         if(i===0) urlSearchParams.append("start", true);
         else if(i===characters.length) urlSearchParams.append("end", true);        
-        await request("changePattern", urlSearchParams.toString())
+        await request("LEDs/changePattern", urlSearchParams.toString())
     }
 
     setTimeout(() => {

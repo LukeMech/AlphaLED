@@ -18,13 +18,6 @@ const bool WiFi_UpdateCredentialsFile = false; // Update network_config.txt in f
 const char *ssid = "";                         // Network name
 const char *password = "";                     // Network password
 
-const char *host = "github.com"; // Host to check connection, leave as is if using github
-const int httpsPort = 443;       // Host port
-
-const char *updaterVersionCtrlUrl = "https://raw.githubusercontent.com/LukeMech/AlphaLED/main/updater/build-version.txt"; // Link to version.txt
-const char *updaterFirmwareUrl = "https://raw.githubusercontent.com/LukeMech/AlphaLED/main/updater/firmware.bin";         // File to firmware.bin
-const char *updaterFSUrl = "https://raw.githubusercontent.com/LukeMech/AlphaLED/main/updater/filesystem.bin";             // File to filesystem.bin
-
 const int LED_PIN = D1; // LED Pin
 
 Adafruit_NeoPixel strip(64, LED_PIN, NEO_GRB + NEO_KHZ800); // Init LEDs
@@ -192,7 +185,8 @@ AsyncWebServer server(80);
 int8_t patternNum = 0;
 byte flashlightColorR = 255, flashlightColorG = 255, flashlightColorB = 255;
 float flashlightBrightness = 0;
-bool serverOn = false, updateFirmware = false;
+bool serverOn = false;
+String updateFS, updateFv, versionString;
 
 // ------------------------
 // --------- LEDs ---------
@@ -366,14 +360,10 @@ void animate(const uint8_t startMap[][8], const uint8_t endMap[][8], uint8_t dir
 
 void mainAnimation()
 {
-  if (!updateFirmware)
-    animate(characterToMap("C"), characterToMap("B"), 2, 120, strip.Color(0, 0, 25));
-  if (!updateFirmware)
-    animate(characterToMap("B"), characterToMap("A"), 2, 120, strip.Color(0, 25, 0));
-  if (!updateFirmware)
-    animate(characterToMap("A"), characterToMap("B"), 3, 120, strip.Color(0, 0, 25));
-  if (!updateFirmware)
-    animate(characterToMap("B"), characterToMap("C"), 3, 120, strip.Color(25, 0, 0));
+  animate(characterToMap("C"), characterToMap("B"), 2, 120, strip.Color(0, 0, 25));
+  animate(characterToMap("B"), characterToMap("A"), 2, 120, strip.Color(0, 25, 0));
+  animate(characterToMap("A"), characterToMap("B"), 3, 120, strip.Color(0, 0, 25));
+  animate(characterToMap("B"), characterToMap("C"), 3, 120, strip.Color(25, 0, 0));
 }
 
 void flashlight()
@@ -486,64 +476,12 @@ void firmwareUpdate() // Updater
   strip.show();
   server.end();
 
+  bool secStage = false, dualUpdate = false;
+
   WiFiClientSecure client; // Create secure wifi client
   client.setTrustAnchors(&cert);
   time_t now = time(nullptr);
 
-  HTTPClient http; // Connect to release API
-  http.begin(client, updaterVersionCtrlUrl);
-  int httpCode = http.GET();
-  if (httpCode != HTTP_CODE_OK)
-  {
-    Serial.println("[ERROR] Cannot check server versionfile");
-    client.abort();
-    return;
-  }
-
-  String new_version = http.getString(); // Download version tag
-  int firmware_pos = new_version.indexOf("Firmware: ") + 10;
-  String newFirmwareVer = new_version.substring(firmware_pos);
-  int fs_pos = new_version.indexOf("Filesystem: ") + 12;
-  int fs_end_pos = new_version.indexOf("\nFirmware:");
-  String newFsVer = new_version.substring(fs_pos, fs_end_pos);
-  newFsVer.trim();
-  newFirmwareVer.trim();
-  http.end();
-
-  String firmwareVer, fsVer;
-  File file = SPIFFS.open("/version.txt", "r"); // Read versions
-  while (file.available())
-  {
-    String line = file.readStringUntil('\n');
-    if (line.startsWith("Filesystem:"))
-      fsVer = line.substring(line.indexOf(":") + 2);
-    else if (line.startsWith("Firmware:"))
-      firmwareVer = line.substring(line.indexOf(":") + 2);
-  }
-  fsVer.trim();
-  firmwareVer.trim();
-  file.close();
-
-  Serial.println("[INFO] Firmware version: " + firmwareVer);
-  Serial.println("[INFO] Firmware latest version: " + newFirmwareVer);
-  Serial.println("[INFO] Local filesystem version: " + fsVer);
-  Serial.println("[INFO] Filesystem latest version: " + newFsVer);
-
-  // Check if version is the same
-  bool updateFS = true, updateFv = true;
-  if (!strcmp(firmwareVer.c_str(), newFirmwareVer.c_str()) || (!newFirmwareVer.c_str() || newFirmwareVer.c_str() == ""))
-    updateFv = false;
-  if (!strcmp(fsVer.c_str(), newFsVer.c_str()) || (!newFsVer.c_str() || newFsVer.c_str() == ""))
-    updateFS = false;
-
-  // If up-to-date
-  if (!updateFv && !updateFS)
-  {
-    client.abort();
-    return;
-  }
-
-  bool secStage = false, dualUpdate = false;
   // Set LEDs
   strip.setPixelColor(led_map[0][0], LED_COLOR_0);
   if (updateFv && updateFS)
@@ -597,9 +535,9 @@ void firmwareUpdate() // Updater
     if (!updateFS) {
       File versionFile = SPIFFS.open("/version.txt", "w");
       versionFile.seek(0);
-      versionFile.write(new_version.c_str());
+      versionFile.write(versionString.c_str());
       Serial.println("[INFO] Updating version.txt based on http string:\n-----");
-      Serial.println(new_version.c_str());
+      Serial.println(versionString.c_str());
       Serial.println("-----");
       versionFile.close();
     }
@@ -607,12 +545,12 @@ void firmwareUpdate() // Updater
 
   t_httpUpdate_return ret;
   if (updateFv)
-    ret = ESPhttpUpdate.update(client, updaterFirmwareUrl); // Update firmware
+    ret = ESPhttpUpdate.update(client, updateFv); // Update firmware
   secStage = true;
   SPIFFS.end();
 
   if (updateFS && (!updateFv || ret == HTTP_UPDATE_OK || ret == 0))
-    ret = ESPhttpUpdate.updateFS(client, updaterFSUrl); // Update filesystem
+    ret = ESPhttpUpdate.updateFS(client, updateFS); // Update filesystem
 
   if (ret != HTTP_UPDATE_OK && ret != 0)
   { // Error
@@ -650,7 +588,7 @@ void initServer()
   server.on("/home", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/html/index.html", "text/html"); });
   server.on("/settings", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/html/info.html", "text/html"); });
+            { request->send(SPIFFS, "/html/settings.html", "text/html"); });
   server.on("/patterns", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/html/patterns.html", "text/html"); });
   server.on("/flashlight", HTTP_GET, [](AsyncWebServerRequest *request)
@@ -669,12 +607,12 @@ void initServer()
             { request->send(SPIFFS, "/scripts/script.js", "text/javascript"); });
   server.on("/scripts/flashlight.js", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/scripts/flashlight.js", "text/javascript"); });
-  server.on("/scripts/info.js", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/scripts/info.js", "text/javascript"); });
+  server.on("/scripts/settings.js", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(SPIFFS, "/scripts/settings.js", "text/javascript"); });
   server.on("/scripts/patterns.js", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/scripts/patterns.js", "text/javascript"); });
 
-  // Photos
+  // Files
   server.on("/images/logo.png", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/images/logo.png", String(), true); });
   server.on("/images/blackhole.jpg", HTTP_GET, [](AsyncWebServerRequest *request)
@@ -683,6 +621,8 @@ void initServer()
             { request->send(SPIFFS, "/images/cosmos.jpg", String(), true); });
   server.on("/images/space.jpg", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/images/space.jpg", String(), true); });
+  server.on("/updater.json", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(SPIFFS, "/updater.json", String(), true); });
 
   // Functions
   server.on("/functions/getSystemInfo", HTTP_GET, [](AsyncWebServerRequest *request)
@@ -699,7 +639,7 @@ void initServer()
     request->send(200, "application/x-www-form-urlencoded", searchParams); });
 
   server.on(
-      "/functions/flashlight", HTTP_POST, [](AsyncWebServerRequest *request)
+      "/functions/LEDs/flashlight", HTTP_POST, [](AsyncWebServerRequest *request)
       {
       patternNum = 0;
       flashlightBrightness = request->getParam("brightness", true)->value().toFloat();
@@ -713,7 +653,7 @@ void initServer()
     request->send(200, "text/plain", "OK"); });
 
   server.on(
-      "/functions/changePattern", HTTP_POST, [](AsyncWebServerRequest *request)
+      "/functions/LEDs/changePattern", HTTP_POST, [](AsyncWebServerRequest *request)
       {
 
     if(request->hasParam("start", true)) {
@@ -734,8 +674,14 @@ void initServer()
     
     request->send(200, "text/plain", "OK"); });
 
-  server.on("/functions/update", HTTP_POST, [](AsyncWebServerRequest *request)
-            { updateFirmware = true; });
+  server.on("/functions/updater/update", HTTP_POST, [](AsyncWebServerRequest *request)
+            {
+              if (request->hasParam("firmware", true))
+                updateFv = request->getParam("firmware")->value();
+              if (request->hasParam("filesystem", true))
+                updateFS = request->getParam("filesystem")->value();
+              if (request->hasParam("versions", true))
+                versionString = request->getParam("versions")->value(); });
 
   server.on("/functions/connCheck", HTTP_HEAD, [](AsyncWebServerRequest *request)
             { request->send(200, "text/plain", "OK"); });
@@ -783,14 +729,12 @@ void loop()
   {
     for (JsonVariant obj : displayPatternJson.as<JsonArray>())
     {
-      if (!updateFirmware)
-        animate(characterToMap(obj["from"].as<String>()), characterToMap(obj["to"].as<String>()), obj["animType"].as<int>(), obj["animSpeed"].as<int>(), strip.Color(obj["color"]["R"].as<int>(), obj["color"]["G"].as<int>(), obj["color"]["B"].as<int>()));
-      if (!updateFirmware)
-        delay(obj["delay"].as<int>());
+      animate(characterToMap(obj["from"].as<String>()), characterToMap(obj["to"].as<String>()), obj["animType"].as<int>(), obj["animSpeed"].as<int>(), strip.Color(obj["color"]["R"].as<int>(), obj["color"]["G"].as<int>(), obj["color"]["B"].as<int>()));
+      delay(obj["delay"].as<int>());
     }
   }
 
-  if (updateFirmware)
+  if (updateFv || updateFS)
   {
     firmwareUpdate(); // Update firmware if server requested
     ESP.restart();    // End update

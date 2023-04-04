@@ -7,35 +7,30 @@ const blueControl = document.getElementById("blue");
 
 // Refresh buttons
 function refreshFlashlight() {
-    const xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-            const response = new URLSearchParams(this.responseText);
-            const flashlightBrightness = response.get("brightness");
-            const flashlightColorR = parseInt(response.get("color[R]"));
-            const flashlightColorG = parseInt(response.get("color[G]"));
-            const flashlightColorB = parseInt(response.get("color[B]"));
+    const req = request("functions/checkFlashlight")
+    if(req.ok) {
+        const response = new URLSearchParams(req.text());
+        const flashlightBrightness = response.get("brightness");
+        const flashlightColorR = parseInt(response.get("color[R]"));
+        const flashlightColorG = parseInt(response.get("color[G]"));
+        const flashlightColorB = parseInt(response.get("color[B]"));
 
-            if (flashlightBrightness > 0) {
-                flashlightBtn.innerHTML = 'TURN OFF';
-                flashlightBtn.style.borderColor = "#0ad826"
-                flashlightBtn.setAttribute("on", true)
-            }
-            else {
-                flashlightBtn.innerHTML = 'TURN ON';
-                flashlightBtn.style.borderColor = ""
-                flashlightBtn.removeAttribute("on")
-            }
-
-            redControl.value = flashlightColorR
-            greenControl.value = flashlightColorG
-            blueControl.value = flashlightColorB
+        if (flashlightBrightness > 0) {
+            flashlightBtn.innerHTML = 'TURN OFF';
+            flashlightBtn.style.borderColor = "#0ad826"
+            flashlightBtn.setAttribute("on", true)
         }
-    };
+        else {
+            flashlightBtn.innerHTML = 'TURN ON';
+            flashlightBtn.style.borderColor = ""
+            flashlightBtn.removeAttribute("on")
+        }
 
-    xhttp.open("GET", "../functions/checkFlashlight", true);
-    xhttp.send();
-}
+        redControl.value = flashlightColorR
+        greenControl.value = flashlightColorG
+        blueControl.value = flashlightColorB
+    }
+};
 refreshFlashlight()
 
 // Flashlight functions
@@ -48,7 +43,7 @@ function changeBrightnessAndColor() {
         "color[B]": blueControl.value
     };
     const urlSearchParams = new URLSearchParams(params).toString();
-    request("flashlight", urlSearchParams)
+    request("LEDs/flashlight", urlSearchParams)
 }
 
 flashlightBtn.addEventListener("click", function () {
@@ -68,7 +63,7 @@ flashlightBtn.addEventListener("click", function () {
         };
         urlSearchParams = new URLSearchParams(params).toString();
     }
-    request("flashlight", urlSearchParams)
+    request("LEDs/flashlight", urlSearchParams)
     refreshFlashlight()
 });
 
