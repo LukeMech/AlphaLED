@@ -34,9 +34,9 @@ async function getSystemInfo() {
     if (req.ok) {
         const text = await req.text()
         const lines = await text.split("\n");
-        fsVer = await lines[0].replace("Filesystem: ", "").trim();
-        fvVer = await lines[1].replace("Firmware: ", "").trim();
-        const chipID = await lines[2].replace("Chip ID: ", "").trim();
+        fsVer = await lines[0].replace(/[^\d.-]/g, "")
+        fvVer = await lines[1].replace(/[^\d.-]/g, "")
+        const chipID = await lines[2].replace(/[^\d.-]/g, "")
 
         FSVersionDoc.innerHTML = await fsVer;
         fvVersionDoc.innerHTML = await fvVer;
@@ -50,7 +50,7 @@ getSystemInfo();
 async function callUpdater() {
     if (updButton.hasAttribute("updating")) return;
     if (confirm(confirmUpdateText)) {
-        updButton.innerHTML = "Updating..."
+        updButton.innerHTML = "Checking..."
         updButton.style.borderColor = "#0e3814"
         updButton.setAttribute("updating", true)
         FSVersionDoc.innerHTML = loadingversions
@@ -66,32 +66,35 @@ async function callUpdater() {
 
         await getSystemInfo();
 
-        if (!req.ok) return
-        const text = await req.text()
-        const lines = text.split("\n");
-        const newFsVer = lines[0].replace("Filesystem: ", "").trim()
-        const newFvVer = lines[1].replace("Firmware: ", "").trim()
-        fsUrl = await updaterSettings.filesystemUrl
-        fvUrl = await updaterSettings.firmwareUrl
-        let urlSearchParams = new URLSearchParams();
-        if (newFsVer !== fsVer) {
-            urlSearchParams.append("filesystem", await fsUrl.replace("{branch}", await currentBranch))
-            FSVersionDoc.innerHTML = newFsVer + ' <i class="fa-solid fa-cloud-arrow-down"></i>'
-        }
-        else {
-            urlSearchParams.append("versions", text)
-        }
-        if (newFvVer !== fvVer) {
-            urlSearchParams.append("firmware", await fvUrl.replace("{branch}", await currentBranch))
-            fvVersionDoc.innerHTML = newFvVer + ' <i class="fa-solid fa-cloud-arrow-down"></i>'
-        }
-
         let timeout = 0
-        if (newFsVer !== fsVer || newFvVer !== fvVer) {
-            request("updater/update", urlSearchParams);
-            timeout = 6000
-        }
+        if (req.ok) {
+            const text = await req.text()
+            const lines = text.split("\n");
+            const newFsVer = lines[0].replace(/[^\d.-]/g, "")
+            const newFvVer = lines[1].replace(/[^\d.-]/g, "")
+            fsUrl = await updaterSettings.filesystemUrl
+            fvUrl = await updaterSettings.firmwareUrl
+            let urlSearchParams = new URLSearchParams();
+            if (newFsVer !== fsVer) {
+                urlSearchParams.append("filesystem", await fsUrl.replace("{branch}", await currentBranch))
+                FSVersionDoc.innerHTML = newFsVer + ' <i class="fa-solid fa-cloud-arrow-down"></i>'
+            }
+            else {
+                urlSearchParams.append("versions", text)
+            }
+            
+            if (newFvVer !== fvVer) {
+                urlSearchParams.append("firmware", await fvUrl.replace("{branch}", await currentBranch))
+                fvVersionDoc.innerHTML = newFvVer + ' <i class="fa-solid fa-cloud-arrow-down"></i>'
+            }
 
+            if (newFsVer !== fsVer || newFvVer !== fvVer) {
+                request("updater/update", urlSearchParams);
+                updButton.innerHTML = "Updating, wait for reconnection..."
+                timeout = 6000
+            }
+        }
+        
         setTimeout(() => {
             const tempinterval = setInterval(() => {
                 if (connectionStatus.hasAttribute("Connected")) {
