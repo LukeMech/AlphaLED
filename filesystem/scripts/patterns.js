@@ -9,37 +9,37 @@ submitBtn.addEventListener("click", function () {
     textInput.value = ""
     
     const characters = document.getElementById("text").value.toUpperCase().split("");
-    let json = []
 
     for (let i = 0; i < characters.length; i++) {
-        json.push({
+        const params = ({
             from: characters[i],
             to: characters[i + 1],
-            color: {
-                R: 50,
-                G: 0,
-                B: 0
-            },
+            "color[R]": 50,
+            "color[G]": 0,
+            "color[B]": 0,
             animType: 0,
             animSpeed: 120,
             delay: 0,
-            start: i===0 ? true : false,
         });
+
+        const urlSearchParams = new URLSearchParams(params);
+        if(i===0) params.append("start", true)
+
+        request("changePattern", urlSearchParams)
     }
 
-    json.push({
+    const params = ({
         to: characters[0],
-        color: {
-            R: 50,
-            G: 0,
-            B: 0
-        },
+        "color[R]": 50,
+        "color[G]": 0,
+        "color[B]": 0,
         animType: 0,
         animSpeed: 120,
-        delay: 0
+        delay: 0,
+        end: true
     })
     
-    request("changePattern", json)
+    request("changePattern", urlSearchParams)
 
     setTimeout(() => {
         submitBtn.style.borderColor = ""

@@ -10,11 +10,11 @@ function refreshFlashlight() {
     const xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
-            const response = JSON.parse(this.responseText);
-            const flashlightBrightness = response.brightness;
-            const flashlightColorR = response.color.R;
-            const flashlightColorG = response.color.G;
-            const flashlightColorB = response.color.B;
+            const response = new URLSearchParams(this.responseText);
+            const flashlightBrightness = response.get("brightness");
+            const flashlightColorR = parseInt(response.get("color[R]"));
+            const flashlightColorG = parseInt(response.get("color[G]"));
+            const flashlightColorB = parseInt(response.get("color[B]"));
 
             if (flashlightBrightness > 0) {
                 flashlightBtn.innerHTML = 'TURN OFF';
@@ -41,33 +41,34 @@ refreshFlashlight()
 // Flashlight functions
 function changeBrightnessAndColor() {
     if (!flashlightBtn.hasAttribute("on")) return;
-    const params = [{
+    const params = {
         brightness: brightnessControl.value,
-        color: {
-            R: redControl.value,
-            G: greenControl.value,
-            B: blueControl.value
-        }
-    }];
-    request("flashlight", params)
+        "color[R]": redControl.value,
+        "color[G]": greenControl.value,
+        "color[B]": blueControl.value
+    };
+    const urlSearchParams = new URLSearchParams(params).toString();
+    request("flashlight", urlSearchParams)
 }
 
 flashlightBtn.addEventListener("click", function () {
-    let params
+    let urlSearchParams
     if (flashlightBtn.hasAttribute("on")) {
-        params = [{
+        const params = {
             brightness: 0
-        }];
+        };
+        urlSearchParams = new URLSearchParams(params).toString();
     }
     else {
-        params = [{
+        const params = {
             brightness: brightnessControl.value,
-            red: redControl.value,
-            green: greenControl.value,
-            blue: blueControl.value
-        }];
+            "color[R]": redControl.value,
+            "color[G]": greenControl.value,
+            "color[B]": blueControl.value
+        };
+        urlSearchParams = new URLSearchParams(params).toString();
     }
-    request("flashlight", params)
+    request("flashlight", urlSearchParams)
     refreshFlashlight()
 });
 

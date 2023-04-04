@@ -179,7 +179,6 @@ AsyncWebServer server(80);
 int8_t patternNum = 0;
 byte flashlightColorR = 255, flashlightColorG = 255, flashlightColorB = 255;
 float flashlightBrightness = 0;
-String tempPatternData, tempFlashlightData;
 bool serverOn = false, updateFirmware = false;
 
 // ------------------------
@@ -684,65 +683,63 @@ void initServer()
 
   server.on("/functions/checkFlashlight", HTTP_GET, [](AsyncWebServerRequest *request)
             {
-    StaticJsonDocument<256> json;
-    json["brightness"] = flashlightBrightness;
-    json["color"]["R"] = flashlightColorR;
-    json["color"]["G"] = flashlightColorG;
-    json["color"]["B"] = flashlightColorB;
-    String jsonString;
-    serializeJson(json, jsonString);
-    Serial.println("[INFO] Received flashlight informations request:");
-    Serial.println(jsonString);
-    json.clear();
-    request->send(200, "application/json", jsonString); });
+
+    Serial.println("[INFO] Received flashlight informations request");
+
+    String searchParams = "brightness=" + String(flashlightBrightness) + "&color[R]=" + String(flashlightColorR) + "&color[G]=" + String(flashlightColorG) + "&color[B]=" + String(flashlightColorB);
+    request->send(200, "application/x-www-form-urlencoded", searchParams); });
 
   server.on(
-      "/functions/flashlight", HTTP_POST, [](AsyncWebServerRequest *request) {}, NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total)
+      "/functions/flashlight", HTTP_POST, [](AsyncWebServerRequest *request)
       {
-    tempFlashlightData = tempFlashlightData + String((const char *)data);
-    if (String((const char *)data).indexOf("]") != -1)
     {
-      StaticJsonDocument<256> tempFlashlightJSON;
-      deserializeJson(tempFlashlightJSON, tempFlashlightData);
-      tempFlashlightData = "";
       patternNum = 0;
+      flashlightBrightness = request->getParam("brightness", true)->value().toFloat();
+      if(request->hasParam("color[R]", true))flashlightColorR = request->getParam("color[R]", true)->value().toInt();
+      if(request->hasParam("color[G]", true))flashlightColorG = request->getParam("color[G]", true)->value().toInt();
+      if(request->hasParam("color[B]", true))flashlightColorB = request->getParam("color[B]", true)->value().toInt();
 
-      flashlightBrightness = tempFlashlightJSON[0]["brightness"].as<float>();
-      flashlightColorR = tempFlashlightJSON[0]["color"]["R"].as<byte>();
-      flashlightColorG = tempFlashlightJSON[0]["color"]["G"].as<byte>();
-      flashlightColorB = tempFlashlightJSON[0]["color"]["B"].as<byte>();
-
-      Serial.println("[INFO] Received flashlight command with JSON:");
-
-      String jsonString;
-      serializeJson(tempFlashlightJSON, jsonString);
-      Serial.println(jsonString);
-    }});
+      Serial.println("[INFO] Received flashlight command with data:");
+      Serial.print(flashlightBrightness);
+      Serial.print(flashlightColorR);
+      Serial.print(flashlightColorG);
+      Serial.print(flashlightColorB);
+    } });
 
   server.on(
-      "/functions/changePattern", HTTP_POST, [](AsyncWebServerRequest *request) {}, NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total)
-      {
-        tempPatternData = tempPatternData + String((const char *)data);
-        if (String((const char *)data).indexOf("]") != -1)
-        {
-          deserializeJson(displayPatternJson, tempPatternData);
-          tempPatternData = "";
-          patternNum = 1;
-          Serial.println("[INFO] Received pattern command with JSON:");
-          Serial.println(tempPatternData);
-        } });
+      "/functions/changePattern", HTTP_POST, [](AsyncWebServerRequest *request) {
+
+    Serial.println("[INFO] Received pattern command");
+
+    JsonObject obj;
+    if(request->hasParam("start", true)) displayPatternJson.clear();
+    if(request->hasParam("from", true)) obj["from"] = request->getParam("from", true)->value();
+    if(request->hasParam("to", true)) obj["to"] = request->getParam("to", true)->value();
+    if(request->hasParam("color[R]", true)) obj["color"]["R"] = request->getParam("color[R]", true)->value().toInt();
+    if(request->hasParam("color[G]", true)) obj["color"]["G"] = request->getParam("color[G]", true)->value().toInt();
+    if(request->hasParam("color[B]", true)) obj["color"]["B"] = request->getParam("color[B]", true)->value().toInt();
+    if(request->hasParam("animType", true)) obj["animType"] = request->getParam("animType", true)->value().toInt();
+    if(request->hasParam("animSpeed", true)) obj["animSpeed"] = request->getParam("animSpeed", true)->value().toInt();
+    if(request->hasParam("delay", true)) obj["delay"] = request->getParam("color[R]", true)->value().toInt();
+    if(request->hasParam("end", true)) patternNum=1;
+
+    displayPatternJson.as<JsonArray>().add(obj);
+});
+      
+        
 
   server.on("/functions/update", HTTP_POST, [](AsyncWebServerRequest *request)
-            { updateFirmware = true; });
+            {
+  updateFirmware = true; });
 
-  server.on("/functions/connCheck", HTTP_HEAD, [](AsyncWebServerRequest *request)
-            { request->send(200, "text/plain", "OK"); });
+server.on("/functions/connCheck", HTTP_HEAD, [](AsyncWebServerRequest *request)
+          { request->send(200, "text/plain", "OK"); });
 
-  server.begin();
-  serverOn = true;
+server.begin();
+serverOn = true;
 
-  Serial.print("[INFO] Server IP: ");
-  Serial.println(WiFi.localIP());
+Serial.print("[INFO] Server IP: ");
+Serial.println(WiFi.localIP());
 }
 
 // ------------------------
