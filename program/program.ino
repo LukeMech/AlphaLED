@@ -717,8 +717,6 @@ void initServer()
       String jsonString;
       serializeJson(tempFlashlightJSON, jsonString);
       Serial.println(jsonString);
-
-      request->send(200, "text/plain", jsonString);
     }});
 
   server.on(
@@ -730,6 +728,8 @@ void initServer()
           deserializeJson(displayPatternJson, tempPatternData);
           tempPatternData = "";
           patternNum = 1;
+          Serial.println("[INFO] Received pattern command with JSON:");
+          Serial.println(tempPatternData);
         } });
 
   server.on("/functions/update", HTTP_POST, [](AsyncWebServerRequest *request)

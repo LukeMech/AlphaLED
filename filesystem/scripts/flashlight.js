@@ -53,23 +53,21 @@ function changeBrightnessAndColor() {
 }
 
 flashlightBtn.addEventListener("click", function () {
-    let urlSearchParams
+    let params
     if (flashlightBtn.hasAttribute("on")) {
-        const params = {
+        params = [{
             brightness: 0
-        };
-        urlSearchParams = new URLSearchParams(params).toString();
+        }];
     }
     else {
-        const params = {
+        params = [{
             brightness: brightnessControl.value,
             red: redControl.value,
             green: greenControl.value,
             blue: blueControl.value
-        };
-        urlSearchParams = new URLSearchParams(params).toString();
+        }];
     }
-    request("flashlight", urlSearchParams)
+    request("flashlight", params)
     refreshFlashlight()
 });
 
