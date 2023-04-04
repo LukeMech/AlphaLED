@@ -1,5 +1,5 @@
 // Here paste announcments
-const globalAnnouncment = '<i class="fa-brands fa-searchengin"></i> Backup page - restoring your device'
+const globalAnnouncment = '<i class="fa-brands fa-searchengin"></i> Restoring your device'
 
 const announcment = document.getElementById('announcment')
 announcment.innerHTML = globalAnnouncment
