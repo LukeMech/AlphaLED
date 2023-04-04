@@ -572,7 +572,6 @@ void firmwareUpdate() // Updater
                            {
     float progress = (float)current / (float)total;
     int value = round(progress * 4) + 1;
-    Serial.println(progress * 100);
 
     strip.setPixelColor(led_map[dualUpdate ? (secStage ? 5 : 1) : 3][value], LED_COLOR_CONN);
     strip.setPixelColor(led_map[dualUpdate ? (secStage ? 6 : 2) : 4][value], LED_COLOR_CONN);
