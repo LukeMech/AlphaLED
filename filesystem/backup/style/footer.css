@@ -1,0 +1,25 @@
+* {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  .footer {
+    min-height: 100px;
+    width: 100%;
+    text-align: center;
+    padding: 30px 0;
+    background: black;
+    color: white;
+  }
+  
+  .icons .fa-brands {
+    color: rgb(255,255,153);
+    margin: 0 13px;
+    cursor: pointer;
+    padding: 18px 0;
+    font-size: 20px;
+  }
+  
+  .i {
+    color: #f44336;
+  }
