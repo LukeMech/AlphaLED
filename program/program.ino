@@ -76,6 +76,7 @@ struct
       S[8][8] = {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 1, 1, 1, 0, 0}, {0, 0, 1, 0, 0, 0, 0, 0}, {0, 0, 0, 1, 0, 0, 0, 0}, {0, 0, 0, 0, 1, 0, 0, 0}, {0, 0, 0, 0, 0, 1, 0, 0}, {0, 0, 1, 1, 1, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}},
       T[8][8] = {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 1, 1, 1, 1, 1, 1, 0}, {0, 1, 1, 1, 1, 1, 1, 0}, {0, 0, 0, 1, 1, 0, 0, 0}, {0, 0, 0, 1, 1, 0, 0, 0}, {0, 0, 0, 1, 1, 0, 0, 0}, {0, 0, 0, 1, 1, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}},
       U[8][8] = {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 1, 0, 0, 1, 0, 0}, {0, 0, 1, 0, 0, 1, 0, 0}, {0, 0, 1, 0, 0, 1, 0, 0}, {0, 0, 1, 0, 0, 1, 0, 0}, {0, 0, 1, 0, 0, 1, 0, 0}, {0, 0, 0, 1, 1, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}},
+      V[8][8] = {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 1, 1, 0, 0, 0}, {0, 0, 1, 0, 0, 1, 0, 0}, {0, 0, 1, 0, 0, 1, 0, 0}, {0, 1, 0, 0, 0, 0, 1, 0}, {0, 1, 0, 0, 0, 0, 1, 0}, {0, 1, 0, 0, 0, 0, 1, 0}, {0, 0, 0, 0, 0, 0, 0, 0}},
       W[8][8] = {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 1, 0, 0, 0, 0, 1, 0}, {0, 1, 0, 0, 0, 0, 1, 0}, {0, 1, 0, 0, 0, 0, 1, 0}, {0, 1, 0, 1, 1, 0, 1, 0}, {0, 1, 1, 0, 0, 1, 1, 0}, {0, 1, 0, 0, 0, 0, 1, 0}, {0, 0, 0, 0, 0, 0, 0, 0}},
       X[8][8] = {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 1, 0, 0, 1, 0, 0}, {0, 0, 1, 0, 0, 1, 0, 0}, {0, 0, 0, 1, 1, 0, 0, 0}, {0, 0, 0, 1, 1, 0, 0, 0}, {0, 0, 1, 0, 0, 1, 0, 0}, {0, 0, 1, 0, 0, 1, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}},
       Y[8][8] = {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 1, 0, 0, 0, 0, 1, 0}, {0, 0, 1, 0, 0, 1, 0, 0}, {0, 0, 0, 1, 1, 0, 0, 0}, {0, 0, 0, 1, 1, 0, 0, 0}, {0, 0, 0, 1, 1, 0, 0, 0}, {0, 0, 0, 1, 1, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}},
@@ -110,13 +111,19 @@ arrayPtr characterToMap(String value)
 {
   if (value == "A")
     return alphabet.A;
+  if (value == "Ą")
+    return alphabet.A;
   else if (value == "B")
     return alphabet.B;
   else if (value == "C")
     return alphabet.C;
+  else if (value == "Ć")
+    return alphabet.C;
   else if (value == "D")
     return alphabet.D;
   else if (value == "E")
+    return alphabet.E;
+  else if (value == "Ę")
     return alphabet.E;
   else if (value == "F")
     return alphabet.F;
@@ -140,11 +147,15 @@ arrayPtr characterToMap(String value)
     return alphabet.N;
   else if (value == "O")
     return alphabet.O;
+  else if (value == "Ó")
+    return alphabet.O;
   else if (value == "P")
     return alphabet.P;
   else if (value == "R")
     return alphabet.R;
   else if (value == "S")
+    return alphabet.S;
+  else if (value == "Ś")
     return alphabet.S;
   else if (value == "T")
     return alphabet.T;
@@ -152,6 +163,8 @@ arrayPtr characterToMap(String value)
     return alphabet.U;
   else if (value == "W")
     return alphabet.W;
+  else if (value == "V")
+    return alphabet.V;
   else if (value == "X")
     return alphabet.X;
   else if (value == "Y")
@@ -186,7 +199,7 @@ bool serverOn = false, updateFirmware = false;
 // ------------------------
 
 // Display static map
-DynamicJsonDocument displayPatternJson(1024);
+DynamicJsonDocument displayPatternJson(4096);
 
 void display(uint8_t map[][8])
 {
@@ -703,8 +716,12 @@ void initServer()
       "/functions/changePattern", HTTP_POST, [](AsyncWebServerRequest *request)
       {
 
-    JsonObject obj;
-    if(request->hasParam("start", true)) displayPatternJson.clear();
+    if(request->hasParam("start", true)) {
+      patternNum=-1;
+      displayPatternJson.to<JsonArray>();
+    }
+    JsonObject obj = displayPatternJson.as<JsonArray>().createNestedObject();
+
     if(request->hasParam("from", true)) obj["from"] = request->getParam("from", true)->value();
     if(request->hasParam("to", true)) obj["to"] = request->getParam("to", true)->value();
     if(request->hasParam("color[R]", true)) obj["color"]["R"] = request->getParam("color[R]", true)->value().toInt();
@@ -714,9 +731,7 @@ void initServer()
     if(request->hasParam("animSpeed", true)) obj["animSpeed"] = request->getParam("animSpeed", true)->value().toInt();
     if(request->hasParam("delay", true)) obj["delay"] = request->getParam("delay", true)->value().toInt();
     if(request->hasParam("end", true)) patternNum=1;
-
-    displayPatternJson.as<JsonArray>().add(obj);
-
+    
     request->send(200, "text/plain", "OK"); });
 
   server.on("/functions/update", HTTP_POST, [](AsyncWebServerRequest *request)
