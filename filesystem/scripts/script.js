@@ -93,7 +93,7 @@ setInterval(connectionState, 500);
 async function request(cmd, params=null) {
   return await fetch(`../functions/${cmd}`, {
     method: params ? 'POST' : 'GET',
-    headers: params ? {'Content-Type': 'application/x-www-form-urlencoded'} : "",
+    headers: params ? {'Content-Type': 'application/x-www-form-urlencoded'} : {},
     body: params
   })
 }
