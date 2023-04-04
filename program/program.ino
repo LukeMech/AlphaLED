@@ -29,7 +29,7 @@ const int LED_PIN = D1; // LED Pin
 
 Adafruit_NeoPixel strip(64, LED_PIN, NEO_GRB + NEO_KHZ800); // Init LEDs
 
-uint8_t led_map[8][8] = { // Table corresponding to the physical position/number of the LEDs
+const uint8_t led_map[8][8] = { // Table corresponding to the physical position/number of the LEDs
     {56, 55, 40, 39, 24, 23, 8, 7},
     {57, 54, 41, 38, 25, 22, 9, 6},
     {58, 53, 42, 37, 26, 21, 10, 5},
@@ -42,14 +42,14 @@ uint8_t led_map[8][8] = { // Table corresponding to the physical position/number
 uint32_t LED_COLOR_0 = strip.Color(0, 0, 0);  // diode color for 0 (background) (R G B)
 uint32_t LED_COLOR_1 = strip.Color(25, 0, 0); // diode color for 1 (text) (R G B)
 
-uint32_t LED_COLOR_CONN = strip.Color(0, 50, 0); // diode color for update
-uint32_t LED_COLOR_UPD = strip.Color(0, 0, 10);  // diode color for update
-uint32_t LED_COLOR_ERR = strip.Color(100, 0, 0); // diode color for update
+const uint32_t LED_COLOR_CONN = strip.Color(0, 50, 0); // diode color for update
+const uint32_t LED_COLOR_UPD = strip.Color(0, 0, 10);  // diode color for update
+const uint32_t LED_COLOR_ERR = strip.Color(100, 0, 0); // diode color for update
 
 // Alphabet maps
-struct
+const struct
 {
-  uint8_t
+  const uint8_t
 
       A[8][8] = {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 1, 1, 0, 0, 0}, {0, 0, 1, 0, 0, 1, 0, 0}, {0, 0, 1, 0, 0, 1, 0, 0}, {0, 0, 1, 1, 1, 1, 0, 0}, {0, 0, 1, 0, 0, 1, 0, 0}, {0, 0, 1, 0, 0, 1, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}},
 
@@ -87,9 +87,9 @@ struct
 } alphabet;
 
 // Characters maps
-struct
+const struct
 {
-  uint8_t
+  const uint8_t
 
       space[8][8] = {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}},
       exclam_mark[8][8] = {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 1, 1, 0, 0, 0}, {0, 0, 0, 1, 1, 0, 0, 0}, {0, 0, 0, 1, 1, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 1, 1, 0, 0, 0}, {0, 0, 0, 1, 1, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}},
@@ -98,15 +98,15 @@ struct
 } characters;
 
 // Numbers maps
-struct
+const struct
 {
-  uint8_t
+  const uint8_t
       one[8][8] = {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 1, 1, 0, 0, 0}, {0, 0, 0, 1, 1, 0, 0, 0}, {0, 0, 0, 1, 1, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 1, 1, 0, 0, 0}, {0, 0, 0, 1, 1, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}};
 
 } numbers;
 
 // Return maps
-typedef uint8_t (*arrayPtr)[8];
+typedef const uint8_t (*arrayPtr)[8];
 arrayPtr characterToMap(String value)
 {
   if (value == "A")
@@ -199,9 +199,9 @@ bool serverOn = false, updateFirmware = false;
 // ------------------------
 
 // Display static map
-DynamicJsonDocument displayPatternJson(4096);
+DynamicJsonDocument displayPatternJson(2048);
 
-void display(uint8_t map[][8])
+void display(const uint8_t map[][8])
 {
   for (uint8_t i = 0; i < 8; i++)
   {
@@ -219,7 +219,7 @@ void display(uint8_t map[][8])
 }
 
 // Animate between maps
-void animate(uint8_t startMap[][8], uint8_t endMap[][8], uint8_t direction = 0, int gap = 50, uint32_t newColor1 = 0, uint32_t newColor0 = 0)
+void animate(const uint8_t startMap[][8], const uint8_t endMap[][8], uint8_t direction = 0, int gap = 50, uint32_t newColor1 = 0, uint32_t newColor0 = 0)
 {
 
   uint32_t oldColor0 = LED_COLOR_0, oldColor1 = LED_COLOR_1, color0, color1;
@@ -583,8 +583,8 @@ void firmwareUpdate() // Updater
 
   ESPhttpUpdate.onProgress([&](int current, int total)
                            {
-    float progress = (float)current / (float)total;
-    int value = round(progress * 4) + 1;
+    const float progress = (float)current / (float)total;
+    const uint8_t value = round(progress * 4) + 1;
 
     strip.setPixelColor(led_map[dualUpdate ? (secStage ? 5 : 1) : 3][value], LED_COLOR_CONN);
     strip.setPixelColor(led_map[dualUpdate ? (secStage ? 6 : 2) : 4][value], LED_COLOR_CONN);
