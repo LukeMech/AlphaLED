@@ -691,7 +691,6 @@ void initServer()
   server.on(
       "/functions/flashlight", HTTP_POST, [](AsyncWebServerRequest *request)
       {
-    {
       patternNum = 0;
       flashlightBrightness = request->getParam("brightness", true)->value().toFloat();
       if(request->hasParam("color[R]", true))
@@ -711,8 +710,8 @@ void initServer()
       Serial.print("Blue:");
       Serial.println(flashlightColorB);
 
-      request->send(200, "text/plain", "OK");
-    } });
+    request->send(200, "text/plain", "OK");
+ });
 
   server.on(
       "/functions/changePattern", HTTP_POST, [](AsyncWebServerRequest *request)
@@ -720,7 +719,7 @@ void initServer()
 
     Serial.println("[INFO] Received pattern command with data:");
 
-    JsonObject obj;
+    StaticJsonDocument<256> obj;
     if(request->hasParam("start", true)) displayPatternJson.clear();
     if(request->hasParam("from", true)) obj["from"] = request->getParam("from", true)->value();
     if(request->hasParam("to", true)) obj["to"] = request->getParam("to", true)->value();
@@ -729,11 +728,10 @@ void initServer()
     if(request->hasParam("color[B]", true)) obj["color"]["B"] = request->getParam("color[B]", true)->value().toInt();
     if(request->hasParam("animType", true)) obj["animType"] = request->getParam("animType", true)->value().toInt();
     if(request->hasParam("animSpeed", true)) obj["animSpeed"] = request->getParam("animSpeed", true)->value().toInt();
-    if(request->hasParam("delay", true)) obj["delay"] = request->getParam("color[R]", true)->value().toInt();
+    if(request->hasParam("delay", true)) obj["delay"] = request->getParam("delay", true)->value().toInt();
     if(request->hasParam("end", true)) patternNum=1;
 
     displayPatternJson.as<JsonArray>().add(obj);
-    Serial.println(String(obj));
 
     request->send(200, "text/plain", "OK"); });
 
@@ -784,6 +782,9 @@ void loop()
 
   else if (patternNum == 1)
   {
+    String json;
+    serializeJson(displayPatternJson, json);
+    Serial.println(json);
     for (JsonVariant obj : displayPatternJson.as<JsonArray>())
     {
       if (!updateFirmware)

@@ -27,7 +27,6 @@ function refreshFlashlight() {
                 flashlightBtn.removeAttribute("on")
             }
 
-            brightnessControl.value = flashlightBrightness
             redControl.value = flashlightColorR
             greenControl.value = flashlightColorG
             blueControl.value = flashlightColorB
