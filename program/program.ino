@@ -39,6 +39,14 @@ const uint32_t LED_COLOR_CONN = strip.Color(0, 50, 0); // diode color for update
 const uint32_t LED_COLOR_UPD = strip.Color(0, 0, 10);  // diode color for update
 const uint32_t LED_COLOR_ERR = strip.Color(100, 0, 0); // diode color for update
 
+int8_t patternNum = 0;
+byte flashlightColorR = 255, flashlightColorG = 255, flashlightColorB = 255;
+float flashlightBrightness = 0;
+bool serverOn = false;
+char updateFS[150];
+char updateFv[150];
+char versionString[60];
+
 // Alphabet maps
 const struct
 {
@@ -181,12 +189,6 @@ arrayPtr characterToMap(String value)
 }
 
 AsyncWebServer server(80);
-
-int8_t patternNum = 0;
-byte flashlightColorR = 255, flashlightColorG = 255, flashlightColorB = 255;
-float flashlightBrightness = 0;
-bool serverOn = false;
-String updateFS = "", updateFv = "", versionString;
 
 // ------------------------
 // --------- LEDs ---------
@@ -535,22 +537,22 @@ void firmwareUpdate() // Updater
     if (!updateFS) {
       File versionFile = SPIFFS.open("/version.txt", "w");
       versionFile.seek(0);
-      versionFile.write(versionString.c_str());
+      versionFile.write(versionString, sizeof(versionString));
       Serial.println("[INFO] Updating version.txt based on http string:\n-----");
-      Serial.println(versionString.c_str());
+      Serial.println(versionString);
       Serial.println("-----");
       versionFile.close();
     }
     strip.show(); });
 
   t_httpUpdate_return ret;
-  if (updateFv)
-    ret = ESPhttpUpdate.update(client, updateFv); // Update firmware
-  secStage = true;
-  SPIFFS.end();
+  if (strlen(updateFv)) // Update firmware
+    ret = ESPhttpUpdate.update(client, updateFv);
 
-  if (updateFS && (!updateFv || ret == HTTP_UPDATE_OK || ret == 0))
-    ret = ESPhttpUpdate.updateFS(client, updateFS); // Update filesystem
+  secStage = true; // Update filesystem
+  SPIFFS.end();
+  if (strlen(updateFS) && (!strlen(updateFv) || ret == HTTP_UPDATE_OK || ret == 0))
+    ret = ESPhttpUpdate.updateFS(client, updateFS);
 
   if (ret != HTTP_UPDATE_OK && ret != 0)
   { // Error
@@ -677,11 +679,13 @@ void initServer()
   server.on("/functions/updater/update", HTTP_POST, [](AsyncWebServerRequest *request)
             {
               if (request->hasParam("firmware", true))
-                updateFv = request->getParam("firmware")->value();
+                request->getParam("firmware", true)->value().toCharArray(updateFv, 150);
+
               if (request->hasParam("filesystem", true))
-                updateFS = request->getParam("filesystem")->value();
+                request->getParam("filesystem", true)->value().toCharArray(updateFS, 150);
+
               if (request->hasParam("versions", true))
-                versionString = request->getParam("versions")->value(); });
+                request->getParam("versions", true)->value().toCharArray(versionString, 60); });
 
   server.on("/functions/connCheck", HTTP_HEAD, [](AsyncWebServerRequest *request)
             { request->send(200, "text/plain", "OK"); });
@@ -734,7 +738,7 @@ void loop()
     }
   }
 
-  if (updateFv != "" || updateFS != "")
+  if (strlen(updateFv) || strlen(updateFS))
   {
     firmwareUpdate(); // Update firmware if server requested
     ESP.restart();    // End update
