@@ -593,7 +593,7 @@ void initServer()
       request->send(SPIFFS, "/html/index.html", "text/html");
     else {
       strcpy(updateFS, backupURLFS);
-      request->send(404, "text/plain", "Re-downloading FS!");
+      request->send(404, "text/plain", "Files not found, downloading backup filesystem!");
     } });
   server.on("/settings", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/html/settings.html", "text/html"); });
