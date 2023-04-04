@@ -52,6 +52,7 @@ jobs:
         run: |
           mkdir ./updater || true
           cp ./program/build/**/*.ino.bin ./updater/firmware.bin
+          cp ./program/build/backup-filesystem.bin ./updater/backup-filesystem.bin
           cp ./program/build/filesystem.bin ./updater/filesystem.bin
           cp ./filesystem/version.txt ./updater/build-version.txt
           rm -rf ./program/build
