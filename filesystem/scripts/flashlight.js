@@ -7,7 +7,7 @@ const blueControl = document.getElementById("blue");
 
 // Refresh buttons
 async function refreshFlashlight() {
-    const req = await request("functions/checkFlashlight")
+    const req = await request("LEDs/checkFlashlight")
     if(req.ok) {
         const response = new URLSearchParams(await req.text());
         const flashlightBrightness = response.get("brightness");

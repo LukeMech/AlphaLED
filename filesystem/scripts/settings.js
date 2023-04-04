@@ -31,7 +31,7 @@ ${EXCLAM_MARK}${WARNING_SIGN} Make sure to NOT turn off the device during update
 let fsVer, fvVer;
 async function getSystemInfo() {
     req = await request("getSystemInfo")
-    if(req.ok) {
+    if (req.ok) {
         const text = await req.text()
         const lines = await text.split("\n");
         fsVer = await lines[0].replace("Filesystem: ", "").trim();
@@ -41,8 +41,8 @@ async function getSystemInfo() {
         FSVersionDoc.innerHTML = await fsVer;
         fvVersionDoc.innerHTML = await fvVer;
         chipIDDoc.innerHTML = await chipID;
-        
-    }            
+
+    }
 }
 getSystemInfo();
 
@@ -60,35 +60,37 @@ async function callUpdater() {
         const updaterSettings = await response.json()
         const currentBranch = await updaterSettings.currentBranch
         const verCtrl = await updaterSettings.versionControl
-        console.log(await updaterSettings)
         const versionCtrlUrl = await verCtrl.replace("{branch}", await currentBranch)
 
-        req = await fetch(await versionCtrlUrl)
+        const req = await fetch(await versionCtrlUrl)
 
         await getSystemInfo();
 
-        if(!req.ok) return
+        if (!req.ok) return
         const text = await req.text()
-        const lines = await text.split("\n");
-        const newFsVer = await lines[0].replace("Filesystem: ", "").trim()
-        const newFvVer = await lines[1].replace("Firmware: ", "").trim()
+        const lines = text.split("\n");
+        const newFsVer = lines[0].replace("Filesystem: ", "").trim()
+        const newFvVer = lines[1].replace("Firmware: ", "").trim()
         fsUrl = await updaterSettings.filesystemUrl
         fvUrl = await updaterSettings.firmwareUrl
         let urlSearchParams = new URLSearchParams();
-        if(newFsVer !== fsVer) {
+        if (newFsVer !== fsVer) {
             urlSearchParams.append("filesystem", await fsUrl.replace("{branch}", await currentBranch))
             FSVersionDoc.innerHTML = newFsVer + ' <i class="fa-solid fa-cloud-arrow-down"></i>'
         }
         else {
-            urlSearchParams.append("versions", await req.text())
+            urlSearchParams.append("versions", text)
         }
-        if(newFvVer !== fvVer) {
+        if (newFvVer !== fvVer) {
             urlSearchParams.append("firmware", await fvUrl.replace("{branch}", await currentBranch))
             fvVersionDoc.innerHTML = newFvVer + ' <i class="fa-solid fa-cloud-arrow-down"></i>'
         }
-        if(newFsVer === fsVer && newFvVer === fvVer) return await getSystemInfo();
 
-        await request("updater/update", urlSearchParams);
+        let timeout = 0
+        if (newFsVer !== fsVer || newFvVer !== fvVer) {
+            request("updater/update", urlSearchParams);
+            timeout = 6000
+        }
 
         setTimeout(() => {
             const tempinterval = setInterval(() => {
@@ -102,6 +104,6 @@ async function callUpdater() {
                     }, 1000);
                 }
             }, 100);
-        }, 3000);
+        }, timeout);
     }
 }
