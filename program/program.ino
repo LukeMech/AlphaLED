@@ -14,7 +14,7 @@
 #include <time.h>
 #include <WiFiClientSecure.h>
 
-const char *backupURLFS = "https://raw.githubusercontent.com/LukeMech/AlphaLED/main/updater/filesystem.bin";
+const char *backupURLFS = "https://raw.githubusercontent.com/LukeMech/AlphaLED/main/updater/backup-filesystem.bin";
 const bool WiFi_UpdateCredentialsFile = false; // Update network_config.txt in filesystem?
 const char *ssid = "";                         // Network name
 const char *password = "";                     // Network password
@@ -47,6 +47,7 @@ bool serverOn = false;
 char updateFS[150];
 char updateFv[150];
 char versionString[60];
+DynamicJsonDocument displayPatternJson(2048);
 
 // Alphabet maps
 const struct
@@ -196,8 +197,6 @@ AsyncWebServer server(80);
 // ------------------------
 
 // Display static map
-DynamicJsonDocument displayPatternJson(2048);
-
 void display(const uint8_t map[][8])
 {
   for (uint8_t i = 0; i < 8; i++)
@@ -487,7 +486,7 @@ void firmwareUpdate() // Updater
 
   // Set LEDs
   strip.setPixelColor(led_map[0][0], LED_COLOR_0);
-  if (updateFv && updateFS)
+  if (strlen(updateFv) && strlen(updateFS))
   {
     for (uint8_t i = 0; i < 8; i++)
       strip.setPixelColor(led_map[0][i], LED_COLOR_UPD);
@@ -535,7 +534,7 @@ void firmwareUpdate() // Updater
                       {
     strip.setPixelColor(led_map[dualUpdate ? (secStage ? 5 : 1) : 3][6], LED_COLOR_CONN);
     strip.setPixelColor(led_map[dualUpdate ? (secStage ? 6 : 2) : 4][6], LED_COLOR_CONN);
-    if (!updateFS) {
+    if (!strlen(updateFS)) {
       File versionFile = SPIFFS.open("/version.txt", "w");
       versionFile.seek(0);
       versionFile.write(versionString, sizeof(versionString));

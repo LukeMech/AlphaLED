@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../style/style.css" />
+
+  <script src="https://kit.fontawesome.com/d73fbba09b.js" crossorigin="anonymous"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;600;700&display=swap"
+    rel="stylesheet" type='text/css'>
+
+  <title>LED Controller - backup</title>
+
+</head>
+
+<body>
+
+  <section class="settingspage-header">
+
+    <nav>
+      <i id="connection"><i class="fa-solid fa-arrow-rotate-right fa-spin" style="color: #33dc09"></i> Connecting...</i>
+    </nav>
+
+    <div class="announcment">
+      <p id="announcment"></p>
+    </div>
+
+    <h3 id="title">BACKUP</h3>
+
+  </section>
+
+  <div id="loading"></div>
+
+  <!--  Info content  -->
+
+  <section class="settingspage" id="mainSection">
+    
+    <h2 class="versionTitle"><i class="i fas fa-code-compare"></i> Firmware version:</h2>
+    <h2 class="versionInfo" id="fvVersion"><i class="fa-solid fa-ellipsis fa-bounce"></i></h2>
+    <h2 class="versionTitle"><i class="i fas fa-folder-tree"></i> Server files version:</h2>
+    <h2 class="versionInfo" id="fsVersion"><i class="fa-solid fa-ellipsis fa-bounce"></i></h2>
+    <h2 class="versionTitle"><i class="i fas fa-microchip"></i> Chip ID:</h2>
+    <h2 class="versionInfo" id="chipID"><i class="fa-solid fa-ellipsis fa-bounce"></i></h2>
+
+    <a onclick="callUpdater()" class="btn" id="updButton">Check for updates</a>
+  </section>
+
+  <iframe src="../html/footer.html" seamless scrolling="no"></iframe>
+
+  <script src="../scripts/script.js"></script>
+  <script src="../scripts/settings.js"></script>
+
+</body>
+
+</html>

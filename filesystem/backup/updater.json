@@ -1,0 +1,7 @@
+{
+
+    "versionControl": "https://raw.githubusercontent.com/LukeMech/AlphaLED/{branch}/updater/build-version.txt",
+    "firmwareUrl": "https://raw.githubusercontent.com/LukeMech/AlphaLED/{branch}/updater/firmware.bin",
+    "filesystemUrl": "https://raw.githubusercontent.com/LukeMech/AlphaLED/{branch}/updater/filesystem.bin",
+    "currentBranch": "main"
+}
