@@ -641,7 +641,7 @@ void initServer()
     String textToReturn = version + "\nChip ID: " + String(ESP.getChipId());
     request->send(200, "text/plain", textToReturn); });
 
-  server.on("/functions/checkFlashlight", HTTP_GET, [](AsyncWebServerRequest *request)
+  server.on("/functions/LEDs/checkFlashlight", HTTP_GET, [](AsyncWebServerRequest *request)
             {
     String searchParams = "brightness=" + String(flashlightBrightness) + "&color[R]=" + String(flashlightColorR) + "&color[G]=" + String(flashlightColorG) + "&color[B]=" + String(flashlightColorB);
     request->send(200, "application/x-www-form-urlencoded", searchParams); });
