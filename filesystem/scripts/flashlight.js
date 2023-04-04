@@ -20,16 +20,17 @@ function refreshFlashlight() {
                 flashlightBtn.innerHTML = 'TURN OFF';
                 flashlightBtn.style.borderColor = "#0ad826"
                 flashlightBtn.setAttribute("on", true)
-                brightnessControl.value = flashlightBrightness
-                redControl.value = flashlightColorR
-                greenControl.value = flashlightColorG
-                blueControl.value = flashlightColorB
             }
             else {
                 flashlightBtn.innerHTML = 'TURN ON';
                 flashlightBtn.style.borderColor = ""
                 flashlightBtn.removeAttribute("on")
             }
+
+            brightnessControl.value = flashlightBrightness
+            redControl.value = flashlightColorR
+            greenControl.value = flashlightColorG
+            blueControl.value = flashlightColorB
         }
     };
 
