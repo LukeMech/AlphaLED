@@ -2,7 +2,7 @@
 const submitBtn = document.getElementById("submit")
 const textInput = document.getElementById("text")
 
-submitBtn.addEventListener("click", function () {
+submitBtn.addEventListener("click", async function () {
     if (!textInput.value) return;
 
     submitBtn.style.borderColor = "#0ad826"
@@ -25,7 +25,7 @@ submitBtn.addEventListener("click", function () {
         if(i===0) params.append("start", true)
 
         const urlSearchParams = new URLSearchParams(params);
-        request("changePattern", urlSearchParams)
+        await request("changePattern", urlSearchParams)
     }
 
     const params = ({
@@ -40,7 +40,7 @@ submitBtn.addEventListener("click", function () {
     })
 
     const urlSearchParams = new URLSearchParams(params);
-    request("changePattern", urlSearchParams)
+    await request("changePattern", urlSearchParams)
 
     setTimeout(() => {
         submitBtn.style.borderColor = ""

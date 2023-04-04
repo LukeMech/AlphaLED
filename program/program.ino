@@ -704,6 +704,8 @@ void initServer()
       Serial.print(flashlightColorR);
       Serial.print(flashlightColorG);
       Serial.print(flashlightColorB);
+
+      request->send(200, "text/plain", "OK");
     } });
 
   server.on(
@@ -724,6 +726,8 @@ void initServer()
     if(request->hasParam("end", true)) patternNum=1;
 
     displayPatternJson.as<JsonArray>().add(obj);
+
+    request->send(200, "text/plain", "OK");
 });
       
         
