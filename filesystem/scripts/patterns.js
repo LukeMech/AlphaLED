@@ -2,16 +2,16 @@
 const submitBtn = document.getElementById("submit")
 const textInput = document.getElementById("text")
 
-submitBtn.addEventListener("click", function () {
+submitBtn.addEventListener("click", async function () {
     if (!textInput.value) return;
 
-    submitBtn.style.borderColor = "#0ad826"
+    const characters = await document.getElementById("text").value.toUpperCase().split("");
+
+    submitBtn.style.borderColor = "#0ad826"    
     textInput.value = ""
-    
-    const characters = document.getElementById("text").value.toUpperCase().split("");
 
     for (let i = 0; i < characters.length; i++) {
-        const params = ({
+        let params = ({
             from: characters[i],
             to: characters[i + 1],
             "color[R]": 50,
@@ -21,11 +21,11 @@ submitBtn.addEventListener("click", function () {
             animSpeed: 120,
             delay: 0,
         });
+        
+        const urlSearchParams = new URLSearchParams(params);
+        if(i===0) urlSearchParams.append("start", true);
 
-        if(i===0) params.append("start", true);
-
-        const urlSearchParams = new URLSearchParams(params).toString();
-        request("changePattern", urlSearchParams)
+        await request("changePattern", urlSearchParams.toString())
     }
 
     const params = ({
@@ -39,8 +39,8 @@ submitBtn.addEventListener("click", function () {
         end: true
     })
 
-    const urlSearchParams = new URLSearchParams(params).toString();
-    request("changePattern", urlSearchParams)
+    const urlSearchParams = new URLSearchParams(params);
+    await request("changePattern", urlSearchParams.toString())
 
     setTimeout(() => {
         submitBtn.style.borderColor = ""

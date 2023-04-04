@@ -682,9 +682,6 @@ void initServer()
 
   server.on("/functions/checkFlashlight", HTTP_GET, [](AsyncWebServerRequest *request)
             {
-
-    Serial.println("[INFO] Received flashlight informations request");
-
     String searchParams = "brightness=" + String(flashlightBrightness) + "&color[R]=" + String(flashlightColorR) + "&color[G]=" + String(flashlightColorG) + "&color[B]=" + String(flashlightColorB);
     request->send(200, "application/x-www-form-urlencoded", searchParams); });
 
@@ -700,26 +697,13 @@ void initServer()
       if(request->hasParam("color[B]", true))
         flashlightColorB = request->getParam("color[B]", true)->value().toInt();
 
-      Serial.println("[INFO] Received flashlight command with data:");
-      Serial.print("Brightness:");
-      Serial.println(flashlightBrightness);
-      Serial.print("Red:");
-      Serial.println(flashlightColorR);
-      Serial.print("Green:");
-      Serial.println(flashlightColorG);
-      Serial.print("Blue:");
-      Serial.println(flashlightColorB);
-
-    request->send(200, "text/plain", "OK");
- });
+    request->send(200, "text/plain", "OK"); });
 
   server.on(
       "/functions/changePattern", HTTP_POST, [](AsyncWebServerRequest *request)
       {
 
-    Serial.println("[INFO] Received pattern command");
-
-    StaticJsonDocument<256> obj;
+    JsonObject obj;
     if(request->hasParam("start", true)) displayPatternJson.clear();
     if(request->hasParam("from", true)) obj["from"] = request->getParam("from", true)->value();
     if(request->hasParam("to", true)) obj["to"] = request->getParam("to", true)->value();
@@ -732,9 +716,6 @@ void initServer()
     if(request->hasParam("end", true)) patternNum=1;
 
     displayPatternJson.as<JsonArray>().add(obj);
-    String jsonString;
-    serializeJson(obj, jsonString);
-    Serial.println(jsonString);
 
     request->send(200, "text/plain", "OK"); });
 
