@@ -31,9 +31,44 @@ ${EXCLAM_MARK}${WARNING_SIGN} Make sure to NOT turn off the device during update
 // Get system info
 let fsVer, fvVer, branchName=0;
 async function getSystemInfo() {
-
+    updButton.setAttribute("updating", true)
+    
     req = await request("getSystemInfo")
     if (req.ok) {
+        if(!branches.value) {
+            const branchesListStatus = await fetch('https://api.github.com/repos/' + await gitRepoName + '/branches')
+
+            const response = await fetch("../updater.json")
+            const updaterSettings = await response.json()
+
+            if(!branchName) branchName = await updaterSettings.currentBranch;
+            const gitRepoName = await updaterSettings.gitRepoName
+
+            if(branchesListStatus.ok) {   // Github given branches list
+                const branchesList = await branchesListStatus.json()
+                for(let i = 0; i < await branchesList.length; i++) {
+                    let displayName
+                    if(await branchesList[i].name == 'main') displayName = 'stable'
+                    else displayName = await branchesList[i].name
+        
+                    const option = document.createElement("option");
+                    option.text = displayName;
+                    option.value = await branchesList[i].name
+                    option.classList.add("branchOption")
+                    if(await branchesList[i].name == await updaterSettings.currentBranch) option.selected = true
+        
+                    branches.appendChild(option)
+                }
+            } 
+            else {  // Github not responded with branches list
+                const option = document.createElement("option");
+                option.text = await updaterSettings.currentBranch;
+                option.value = await updaterSettings.currentBranch
+                option.classList.add("branchOption")    
+                branches.appendChild(option)
+            }
+        }
+
         const text = await req.text()
         const lines = await text.split("\n");
         fsVer = await lines[0].replace(/[^\d.-]/g, "")
@@ -44,27 +79,8 @@ async function getSystemInfo() {
         fvVersionDoc.innerHTML = await fvVer;
         chipIDDoc.innerHTML = await chipID;
 
-        const response = await fetch("../updater.json")
-        const updaterSettings = await response.json()
-
-        if(!branchName) branchName = await updaterSettings.currentBranch;
-        const gitRepoName = await updaterSettings.gitRepoName
-        const branchesList = await fetch('https://api.github.com/repos/' + await gitRepoName + '/branches').then(res => res.json())
-
-        for(let i = 0; i < await branchesList.length; i++) {
-
-            let displayName
-            if(await branchesList[i].name == 'main') displayName = 'stable'
-            else displayName = await branchesList[i].name
-
-            const option = document.createElement("option");
-            option.text = displayName;
-            option.value = await branchesList[i].name
-            option.classList.add("branchOption")
-            if(await branchesList[i].name == await updaterSettings.currentBranch) option.selected = true
-
-            branches.appendChild(option)
-          } 
+        updButton.innerHTML = "Check for updates"
+        updButton.removeAttribute("updating")
     }
 }
 getSystemInfo();
