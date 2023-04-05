@@ -61,8 +61,11 @@ async function getSystemInfo() {
             } 
             else {  // Github not responded with branches list
                 const option = document.createElement("option");
-                option.text = await updaterSettings.currentBranch;
-                option.value = await updaterSettings.currentBranch
+                let displayName
+                if(await updaterSettings.currentBranch == 'main') displayName = 'stable'
+                else displayName = await updaterSettings.currentBranch
+                option.text = displayName;
+                option.value = await updaterSettings.currentBranch              
                 option.classList.add("branchOption")    
                 branches.appendChild(option)
             }
