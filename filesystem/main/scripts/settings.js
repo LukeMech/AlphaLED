@@ -20,12 +20,11 @@ const EXCLAM_MARK = "\u2757"        // ❗
 const WARNING_SIGN = "\u26A0"       // ⚠️
 
 const confirmUpdateText = `${Q_MARK} Call updater? That's the procedure:\n
-1. ${ZZZ} Server will turn off, status 'reconnecting' will be displayed\n
-2. ${SEARCH} The device will check for updates\n
-3. ${ARROW_SPIN} If no updates found, it'll reboot\n
-4. ${MAGIC_WAND} If updates found, required files will be downloaded displaying progress on LEDs\n
-5. ${TOOLS} Update will be applied on auto reboot\n
-6. ${BOLT} Connection will be restored, you will see 'connected' status on top of the screen\n
+1. ${SEARCH} Your phone will compare local and server versions.\n
+2. ${ARROW_SPIN} If no updates found, operation will be aborted.\n
+3. ${MAGIC_WAND} If updates found, required files will be downloaded to microcontroller displaying progress on LEDs.\n
+5. ${TOOLS} Update will be applied on auto reboot.\n
+6. ${BOLT} Connection will be restored, you will see 'connected' status on top of the screen.\n
 ${EXCLAM_MARK}${WARNING_SIGN} Make sure to NOT turn off the device during update! Refreshing the page is also not recommended, as it'll automatically reconnect to device after its reboot ${WARNING_SIGN}${EXCLAM_MARK}`
 
 // Get system info
@@ -34,45 +33,46 @@ async function getSystemInfo() {
     updButton.setAttribute("updating", true)
     
     req = await request("getSystemInfo")
-    if (req.ok) {
-        if(!branches.value) {
-            const response = await fetch("../updater.json")
-            const updaterSettings = await response.json()
 
-            if(!branchName) branchName = await updaterSettings.currentBranch;
-            const gitRepoName = await updaterSettings.gitRepoName
+    if(!branches.value) {
+        const response = await fetch("../updater.json")
+        const updaterSettings = await response.json()
 
-            const branchesListStatus = await fetch('https://api.github.com/repos/' + await gitRepoName + '/branches')
+        if(!branchName) branchName = await updaterSettings.currentBranch;
+        const gitRepoName = await updaterSettings.gitRepoName
 
-            if(branchesListStatus.ok) {   // Github given branches list
-                const branchesList = await branchesListStatus.json()
-                for(let i = await branchesList.length-1; i >= 0 ; i--) {
-                    let displayName
-                    if(await branchesList[i].name == 'main') displayName = 'stable'
-                    else displayName = await branchesList[i].name
-        
-                    const option = document.createElement("option");
-                    option.text = displayName;
-                    option.value = await branchesList[i].name
-                    option.classList.add("branchOption")
-                    if(await branchesList[i].name == await updaterSettings.currentBranch) option.selected = true
-        
-                    branches.appendChild(option)
-                }
-            } 
-            else {  // Github not responded with branches list
-                const option = document.createElement("option");
+        let branchesListStatus
+        try {branchesListStatus = await fetch('https://api.github.com/repos/' + await gitRepoName + '/branches')}
+        catch (error) {}
+
+        if(branchesListStatus.ok) {   // Github given branches list
+            const branchesList = await branchesListStatus.json()
+            for(let i = await branchesList.length-1; i >= 0 ; i--) {
                 let displayName
-                if(await updaterSettings.currentBranch == 'main') displayName = 'stable'
-                else displayName = await updaterSettings.currentBranch
+                if(await branchesList[i].name == 'main') displayName = 'stable'
+                else displayName = await branchesList[i].name
+    
+                const option = document.createElement("option");
                 option.text = displayName;
-                option.value = await updaterSettings.currentBranch              
-                option.classList.add("branchOption")    
+                option.value = await branchesList[i].name
+                option.classList.add("branchOption")
+                if(await branchesList[i].name == await updaterSettings.currentBranch) option.selected = true
+    
                 branches.appendChild(option)
-
-                document.getElementById("warn1").classList.remove("hidden")
-                document.getElementById("warn2").classList.remove("hidden")
             }
+        } 
+        else {  // Github not responded with branches list
+            const option = document.createElement("option");
+            let displayName
+            if(await updaterSettings.currentBranch == 'main') displayName = 'stable'
+            else displayName = await updaterSettings.currentBranch
+            option.text = displayName;
+            option.value = await updaterSettings.currentBranch              
+            option.classList.add("branchOption")    
+            branches.appendChild(option)
+
+            document.getElementById("warn1").classList.remove("hidden")
+            document.getElementById("warn2").classList.remove("hidden")
         }
 
         const text = await req.text()
@@ -112,10 +112,13 @@ async function callUpdater() {
         const verCtrl = await updaterSettings.versionFile
         
         const urlToVerCtrl = 'https://raw.githubusercontent.com/' + await gitRepoName + '/' + branchName + '/' + await verCtrl;
-        const req = await fetch(urlToVerCtrl)
-        await getSystemInfo();
+        
+        try {const req = await fetch(urlToVerCtrl)}
+        catch (error) {}
 
+        await getSystemInfo();
         let timeout = 0
+
         if (req.ok) {
             const text = await req.text()
             const lines = text.split("\n");
