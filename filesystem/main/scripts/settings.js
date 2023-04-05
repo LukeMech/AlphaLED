@@ -5,7 +5,6 @@ const chipIDDoc = document.getElementById('chipID')
 const updButton = document.getElementById('updButton')
 const connectionStatus = document.getElementById('connection')
 const branches = document.getElementById("branches")
-const updaterSettings = fetch("../updater.json").then(res => res.json())
 
 const loadingversions = '<i class="fa-solid fa-ellipsis fa-bounce"></i>'
 const updbuttonhtml = 'Check for updates'
@@ -45,6 +44,9 @@ async function getSystemInfo() {
         fvVersionDoc.innerHTML = await fvVer;
         chipIDDoc.innerHTML = await chipID;
 
+        const response = await fetch("../updater.json")
+        const updaterSettings = await response.json()
+
         if(!branchName) branchName = await updaterSettings.currentBranch;
         const gitRepoName = await updaterSettings.gitRepoName
         const branchesList = await fetch('https://api.github.com/repos/' + await gitRepoName + '/branches').then(res => res.json())
@@ -81,10 +83,13 @@ async function callUpdater() {
         FSVersionDoc.innerHTML = loadingversions
         fvVersionDoc.innerHTML = loadingversions
 
+        const response = await fetch("../updater.json")
+        const updaterSettings = await response.json()
+
         const gitRepoName = await updaterSettings.gitRepoName
         const verCtrl = await updaterSettings.versionFile
         
-        const urlToVerCtrl = 'https://raw.githubusercontent.com/' + await gitRepoName + '/' + await branchName + '/' + await verCtrl;
+        const urlToVerCtrl = 'https://raw.githubusercontent.com/' + await gitRepoName + '/' + branchName + '/' + await verCtrl;
         const req = await fetch(urlToVerCtrl)
         await getSystemInfo();
 
@@ -99,7 +104,7 @@ async function callUpdater() {
             fvUrl = await updaterSettings.firmwareFile
             let urlSearchParams = new URLSearchParams();
             if (newFsVer !== fsVer) {
-                urlSearchParams.append("filesystem", 'https://raw.githubusercontent.com/' + await gitRepoName + '/' + await branchName + '/' + await fsUrl)
+                urlSearchParams.append("filesystem", 'https://raw.githubusercontent.com/' + await gitRepoName + '/' + branchName + '/' + await fsUrl)
                 FSVersionDoc.innerHTML = newFsVer + ' <i class="fa-solid fa-cloud-arrow-down"></i>'
             }
             else {
@@ -107,7 +112,7 @@ async function callUpdater() {
             }
             
             if (newFvVer !== fvVer) {
-                urlSearchParams.append("firmware", 'https://raw.githubusercontent.com/' + await gitRepoName + '/' + await branchName + '/' + await fvUrl)
+                urlSearchParams.append("firmware", 'https://raw.githubusercontent.com/' + await gitRepoName + '/' + branchName + '/' + await fvUrl)
                 fvVersionDoc.innerHTML = newFvVer + ' <i class="fa-solid fa-cloud-arrow-down"></i>'
             }
 
