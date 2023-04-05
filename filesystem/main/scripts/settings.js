@@ -45,23 +45,7 @@ async function getSystemInfo() {
         try {branchesListStatus = await fetch('https://api.github.com/repos/' + await gitRepoName + '/branches')}
         catch (error) {}
 
-        if(branchesListStatus.ok) {   // Github given branches list
-            const branchesList = await branchesListStatus.json()
-            for(let i = await branchesList.length-1; i >= 0 ; i--) {
-                let displayName
-                if(await branchesList[i].name == 'main') displayName = 'stable'
-                else displayName = await branchesList[i].name
-    
-                const option = document.createElement("option");
-                option.text = displayName;
-                option.value = await branchesList[i].name
-                option.classList.add("branchOption")
-                if(await branchesList[i].name == await updaterSettings.currentBranch) option.selected = true
-    
-                branches.appendChild(option)
-            }
-        } 
-        else {  // Github not responded with branches list
+        async function errHandle() {
             const option = document.createElement("option");
             let displayName
             if(await updaterSettings.currentBranch == 'main') displayName = 'stable'
@@ -74,6 +58,26 @@ async function getSystemInfo() {
             document.getElementById("warn1").classList.remove("hidden")
             document.getElementById("warn2").classList.remove("hidden")
         }
+
+        if(branchesListStatus) {   // Github given branches list
+            if(branchesListStatus.ok) {  
+                const branchesList = await branchesListStatus.json()
+                for(let i = await branchesList.length-1; i >= 0 ; i--) {
+                    let displayName
+                    if(await branchesList[i].name == 'main') displayName = 'stable'
+                    else displayName = await branchesList[i].name
+        
+                    const option = document.createElement("option");
+                    option.text = displayName;
+                    option.value = await branchesList[i].name
+                    option.classList.add("branchOption")
+                    if(await branchesList[i].name == await updaterSettings.currentBranch) option.selected = true
+        
+                    branches.appendChild(option)
+                }
+            } else errHandle(); // Github not responded with branches list
+        } 
+        else errHandle();  
 
         const text = await req.text()
         const lines = await text.split("\n");
@@ -119,35 +123,37 @@ async function callUpdater() {
         await getSystemInfo();
         let timeout = 0
 
-        if (req.ok) {
-            const text = await req.text()
-            const lines = text.split("\n");
-            const newFsVer = lines[0].replace("Filesystem: ", "").replace(/[^\d.a-zA-Z-]/g, "")
-            const newFvVer = lines[1].replace("Firmware: ", "").replace(/[^\d.a-zA-Z-]/g, "")
-
-            fsUrl = await updaterSettings.filesystemFile
-            fvUrl = await updaterSettings.firmwareFile
-            let urlSearchParams = new URLSearchParams();
-            if (newFsVer !== fsVer) {
-                urlSearchParams.append("filesystem", 'https://raw.githubusercontent.com/' + await gitRepoName + '/' + branchName + '/' + await fsUrl)
-                FSVersionDoc.innerHTML = newFsVer + ' <i class="fa-solid fa-cloud-arrow-down"></i>'
-            }
-            else {
-                urlSearchParams.append("versions", text)
-            }
-            
-            if (newFvVer !== fvVer) {
-                urlSearchParams.append("firmware", 'https://raw.githubusercontent.com/' + await gitRepoName + '/' + branchName + '/' + await fvUrl)
-                fvVersionDoc.innerHTML = newFvVer + ' <i class="fa-solid fa-cloud-arrow-down"></i>'
-            }
-
-            if (newFsVer !== fsVer || newFvVer !== fvVer) {
-                request("updater/update", urlSearchParams);
-                updButton.innerHTML = "Updating, wait for reconnection..."
-                timeout = 5000
+        if(req) {
+            if (req.ok) {
+                const text = await req.text()
+                const lines = text.split("\n");
+                const newFsVer = lines[0].replace("Filesystem: ", "").replace(/[^\d.a-zA-Z-]/g, "")
+                const newFvVer = lines[1].replace("Firmware: ", "").replace(/[^\d.a-zA-Z-]/g, "")
+    
+                fsUrl = await updaterSettings.filesystemFile
+                fvUrl = await updaterSettings.firmwareFile
+                let urlSearchParams = new URLSearchParams();
+                if (newFsVer !== fsVer) {
+                    urlSearchParams.append("filesystem", 'https://raw.githubusercontent.com/' + await gitRepoName + '/' + branchName + '/' + await fsUrl)
+                    FSVersionDoc.innerHTML = newFsVer + ' <i class="fa-solid fa-cloud-arrow-down"></i>'
+                }
+                else {
+                    urlSearchParams.append("versions", text)
+                }
+                
+                if (newFvVer !== fvVer) {
+                    urlSearchParams.append("firmware", 'https://raw.githubusercontent.com/' + await gitRepoName + '/' + branchName + '/' + await fvUrl)
+                    fvVersionDoc.innerHTML = newFvVer + ' <i class="fa-solid fa-cloud-arrow-down"></i>'
+                }
+    
+                if (newFsVer !== fsVer || newFvVer !== fvVer) {
+                    request("updater/update", urlSearchParams);
+                    updButton.innerHTML = "Updating, wait for reconnection..."
+                    timeout = 5000
+                }
             }
         }
-        
+    
         setTimeout(() => {
             const tempinterval = setInterval(() => {
                 if (connectionStatus.hasAttribute("Connected")) {
