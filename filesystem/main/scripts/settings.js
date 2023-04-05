@@ -117,7 +117,8 @@ async function callUpdater() {
         
         const urlToVerCtrl = 'https://raw.githubusercontent.com/' + await gitRepoName + '/' + branchName + '/' + await verCtrl;
         
-        try {const req = await fetch(urlToVerCtrl)}
+        let req
+        try {req = await fetch(urlToVerCtrl)}
         catch (error) {}
 
         await getSystemInfo();
