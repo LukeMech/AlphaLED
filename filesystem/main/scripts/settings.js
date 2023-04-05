@@ -36,14 +36,13 @@ async function getSystemInfo() {
     req = await request("getSystemInfo")
     if (req.ok) {
         if(!branches.value) {
-            const branchesListStatus = await fetch('https://api.github.com/repos/' + await gitRepoName + '/branches')
-
             const response = await fetch("../updater.json")
             const updaterSettings = await response.json()
 
             if(!branchName) branchName = await updaterSettings.currentBranch;
             const gitRepoName = await updaterSettings.gitRepoName
 
+            const branchesListStatus = await fetch('https://api.github.com/repos/' + await gitRepoName + '/branches')
             if(branchesListStatus.ok) {   // Github given branches list
                 const branchesList = await branchesListStatus.json()
                 for(let i = 0; i < await branchesList.length; i++) {

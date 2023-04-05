@@ -474,8 +474,6 @@ void firmwareUpdate() // Updater
 {
 
   display(characters.space);
-  strip.setPixelColor(led_map[0][0], LED_COLOR_UPD);
-  strip.show();
   server.end();
 
   bool secStage = false, dualUpdate = false;
