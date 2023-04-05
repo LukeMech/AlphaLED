@@ -46,7 +46,7 @@ async function getSystemInfo() {
 
             if(branchesListStatus.ok) {   // Github given branches list
                 const branchesList = await branchesListStatus.json()
-                for(let i = 0; i < await branchesList.length; i++) {
+                for(let i = await branchesList.length-1; i >= 0 ; i--) {
                     let displayName
                     if(await branchesList[i].name == 'main') displayName = 'stable'
                     else displayName = await branchesList[i].name
@@ -77,9 +77,9 @@ async function getSystemInfo() {
 
         const text = await req.text()
         const lines = await text.split("\n");
-        fsVer = await lines[0].replace(/[^\d.-]/g, "")
-        fvVer = await lines[1].replace(/[^\d.-]/g, "")
-        const chipID = await lines[2].replace(/[^\d.-]/g, "")
+        fsVer = await lines[0].replace(/[^\d.a-zA-Z-]/g, "")
+        fvVer = await lines[1].replace(/[^\d.a-zA-Z-]/g, "")
+        const chipID = await lines[2].replace(/[^\d.a-zA-Z-]/g, "")
 
         FSVersionDoc.innerHTML = await fsVer;
         fvVersionDoc.innerHTML = await fvVer;
@@ -119,8 +119,8 @@ async function callUpdater() {
         if (req.ok) {
             const text = await req.text()
             const lines = text.split("\n");
-            const newFsVer = lines[0].replace(/[^\d.-]/g, "")
-            const newFvVer = lines[1].replace(/[^\d.-]/g, "")
+            const newFsVer = lines[0].replace(/[^\d.a-zA-Z-]/g, "")
+            const newFvVer = lines[1].replace(/[^\d.a-zA-Z-]/g, "")
 
             fsUrl = await updaterSettings.filesystemFile
             fvUrl = await updaterSettings.firmwareFile
