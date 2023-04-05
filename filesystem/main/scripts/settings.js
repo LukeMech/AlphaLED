@@ -78,20 +78,20 @@ async function getSystemInfo() {
             } else errHandle(); // Github not responded with branches list
         } 
         else errHandle();  
-
-        const text = await req.text()
-        const lines = await text.split("\n");
-        fsVer = await lines[0].replace("Filesystem: ", "").replace(/[^\d.a-zA-Z-]/g, "")
-        fvVer = await lines[1].replace("Firmware: ", "").replace(/[^\d.a-zA-Z-]/g, "")
-        const chipID = await lines[2].replace("Chip ID: ", "").replace(/[^\d.a-zA-Z-]/g, "")
-
-        FSVersionDoc.innerHTML = await fsVer;
-        fvVersionDoc.innerHTML = await fvVer;
-        chipIDDoc.innerHTML = await chipID;
-
-        updButton.innerHTML = "Check for updates"
-        updButton.removeAttribute("updating")
     }
+    
+    const text = await req.text()
+    const lines = await text.split("\n");
+    fsVer = await lines[0].replace("Filesystem: ", "").replace(/[^\d.a-zA-Z-]/g, "")
+    fvVer = await lines[1].replace("Firmware: ", "").replace(/[^\d.a-zA-Z-]/g, "")
+    const chipID = await lines[2].replace("Chip ID: ", "").replace(/[^\d.a-zA-Z-]/g, "")
+
+    FSVersionDoc.innerHTML = await fsVer;
+    fvVersionDoc.innerHTML = await fvVer;
+    chipIDDoc.innerHTML = await chipID;
+
+    updButton.innerHTML = "Check for updates"
+    updButton.removeAttribute("updating")
 }
 getSystemInfo();
 
