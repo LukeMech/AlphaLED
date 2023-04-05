@@ -1,7 +1,8 @@
 {
+    "gitRepoName": "LukeMech/AlphaLED",
+    "currentBranch": "main",
 
-    "versionControl": "https://raw.githubusercontent.com/LukeMech/AlphaLED/{branch}/updater/build-version.txt",
-    "firmwareUrl": "https://raw.githubusercontent.com/LukeMech/AlphaLED/{branch}/updater/firmware.bin",
-    "filesystemUrl": "https://raw.githubusercontent.com/LukeMech/AlphaLED/{branch}/updater/filesystem.bin",
-    "currentBranch": "main"
+    "versionFile": "updater/build-version.txt",
+    "firmwareFile": "updater/firmware.bin",
+    "filesystemFile": "updater/filesystem.bin"
 }

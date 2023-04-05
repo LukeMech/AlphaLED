@@ -470,6 +470,25 @@
   font-size: 35px;
 }
 
+.settingspage .branches {
+  margin: 25px;
+  margin-bottom: -10px;
+  width: 60vw;
+  height: 30px;
+  background-color: rgba(0, 0, 0, 0);
+  color: white;
+  border: 3px solid #a1d80a;
+}
+.settingspage .branches:focus {
+  outline:none;
+}
+
+.settingspage .branches .branchOption {
+  background-color: rgb(255, 255, 255);
+  color: black
+}
+
+
 .settingspage .btn {
   display: inline-block;
   text-decoration: none;

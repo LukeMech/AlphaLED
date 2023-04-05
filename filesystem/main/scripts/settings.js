@@ -4,6 +4,8 @@ const FSVersionDoc = document.getElementById('fsVersion')
 const chipIDDoc = document.getElementById('chipID')
 const updButton = document.getElementById('updButton')
 const connectionStatus = document.getElementById('connection')
+const branches = document.getElementById("branches")
+const updaterSettings = fetch("../updater.json").then(res => res.json())
 
 const loadingversions = '<i class="fa-solid fa-ellipsis fa-bounce"></i>'
 const updbuttonhtml = 'Check for updates'
@@ -28,8 +30,9 @@ const confirmUpdateText = `${Q_MARK} Call updater? That's the procedure:\n
 ${EXCLAM_MARK}${WARNING_SIGN} Make sure to NOT turn off the device during update! Refreshing the page is also not recommended, as it'll automatically reconnect to device after its reboot ${WARNING_SIGN}${EXCLAM_MARK}`
 
 // Get system info
-let fsVer, fvVer;
+let fsVer, fvVer, branchName=0;
 async function getSystemInfo() {
+
     req = await request("getSystemInfo")
     if (req.ok) {
         const text = await req.text()
@@ -42,9 +45,31 @@ async function getSystemInfo() {
         fvVersionDoc.innerHTML = await fvVer;
         chipIDDoc.innerHTML = await chipID;
 
+        if(!branchName) branchName = await updaterSettings.currentBranch;
+        const gitRepoName = await updaterSettings.gitRepoName
+        const branchesList = await fetch('https://api.github.com/repos/' + await gitRepoName + '/branches').then(res => res.json())
+
+        for(let i = 0; i < await branchesList.length; i++) {
+
+            let displayName
+            if(await branchesList[i].name == 'main') displayName = 'stable'
+            else displayName = await branchesList[i].name
+
+            const option = document.createElement("option");
+            option.text = displayName;
+            option.value = await branchesList[i].name
+            option.classList.add("branchOption")
+            if(await branchesList[i].name == await updaterSettings.currentBranch) option.selected = true
+
+            branches.appendChild(option)
+          } 
     }
 }
 getSystemInfo();
+
+branches.addEventListener("change", function() {
+    branchName = branches.value
+})
 
 // Call updater
 async function callUpdater() {
@@ -56,14 +81,11 @@ async function callUpdater() {
         FSVersionDoc.innerHTML = loadingversions
         fvVersionDoc.innerHTML = loadingversions
 
-        const response = await fetch("../updater.json")
-        const updaterSettings = await response.json()
-        const currentBranch = await updaterSettings.currentBranch
-        const verCtrl = await updaterSettings.versionControl
-        const versionCtrlUrl = await verCtrl.replace("{branch}", await currentBranch)
-
-        const req = await fetch(await versionCtrlUrl)
-
+        const gitRepoName = await updaterSettings.gitRepoName
+        const verCtrl = await updaterSettings.versionFile
+        
+        const urlToVerCtrl = 'https://raw.githubusercontent.com/' + await gitRepoName + '/' + await branchName + '/' + await verCtrl;
+        const req = await fetch(urlToVerCtrl)
         await getSystemInfo();
 
         let timeout = 0
@@ -72,11 +94,12 @@ async function callUpdater() {
             const lines = text.split("\n");
             const newFsVer = lines[0].replace(/[^\d.-]/g, "")
             const newFvVer = lines[1].replace(/[^\d.-]/g, "")
-            fsUrl = await updaterSettings.filesystemUrl
-            fvUrl = await updaterSettings.firmwareUrl
+
+            fsUrl = await updaterSettings.filesystemFile
+            fvUrl = await updaterSettings.firmwareFile
             let urlSearchParams = new URLSearchParams();
             if (newFsVer !== fsVer) {
-                urlSearchParams.append("filesystem", await fsUrl.replace("{branch}", await currentBranch))
+                urlSearchParams.append("filesystem", 'https://raw.githubusercontent.com/' + await gitRepoName + '/' + await branchName + '/' + await fsUrl)
                 FSVersionDoc.innerHTML = newFsVer + ' <i class="fa-solid fa-cloud-arrow-down"></i>'
             }
             else {
@@ -84,7 +107,7 @@ async function callUpdater() {
             }
             
             if (newFvVer !== fvVer) {
-                urlSearchParams.append("firmware", await fvUrl.replace("{branch}", await currentBranch))
+                urlSearchParams.append("firmware", 'https://raw.githubusercontent.com/' + await gitRepoName + '/' + await branchName + '/' + await fvUrl)
                 fvVersionDoc.innerHTML = newFvVer + ' <i class="fa-solid fa-cloud-arrow-down"></i>'
             }
 
