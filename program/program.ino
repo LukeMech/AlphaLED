@@ -47,7 +47,7 @@ bool serverOn = false;
 char updateFS[150];
 char updateFv[150];
 char versionString[60];
-DynamicJsonDocument displayPatternJson(2048);
+DynamicJsonDocument displayPatternJson(4096);
 
 // Alphabet maps
 const struct
@@ -217,6 +217,8 @@ void display(const uint8_t map[][8])
 // Animate between maps
 void animate(const uint8_t startMap[][8], const uint8_t endMap[][8], uint8_t direction = 0, int gap = 50, uint32_t newColor1 = 0, uint32_t newColor0 = 0)
 {
+  if (strlen(updateFv) || strlen(updateFS))
+    return;
 
   uint32_t oldColor0 = LED_COLOR_0, oldColor1 = LED_COLOR_1, color0, color1;
   // New background color
@@ -475,6 +477,8 @@ void firmwareUpdate() // Updater
 
   display(characters.space);
   server.end();
+  displayPatternJson.clear();
+  displayPatternJson.shrinkToFit();
 
   bool secStage = false, dualUpdate = false;
 
@@ -567,7 +571,9 @@ void firmwareUpdate() // Updater
   }
   else
   {
-    delay(500);
+    delay(1000);
+    strcpy(updateFS, "");
+    strcpy(updateFv, "");
     animate(characters.space, characters.updater, 2, 100, LED_COLOR_CONN);
     delay(500);
   }
@@ -738,7 +744,8 @@ void loop()
     for (JsonVariant obj : displayPatternJson.as<JsonArray>())
     {
       animate(characterToMap(obj["from"].as<String>()), characterToMap(obj["to"].as<String>()), obj["animType"].as<int>(), obj["animSpeed"].as<int>(), strip.Color(obj["color"]["R"].as<int>(), obj["color"]["G"].as<int>(), obj["color"]["B"].as<int>()));
-      delay(obj["delay"].as<int>());
+      if (!strlen(updateFv) && !strlen(updateFS))
+        delay(obj["delay"].as<int>());
     }
   }
 

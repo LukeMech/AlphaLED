@@ -77,9 +77,9 @@ async function getSystemInfo() {
 
         const text = await req.text()
         const lines = await text.split("\n");
-        fsVer = await lines[0].replace(/[^\d.a-zA-Z-]/g, "")
-        fvVer = await lines[1].replace(/[^\d.a-zA-Z-]/g, "")
-        const chipID = await lines[2].replace(/[^\d.a-zA-Z-]/g, "")
+        fsVer = await lines[0].replace("Filesystem: ", "").replace(/[^\d.a-zA-Z-]/g, "")
+        fvVer = await lines[1].replace("Firmware: ", "").replace(/[^\d.a-zA-Z-]/g, "")
+        const chipID = await lines[2].replace("Chip ID: ", "").replace(/[^\d.a-zA-Z-]/g, "")
 
         FSVersionDoc.innerHTML = await fsVer;
         fvVersionDoc.innerHTML = await fvVer;
@@ -119,8 +119,8 @@ async function callUpdater() {
         if (req.ok) {
             const text = await req.text()
             const lines = text.split("\n");
-            const newFsVer = lines[0].replace(/[^\d.a-zA-Z-]/g, "")
-            const newFvVer = lines[1].replace(/[^\d.a-zA-Z-]/g, "")
+            const newFsVer = lines[0].replace("Filesystem: ", "").replace(/[^\d.a-zA-Z-]/g, "")
+            const newFvVer = lines[1].replace("Firmware: ", "").replace(/[^\d.a-zA-Z-]/g, "")
 
             fsUrl = await updaterSettings.filesystemFile
             fvUrl = await updaterSettings.firmwareFile
@@ -141,7 +141,7 @@ async function callUpdater() {
             if (newFsVer !== fsVer || newFvVer !== fvVer) {
                 request("updater/update", urlSearchParams);
                 updButton.innerHTML = "Updating, wait for reconnection..."
-                timeout = 6000
+                timeout = 5000
             }
         }
         
