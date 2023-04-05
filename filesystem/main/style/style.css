@@ -310,7 +310,6 @@
   margin: 20px;
   background: linear-gradient(45deg, rgba(0, 0, 0, 0), rgba(224, 215, 215, 0.6), rgba(255, 255, 255, 0.76));
 }
-
 .flashpage .red {
   appearance: none;
   height: 10px;
@@ -319,7 +318,6 @@
   margin: 20px;
   background: linear-gradient(45deg, rgba(0, 0, 0, 0), rgba(255, 0, 0, 0.295), rgba(255, 0, 0, 0.76));
 }
-
 .flashpage .green {
   appearance: none;
   height: 10px;
@@ -328,7 +326,6 @@
   margin: 20px;
   background: linear-gradient(45deg, rgba(0, 0, 0, 0), rgba(57, 245, 0, 0.384), rgba(60, 255, 0, 0.76));
 }
-
 .flashpage .blue {
   appearance: none;
   height: 10px;
@@ -337,7 +334,6 @@
   margin: 20px;
   background: linear-gradient(45deg, rgba(0, 0, 0, 0), rgba(21, 53, 236, 0.363), rgba(36, 51, 253, 0.76));
 }
-
 .flashpage input::-webkit-slider-thumb {
   appearance: none;
   height: 20px;
@@ -403,11 +399,9 @@
   margin: 20px;
   text-align: center;
 }
-
 .patternspage .text:focus {
   outline:none;
 }
-
 .patternspage .text::placeholder {
   color: #ffffff9d;
 }
@@ -464,13 +458,13 @@
 .settingspage .versionTitle .i {
   color: #0ad826;
 }
-
 .settingspage .versionInfo {
   color: #e5ff00;
   font-size: 35px;
 }
 
 .settingspage .branches {
+  display: inline-block;
   margin: 25px;
   margin-bottom: -10px;
   width: 60vw;
@@ -480,14 +474,24 @@
   border: 3px solid #a1d80a;
 }
 .settingspage .branches:focus {
-  outline:none;
+  outline: none;
 }
-
 .settingspage .branches .branchOption {
   background-color: rgb(255, 255, 255);
   color: black
 }
 
+.settingspage .ghWarning {
+  position: absolute;
+  margin-top: 32px;
+  margin-left: 56vw;
+  color: #f44336;
+}
+.settingspage .ghWarningOverflow {
+  color: #f44336;
+  margin-top: 10px;
+  margin-bottom: -10px;
+}
 
 .settingspage .btn {
   display: inline-block;
@@ -500,4 +504,8 @@
   cursor: pointer;
   transition: 0.5s;
   margin: 25px;
+}
+
+.settingspage .hidden {
+  display: none;
 }

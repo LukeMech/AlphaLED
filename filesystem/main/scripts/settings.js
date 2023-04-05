@@ -43,6 +43,7 @@ async function getSystemInfo() {
             const gitRepoName = await updaterSettings.gitRepoName
 
             const branchesListStatus = await fetch('https://api.github.com/repos/' + await gitRepoName + '/branches')
+
             if(branchesListStatus.ok) {   // Github given branches list
                 const branchesList = await branchesListStatus.json()
                 for(let i = 0; i < await branchesList.length; i++) {
@@ -68,6 +69,9 @@ async function getSystemInfo() {
                 option.value = await updaterSettings.currentBranch              
                 option.classList.add("branchOption")    
                 branches.appendChild(option)
+
+                document.getElementById("warn1").classList.remove("hidden")
+                document.getElementById("warn2").classList.remove("hidden")
             }
         }
 
