@@ -310,7 +310,6 @@
   margin: 20px;
   background: linear-gradient(45deg, rgba(0, 0, 0, 0), rgba(224, 215, 215, 0.6), rgba(255, 255, 255, 0.76));
 }
-
 .flashpage .red {
   appearance: none;
   height: 10px;
@@ -319,7 +318,6 @@
   margin: 20px;
   background: linear-gradient(45deg, rgba(0, 0, 0, 0), rgba(255, 0, 0, 0.295), rgba(255, 0, 0, 0.76));
 }
-
 .flashpage .green {
   appearance: none;
   height: 10px;
@@ -328,7 +326,6 @@
   margin: 20px;
   background: linear-gradient(45deg, rgba(0, 0, 0, 0), rgba(57, 245, 0, 0.384), rgba(60, 255, 0, 0.76));
 }
-
 .flashpage .blue {
   appearance: none;
   height: 10px;
@@ -337,7 +334,6 @@
   margin: 20px;
   background: linear-gradient(45deg, rgba(0, 0, 0, 0), rgba(21, 53, 236, 0.363), rgba(36, 51, 253, 0.76));
 }
-
 .flashpage input::-webkit-slider-thumb {
   appearance: none;
   height: 20px;
@@ -394,6 +390,7 @@
 }
 
 .patternspage .text {
+  display: inline-block;
   border-radius: 10px;
   color: rgb(255,255,153);
   background-color: rgba(0, 0, 0, 0);
@@ -401,14 +398,181 @@
   padding: 5px;
   width: 70vw;
   margin: 20px;
+  margin-bottom: 10px;
   text-align: center;
+  font-size: 15px;
 }
-
 .patternspage .text:focus {
-  outline:none;
+  outline: none;
+}
+.patternspage .text::placeholder {
+  color: #ffffff9d;
 }
 
-.patternspage .text::placeholder {
+.patternspage .options-btn {
+  display: inline-block;
+  text-decoration: none;
+  color: #fff;
+  border: 3px solid yellow;
+  border-radius: 10px;
+  padding: 2px 5px;
+  font-size: 15px;
+  background: transparent;
+  margin: 20px;
+  margin-bottom: 10px;
+  margin-left: -15px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.patternspage .hidden {
+  height: 0;
+  overflow: hidden;
+  margin: 0px;
+  margin-bottom: 0px;
+  transition: 0.3s ease-in-out;
+}
+
+.patternspage .optionsBox {
+  margin-left: 20px;
+  color: white;
+}
+
+.patternspage .optionsBox .charsDiv {
+  display: block;
+  color: white;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  text-align: center;
+  width: min-content;
+  float: left;
+}
+.patternspage .optionsBox .list {
+  overflow-y: scroll;
+  height: 230px;
+  transition: 0.3s;
+}
+.patternspage .optionsBox .list::-webkit-scrollbar {
+  display: none;
+}
+.patternspage .optionsBox .list .list-option {
+  border: 2px solid yellow;
+  padding: 2px 8px;
+  margin-top: 3px;
+  border-radius: 2px;
+  transition: 0.3s;
+}
+.patternspage .optionsBox .list .list-option.selected {
+  border: 2px solid #0ad826;
+}
+
+.patternspage .optionsBox .slidersDiv {
+  text-align: right;
+  margin-right: 20px;
+}
+.patternspage .optionsBox .slidersDiv h1 {
+  font-size: 20px;
+}
+.patternspage .optionsBox .slider {
+  appearance: none;
+  display: inline-block;
+  height: 10px;
+  width: 70vw;
+  border-radius: 5px;
+  transition: 0.3s;
+  margin: 0px;
+}
+.patternspage .optionsBox .slider::-webkit-slider-thumb {
+  appearance: none;
+  height: 20px;
+  width: 20px;
+  background-color: transparent;
+  border-radius: 50%;
+  border: 5px solid rgb(255, 255, 153);
+}
+
+.patternspage .optionsBox .red {
+  background: linear-gradient(45deg, rgba(0, 0, 0, 0), rgba(255, 0, 0, 0.295), rgba(255, 0, 0, 0.76));
+}
+.patternspage .optionsBox .green {
+  background: linear-gradient(45deg, rgba(0, 0, 0, 0), rgba(57, 245, 0, 0.384), rgba(60, 255, 0, 0.76));
+}
+.patternspage .optionsBox .blue {
+  background: linear-gradient(45deg, rgba(0, 0, 0, 0), rgba(21, 53, 236, 0.363), rgba(36, 51, 253, 0.76));
+}
+
+.patternspage .optionsBox .out {
+  text-align: right;
+  margin-right: 20px;
+  transition: 0.3s;
+}
+.patternspage .optionsBox .out h1 {
+  font-size: 20px;
+}
+.patternspage .optionsBox .out .btn {
+  border: 3px solid #00f80c;
+  padding: 5px 10px;
+  font-size: 13px;
+  width: 50px;
+  text-align: center;
+  transition: 0.3s;
+  margin: 0px;
+  margin-top: 5px;
+  border-radius: 5px;
+}
+
+.patternspage .optionsBox .dirDiv {
+  text-align: right;
+  margin-right: 20px;
+  margin-top: 20px;
+  transition: 0.3s;
+}
+.patternspage .optionsBox .dirDiv h1 {
+  font-size: 20px;
+}
+.patternspage .optionsBox .direction {
+  font-size: 30px;
+  color: yellow;
+  transition: 0.3s;
+}
+
+.patternspage .optionsBox .speedDiv {
+  text-align: right;
+  margin-right: 20px;
+  margin-top: 20px;
+}
+.patternspage .optionsBox .speedDiv h1 {
+  font-size: 20px;
+}
+.patternspage .optionsBox .speed {
+  background: linear-gradient(45deg, rgba(0, 0, 0, 0), rgba(255, 251, 0, 0.363), rgba(253, 231, 36, 0.76));
+}
+
+.patternspage .optionsBox .delayDiv {
+  text-align: right;
+  margin-right: 20px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+.patternspage .optionsBox .delayDiv h1 {
+  font-size: 20px;
+}
+
+.patternspage .optionsBox .animDelay {
+  border-radius: 10px;
+  color: rgb(255,255,153);
+  background-color: rgba(0, 0, 0, 0);
+  border: 3px solid #a5281f;
+  padding: 3px;
+  width: 70vw;
+  margin-top: 10px;
+  text-align: right;
+  padding-right: 6px;
+}
+.patternspage .optionsBox .animDelay:focus {
+  outline: none;
+}
+.patternspage .optionsBox .animDelay::placeholder {
   color: #ffffff9d;
 }
 
@@ -423,6 +587,7 @@
   cursor: pointer;
   transition: 0.5s;
   margin: 20px;
+  margin-top: 10px;
 }
 
 /* 
@@ -464,13 +629,13 @@
 .settingspage .versionTitle .i {
   color: #0ad826;
 }
-
 .settingspage .versionInfo {
   color: #e5ff00;
   font-size: 35px;
 }
 
 .settingspage .branches {
+  display: inline-block;
   margin: 25px;
   margin-bottom: -10px;
   width: 60vw;
@@ -480,14 +645,24 @@
   border: 3px solid #a1d80a;
 }
 .settingspage .branches:focus {
-  outline:none;
+  outline: none;
 }
-
 .settingspage .branches .branchOption {
   background-color: rgb(255, 255, 255);
   color: black
 }
 
+.settingspage .ghWarning {
+  position: absolute;
+  margin-top: 32px;
+  margin-left: 56vw;
+  color: #f44336;
+}
+.settingspage .ghWarningOverflow {
+  color: #f44336;
+  margin-top: 10px;
+  margin-bottom: -10px;
+}
 
 .settingspage .btn {
   display: inline-block;
@@ -500,4 +675,8 @@
   cursor: pointer;
   transition: 0.5s;
   margin: 25px;
+}
+
+.settingspage .hidden {
+  display: none;
 }

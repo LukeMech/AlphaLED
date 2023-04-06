@@ -1,15 +1,11 @@
 # ✨ AlphaLED
 
-## ⚡ Usage
-In Arduino sketch, set your leds numbers map, then in loop function use the **animate(startMap, endMap)** <br />
+## ⚡ Project description
+🪄 Firmware for LEDs, some LEDs photos will be uploaded soon!
 
-Available functions:
-- **animate()**:
-    - **required** startMap (int8_t): map for animation start
-    - **required** endMap (int8_t): map for animation end
-    - Direction (0/1/2/3) *default is 0 - left-to-right, 2 is to up*,
-    - New text color (strip.Color),
-    - New background color (strip.Color)
-
-- **display()**:
-    - **required** map (int8_t): map to display
+**Main functions**:
+- 📔 8x8 LEDs with **server-based controls** (right from your browser)
+- 🔦 **Flashlight** - control brightness and **color**
+- 🔎 Custom patterns - **type text** and it'll be displayed on LEDs!
+- 🔄️ **Updater** - call updater to get latest features and bugfixes for server and microcontroller code!
+- 🛠️ **And much more coming soon!**
