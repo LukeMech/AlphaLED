@@ -636,7 +636,7 @@ void initServer()
   server.on("/updater.json", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/updater.json", String(), true); });
 
-  // Functions
+  // Functions - global
   server.on("/functions/getSystemInfo", HTTP_GET, [](AsyncWebServerRequest *request)
             {
     File file = SPIFFS.open("/version.txt", "r");  // Read versions
@@ -645,11 +645,25 @@ void initServer()
     String textToReturn = version + "\nChip ID: " + String(ESP.getChipId());
     request->send(200, "text/plain", textToReturn); });
 
+  server.on("/functions/updater/update", HTTP_POST, [](AsyncWebServerRequest *request)
+            {
+              if (request->hasParam("firmware", true))
+                request->getParam("firmware", true)->value().toCharArray(updateFv, 150);
+
+              if (request->hasParam("filesystem", true))
+                request->getParam("filesystem", true)->value().toCharArray(updateFS, 150);
+
+              if (request->hasParam("versions", true))
+                request->getParam("versions", true)->value().toCharArray(versionString, 60); });
+
+  server.on("/functions/connCheck", HTTP_HEAD, [](AsyncWebServerRequest *request)
+            { request->send(200, "text/plain", "OK"); });
+
+  // Functions - LEDs
   server.on("/functions/LEDs/checkFlashlight", HTTP_GET, [](AsyncWebServerRequest *request)
             {
     String searchParams = "brightness=" + String(flashlightBrightness) + "&color[R]=" + String(flashlightColorR) + "&color[G]=" + String(flashlightColorG) + "&color[B]=" + String(flashlightColorB);
     request->send(200, "application/x-www-form-urlencoded", searchParams); });
-
   server.on(
       "/functions/LEDs/flashlight", HTTP_POST, [](AsyncWebServerRequest *request)
       {
@@ -672,8 +686,8 @@ void initServer()
       patternNum=-1;
       displayPatternJson.to<JsonArray>();
     }
-    JsonObject obj = displayPatternJson.as<JsonArray>().createNestedObject();
 
+    JsonObject obj = displayPatternJson.as<JsonArray>().createNestedObject();
     if(request->hasParam("from", true)) obj["from"] = request->getParam("from", true)->value();
     if(request->hasParam("to", true)) obj["to"] = request->getParam("to", true)->value();
     if(request->hasParam("color[R]", true)) obj["color"]["R"] = request->getParam("color[R]", true)->value().toInt();
@@ -682,23 +696,29 @@ void initServer()
     if(request->hasParam("animType", true)) obj["animType"] = request->getParam("animType", true)->value().toInt();
     if(request->hasParam("animSpeed", true)) obj["animSpeed"] = request->getParam("animSpeed", true)->value().toInt();
     if(request->hasParam("delay", true)) obj["delay"] = request->getParam("delay", true)->value().toInt();
-    if(request->hasParam("end", true)) patternNum=1;
-    
+    if(request->hasParam("filename", true)) {
+      String filename = "";
+      const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+      for (int i = 0; i < 10; i++) {
+        filename += charset[random(sizeof(charset))];
+      }
+      String filepath = "/patterns/" + filename + ".json";
+      File file = SPIFFS.open(filepath, "w");
+      serializeJson(displayPatternJson, file);
+      file.close();
+
+      File patternsFile = SPIFFS.open("/patterns/patterns.txt", "a");
+      patternsFile.println(request->getParam("filename", true)->value() + "->" + filename);
+      patternsFile.close();
+
+      patternNum=1;
+    }
     request->send(200, "text/plain", "OK"); });
 
-  server.on("/functions/updater/update", HTTP_POST, [](AsyncWebServerRequest *request)
-            {
-              if (request->hasParam("firmware", true))
-                request->getParam("firmware", true)->value().toCharArray(updateFv, 150);
-
-              if (request->hasParam("filesystem", true))
-                request->getParam("filesystem", true)->value().toCharArray(updateFS, 150);
-
-              if (request->hasParam("versions", true))
-                request->getParam("versions", true)->value().toCharArray(versionString, 60); });
-
-  server.on("/functions/connCheck", HTTP_HEAD, [](AsyncWebServerRequest *request)
-            { request->send(200, "text/plain", "OK"); });
+  server.on("/functions/LEDs/getSavedPattern", HTTP_GET, [](AsyncWebServerRequest *request)
+            { 
+        if(!request->hasParam("filename")) request->send(SPIFFS, "/patterns/patterns.txt", String(), true); 
+        else request->send(SPIFFS, "/patterns/" + request->getParam("filename")->value() + ".json", String(), true); });
 
   server.begin();
   serverOn = true;
@@ -743,7 +763,7 @@ void loop()
   {
     for (JsonVariant obj : displayPatternJson.as<JsonArray>())
     {
-      animate(characterToMap(obj["from"].as<String>()), characterToMap(obj["to"].as<String>()), obj["animType"].as<int>(), obj["animSpeed"].as<int>(), strip.Color(obj["color"]["R"].as<int>()*0.5, obj["color"]["G"].as<int>()*0.5, obj["color"]["B"].as<int>()*0.5));
+      animate(characterToMap(obj["from"].as<String>()), characterToMap(obj["to"].as<String>()), obj["animType"].as<int>(), obj["animSpeed"].as<int>(), strip.Color(obj["color"]["R"].as<int>() * 0.5, obj["color"]["G"].as<int>() * 0.5, obj["color"]["B"].as<int>() * 0.5));
       if (!strlen(updateFv) && !strlen(updateFS))
         delay(obj["delay"].as<int>());
     }

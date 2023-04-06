@@ -17,8 +17,53 @@ const slidersDiv = document.getElementById('slidersDiv')
 const animationDirDiv = document.getElementById('dirDiv')
 const outAnimDiv = document.getElementById("addSpaceToggle")
 
+const lastPatternsList = document.getElementById('lastPatterns')
+
 let choosenLetter
-let optionsPerAnim = []
+let optionsPerAnim = [], patterns = []
+
+async function getLastPatterns() {
+    const response = await fetch("../functions/LEDs/getSavedPattern")
+    const files = await response.text()
+    const lines = files.split("\n")
+
+    for (let i = 0; i < lines.length; i++) {
+        const filename = lines[i].substring(0, 10)
+        const res = await fetch(`../functions/LEDs/getSavedPattern?filename=${filename}`)
+        let responseJson = await res.json()
+        responseJson.unshift(lines[i].substring(12))
+        patterns.push(responseJson)
+    }
+
+    for (let i = 0; i < patterns.length; i++) {
+        const option = document.createElement("div");
+        option.innerHTML = `<h1>${patterns[i][0]}</h1><a class="runPattern-btn" onclick="runSavedPattern(${i})"><i class="fa-solid fa-play"></i></a>`
+        option.classList.add('patternOption')
+
+        lastPatternsList.appendChild(option)
+    }
+}
+getLastPatterns()
+
+function runSavedPattern(num) {
+    optionsPerAnim = patterns[num].splice(0, 1)
+
+    let textInputValueArray = []
+    for(let i = 0; i < optionsPerAnim.length; i++) {
+        if(optionsPerAnim[i].from != 'undefined') textInputValueArray.push(optionsPerAnim[i].from)
+    }
+
+    textInput.value = textInputValueArray.join("")
+    optionsBtn.click()
+
+    optionsPerAnim = patterns[num].splice(0, 1)
+    changeLetter(0)
+
+    if(optionsPerAnim[0].from === 'undefined') {
+        outAnim.innerHTML = 'OFF'
+        outAnim.style.borderColor = '#f44336' 
+    }
+}
 
 textInput.addEventListener('keydown', function (event) {
     if (event.key === "Enter") {
@@ -51,12 +96,13 @@ submitBtn.addEventListener("click", async function () {
 
         const urlSearchParams = new URLSearchParams(params);
         if(i===0) urlSearchParams.append("start", true);
-        else if(i===optionsPerAnim.length-1) urlSearchParams.append("end", true);        
+        else if(i===optionsPerAnim.length-1) urlSearchParams.append("filename", characters);        
         await request("LEDs/changePattern", urlSearchParams.toString())
     }
 
     setTimeout(() => {
         submitBtn.style.borderColor = ""
+        getLastPatterns()
     }, 1000);
 });
 
@@ -184,7 +230,7 @@ outAnim.addEventListener("click", function () {
         outAnim.innerHTML = 'ON'
         outAnim.style.borderColor = ''
 
-        optionsPerAnim[0].from = ' '
+        optionsPerAnim[0].from = 'undefined'
         optionsPerAnim.push({
             from: optionsPerAnim[optionsPerAnim.length - 1].to,
             to: " ",

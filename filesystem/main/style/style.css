@@ -586,8 +586,50 @@
   background: transparent;
   cursor: pointer;
   transition: 0.5s;
+  margin: 10px;
+}
+
+.patternspage .historyInfo {
+  border-top: 3px solid;
+  border-image-source: linear-gradient(to right, rgb(26, 25, 25), rgba(38, 155, 22, 0.8), rgb(26, 25, 25));
+  border-image-slice: 1;
+  padding-top: 20px;
+  color: white;
+  text-align: left;
   margin: 20px;
-  margin-top: 10px;
+}
+.patternspage .lastPatterns {
+  color: white;
+  display: flex;
+  align-items: center;
+  width: calc(100vw - 40px);
+  text-align: left;
+  margin: 20px;
+  margin-top: -20px;
+  border-radius: 5px;
+  padding: 10px;
+}
+.patternspage .lastPatterns h1 {
+  width: calc(100vw - 40px - 25px);
+  border: 3px solid red;
+  border-radius: 5px;
+  margin-right: 20px;
+  padding-left: 10px;
+  font-size: 20px;
+}
+
+.patternspage .lastPatterns .runPattern-btn {
+  text-decoration: none;
+  color: #fff;
+  border: 3px solid yellow;
+  border-radius: 5px;
+  padding: 5px 15px;
+  background: transparent;
+  cursor: pointer;
+  transition: 0.5s;
+  font-size: 15px;
+  margin-left: auto;
+  margin-bottom: 2px;
 }
 
 /* 
