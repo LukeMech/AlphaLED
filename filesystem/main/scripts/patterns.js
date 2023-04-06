@@ -63,7 +63,7 @@ submitBtn.addEventListener("click", async function () {
     }, 1000);
 });
 
-textInput.addEventListener('input', function() {
+function textInputFunction() {
     optionsBtn.style.rotate = ''
     optionsBox.style.height = ''
     addDelay.setAttribute('readonly', true)
@@ -85,7 +85,9 @@ textInput.addEventListener('input', function() {
             })
         } 
     }
-})
+}
+
+textInput.addEventListener('input', textInputFunction)
 
 function changeLetter(num) {
     choosenLetter = num
@@ -189,6 +191,7 @@ function runSavedPattern(num) {
     for(let i = 0; i < optionsPerAnim.length; i++) if(optionsPerAnim[i].to != 'undefined') textInputValueArray.push(optionsPerAnim[i].to)
     
     textInput.value = textInputValueArray.join("")
+    textInputFunction()
     optionsBox.style.height = ''
     optionsBtn.click()
 
