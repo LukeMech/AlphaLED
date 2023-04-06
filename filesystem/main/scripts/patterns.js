@@ -22,53 +22,6 @@ const lastPatternsList = document.getElementById('lastPatterns')
 let choosenLetter
 let optionsPerAnim = [], patterns = []
 
-async function getLastPatterns() {
-    const response = await fetch("../functions/LEDs/getSavedPattern")
-    const files = await response.text()
-    const lines = files.split("\n")
-
-    for (let i = 0; i < lines.length; i++) {
-        const filename = lines[i].substring(0, 10)
-        if(filename) {
-            const res = await fetch(`../functions/LEDs/getSavedPattern?filename=${filename}`)
-            let responseJson = await res.json()
-            responseJson.unshift(lines[i].substring(12))
-            patterns.push(responseJson)
-        }
-    }
-
-    lastPatternsList.innerHTML = ''
-    for (let i = 0; i < patterns.length; i++) {
-        const option = document.createElement("div");
-        option.innerHTML = `<div class="lastPatterns"><h1>${patterns[i][0]}</h1><a class="runPattern-btn" onclick="runSavedPattern(${i})"><i class="fa-solid fa-play"></i></a></div>`
-        option.classList.add('patternOption')
-
-        lastPatternsList.appendChild(option)
-    }
-}
-getLastPatterns()
-
-function runSavedPattern(num) {
-    
-    optionsPerAnim = patterns[num].slice(1)
-
-    let textInputValueArray = []
-    for(let i = 0; i < optionsPerAnim.length; i++) {
-        if(optionsPerAnim[i].from != 'undefined') textInputValueArray.push(optionsPerAnim[i].from)
-    }
-
-    textInput.value = textInputValueArray.join("")
-    optionsBtn.click()
-
-    optionsPerAnim = patterns[num].slice(1)
-    changeLetter(0)
-
-    if(optionsPerAnim[0].from === 'undefined') {
-        outAnim.innerHTML = 'OFF'
-        outAnim.style.borderColor = '#f44336' 
-    }
-}
-
 textInput.addEventListener('keydown', function (event) {
     if (event.key === "Enter") {
         if(optionsBox.style.height) submitBtn.click();
@@ -200,6 +153,57 @@ optionsBtn.addEventListener("click", function () {
         addDelay.setAttribute('readonly', true)
     }
 });
+
+async function getLastPatterns() {
+    const response = await fetch("../functions/LEDs/getSavedPattern")
+    const files = await response.text()
+    const lines = files.split("\n")
+
+    for (let i = 0; i < lines.length; i++) {
+        const filename = lines[i].substring(0, 10)
+        if(filename) {
+            const res = await fetch(`../functions/LEDs/getSavedPattern?filename=${filename}`)
+            let responseJson = await res.json()
+            responseJson.unshift(lines[i].substring(12))
+            patterns.push(await responseJson)
+        }
+    }
+
+    lastPatternsList.innerHTML = ''
+    for (let i = 0; i < patterns.length; i++) {
+        const option = document.createElement("div");
+        option.innerHTML = `<div class="lastPatterns"><h1>${patterns[i][0]}</h1><a class="runPattern-btn" onclick="runSavedPattern(${i})"><i class="fa-solid fa-play"></i></a></div>`
+        option.classList.add('patternOption')
+
+        lastPatternsList.appendChild(option)
+    }
+
+    console.log(patterns)
+}
+getLastPatterns()
+
+function runSavedPattern(num) {
+    
+    console.log(optionsPerAnim[num])
+
+    optionsPerAnim = patterns[num].slice(1)
+
+    let textInputValueArray = []
+    for(let i = 0; i < optionsPerAnim.length; i++) {
+        if(optionsPerAnim[i].from != 'undefined') textInputValueArray.push(optionsPerAnim[i].from)
+    }
+
+    textInput.value = textInputValueArray.join("")
+    optionsBtn.click()
+
+    optionsPerAnim = patterns[num].slice(1)
+    changeLetter(0)
+
+    if(optionsPerAnim[0].from === 'undefined') {
+        outAnim.innerHTML = 'OFF'
+        outAnim.style.borderColor = '#f44336' 
+    }
+}
 
 redControl.addEventListener("input", function () {
     optionsPerAnim[choosenLetter]["color[R]"] = redControl.value
