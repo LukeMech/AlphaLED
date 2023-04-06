@@ -743,7 +743,7 @@ void loop()
   {
     for (JsonVariant obj : displayPatternJson.as<JsonArray>())
     {
-      animate(characterToMap(obj["from"].as<String>()), characterToMap(obj["to"].as<String>()), obj["animType"].as<int>(), obj["animSpeed"].as<int>(), strip.Color(obj["color"]["R"].as<int>(), obj["color"]["G"].as<int>(), obj["color"]["B"].as<int>()));
+      animate(characterToMap(obj["from"].as<String>()), characterToMap(obj["to"].as<String>()), obj["animType"].as<int>(), obj["animSpeed"].as<int>(), strip.Color(obj["color"]["R"].as<int>()*0.4, obj["color"]["G"].as<int>()*0.4, obj["color"]["B"].as<int>()*0.4));
       if (!strlen(updateFv) && !strlen(updateFS))
         delay(obj["delay"].as<int>());
     }

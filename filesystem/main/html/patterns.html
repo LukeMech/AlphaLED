@@ -51,7 +51,31 @@
     <input class="text" placeholder="Type here... (max 24 characters)" type="text" id="text" maxlength="24">
     <a class="options-btn" id="optionsBtn"><i class="fa-solid fa-chevron-down"></i></a>
     <div id="optionsBox" class="hidden optionsBox">
-      Options will be placed here
+      
+      <div class='charsDiv'>
+        <ul class="list" id="charList"></ul>
+      </div>
+      <div class='slidersDiv'>
+        <h1>Character color</h1>
+        <input class="slider red" type="range" min="0" max="255" step="5" value="122" id="red">
+        <input class="slider green" type="range" min="0" max="255" step="5" value="0" id="green">
+        <input class="slider blue" type="range" min="0" max="255" step="5" value="0" id="blue">
+      </div>
+
+      <div class='dirDiv'>
+        <h1>Animation direction</h1>
+        <i class="direction fa-solid fa-arrow-left" id='direction'></i>
+      </div>
+
+      <div class='speedDiv'>
+        <h1>Animation speed</h1>
+        <input class="slider speed" type="range" min="0" max="800" step="5" value="120" id="speed">
+      </div>
+
+      <div class='delayDiv'>
+        <h1>Stop on letter</h1>
+        <input class="animDelay" placeholder="0 sec" type="number" id='delay' min="0" max="10">
+      </div>
     </div>
 
     <a class="btn" id="submit">SUBMIT</a>
