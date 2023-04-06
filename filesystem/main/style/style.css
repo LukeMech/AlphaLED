@@ -400,6 +400,7 @@
   margin: 20px;
   margin-bottom: 10px;
   text-align: center;
+  font-size: 15px;
 }
 .patternspage .text:focus {
   outline: none;
@@ -461,7 +462,7 @@
   border-radius: 2px;
   transition: 0.3s;
 }
-.patternspage .optionsBox .list .list-option:checked {
+.patternspage .optionsBox .list .list-option.selected {
   border: 2px solid #0ad826;
 }
 
@@ -498,6 +499,26 @@
 }
 .patternspage .optionsBox .blue {
   background: linear-gradient(45deg, rgba(0, 0, 0, 0), rgba(21, 53, 236, 0.363), rgba(36, 51, 253, 0.76));
+}
+
+.patternspage .optionsBox .out {
+  text-align: right;
+  margin-right: 20px;
+  transition: 0.3s;
+}
+.patternspage .optionsBox .out h1 {
+  font-size: 20px;
+}
+.patternspage .optionsBox .out .btn {
+  border: 3px solid #00f80c;
+  padding: 5px 10px;
+  font-size: 13px;
+  width: 50px;
+  text-align: center;
+  transition: 0.3s;
+  margin: 0px;
+  margin-top: 5px;
+  border-radius: 5px;
 }
 
 .patternspage .optionsBox .dirDiv {
