@@ -162,7 +162,8 @@ async function getLastPatterns() {
     const response = await fetch("../functions/LEDs/getSavedPattern")
     const files = await response.text()
     const lines = files.split("\n")
-
+    patterns = []
+    
     for (let i = 0; i < lines.length; i++) {
         const filename = lines[i].substring(0, 10)
         if(filename) {
