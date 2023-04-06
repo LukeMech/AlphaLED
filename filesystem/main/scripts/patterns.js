@@ -195,7 +195,7 @@ function runSavedPattern(num) {
     optionsPerAnim = patterns[num].slice(1)
     changeLetter(0)
 
-    if(optionsPerAnim[0].from === 'undefined') {
+    if(optionsPerAnim[0].from != 'undefined') {
         outAnim.innerHTML = 'OFF'
         outAnim.style.borderColor = '#f44336' 
     }
