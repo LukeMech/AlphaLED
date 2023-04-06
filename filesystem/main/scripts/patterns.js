@@ -105,7 +105,7 @@ function changeLetter(num) {
     else if(optionsPerAnim[num].animType === 1) animDir.style.rotate='180deg'
     else if(optionsPerAnim[num].animType === 2) animDir.style.rotate='90deg'
     else if(optionsPerAnim[num].animType === 3) animDir.style.rotate='-90deg'
-    animSpeed.value = 810-optionsPerAnim[num].animSpeed
+    animSpeed.value = 850-optionsPerAnim[num].animSpeed
     addDelay.value = ''
     addDelay.placeholder = `${(optionsPerAnim[num].delay/1000)} sec`
     addDelay.removeAttribute('readonly')
@@ -155,7 +155,7 @@ animDir.addEventListener('click', function() {
     else if(optionsPerAnim[choosenLetter].animType === 3) animDir.style.rotate='-90deg'
 })
 animSpeed.addEventListener("input", function () {
-    optionsPerAnim[choosenLetter].animSpeed = 810-animSpeed.value
+    optionsPerAnim[choosenLetter].animSpeed = 850-animSpeed.value
 })
 addDelay.addEventListener("input", function () {
     optionsPerAnim[choosenLetter].delay = addDelay.value*1000
