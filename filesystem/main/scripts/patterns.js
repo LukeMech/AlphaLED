@@ -12,6 +12,9 @@ const animDir = document.getElementById('direction');
 const animSpeed = document.getElementById('speed');
 const addDelay = document.getElementById('delay')
 
+const slidersDiv = document.getElementById('slidersDiv')
+const animationDirDiv = document.getElementById('dirDiv')
+
 let choosenLetter
 let optionsPerAnim = []
 
@@ -30,6 +33,7 @@ submitBtn.addEventListener("click", async function () {
     textInput.value = ""
     optionsBtn.style.rotate = ''
     optionsBox.style.height = ''
+    addDelay.setAttribute('readonly', true)
 
     for (let i = 0; i <= characters.length; i++) {
         const params = ({
@@ -56,7 +60,8 @@ submitBtn.addEventListener("click", async function () {
 
 textInput.addEventListener('input', function() {
     optionsBtn.style.rotate = ''
-    optionsBox.style.height = '';
+    optionsBox.style.height = ''
+    addDelay.setAttribute('readonly', true)
     
     if(textInput.value) {
         const characters = document.getElementById("text").value.toUpperCase().split("");
@@ -80,14 +85,22 @@ textInput.addEventListener('input', function() {
 function changeLetter(num) {
     choosenLetter = num
 
-    for(let i = 0; i < charactersList.children.length; i++) {
-        charactersList.children.item(i).removeAttribute('selected');
-    }
+    for(let i = 0; i < charactersList.children.length; i++) charactersList.children.item(i).removeAttribute('selected');
     charactersList.children.item(num).setAttribute('selected', true)
 
-    redControl.value = optionsPerAnim[num]["color[R]"]
-    greenControl.value = optionsPerAnim[num]["color[G]"]
-    blueControl.value = optionsPerAnim[num]["color[B]"]
+    if(charactersList.children.item(num).value == " ") {
+        optionsBox.style.height = `240px`
+        slidersDiv.style.height = ''
+        animationDirDiv.style.marginTop = '0px'
+    }
+    else {
+        optionsBox.style.height = `370px`
+        slidersDiv.style.height = `${slidersDiv.scrollHeight}px`
+        animationDirDiv.style.marginTop = ''
+        redControl.value = optionsPerAnim[num]["color[R]"]
+        greenControl.value = optionsPerAnim[num]["color[G]"]
+        blueControl.value = optionsPerAnim[num]["color[B]"]
+    }
     if(optionsPerAnim[num].animType === 0) animDir.style.rotate=''
     else if(optionsPerAnim[num].animType === 1) animDir.style.rotate='180deg'
     else if(optionsPerAnim[num].animType === 2) animDir.style.rotate='90deg'
@@ -95,9 +108,10 @@ function changeLetter(num) {
     animSpeed.value = 810-optionsPerAnim[num].animSpeed
     addDelay.value = ''
     addDelay.placeholder = `${(optionsPerAnim[num].delay/1000)} sec`
+    addDelay.removeAttribute('readonly')
 }
 
-optionsBtn.addEventListener("click", async function () {
+optionsBtn.addEventListener("click", function () {
     if (!textInput.value) return;
 
     if (!optionsBox.style.height) {
@@ -106,18 +120,19 @@ optionsBtn.addEventListener("click", async function () {
         for(let i = 0; i < optionsPerAnim.length-1; i++) {
             const option = document.createElement("option");
             option.innerHTML = optionsPerAnim[i].to;
+            option.value = optionsPerAnim[i].to
             option.setAttribute('onclick', `changeLetter(${i})`)
             option.classList.add("list-option")
             charactersList.appendChild(option)
         }
 
         changeLetter(0)
-        optionsBox.style.height = `${optionsBox.scrollHeight}px`
         optionsBtn.style.rotate = '180deg'
     }
     else {
         optionsBtn.style.rotate = ''
-        optionsBox.style.height = '';
+        optionsBox.style.height = ''
+        addDelay.setAttribute('readonly', true)
     }
 });
 
