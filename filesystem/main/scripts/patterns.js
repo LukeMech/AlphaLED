@@ -31,7 +31,6 @@ async function getLastPatterns() {
         const filename = lines[i].substring(0, 10)
         if(filename) {
             const res = await fetch(`../functions/LEDs/getSavedPattern?filename=${filename}`)
-            console.log(res)
             let responseJson = await res.json()
             responseJson.unshift(lines[i].substring(12))
             patterns.push(responseJson)
@@ -50,8 +49,9 @@ async function getLastPatterns() {
 getLastPatterns()
 
 function runSavedPattern(num) {
-    optionsPerAnim = patterns[num].slice(1)
     
+    optionsPerAnim = patterns[num].slice(1)
+
     let textInputValueArray = []
     for(let i = 0; i < optionsPerAnim.length; i++) {
         if(optionsPerAnim[i].from != 'undefined') textInputValueArray.push(optionsPerAnim[i].from)
@@ -60,7 +60,7 @@ function runSavedPattern(num) {
     textInput.value = textInputValueArray.join("")
     optionsBtn.click()
 
-    optionsPerAnim = patterns[num].splice(0, 1)
+    optionsPerAnim = patterns[num].slice(1)
     changeLetter(0)
 
     if(optionsPerAnim[0].from === 'undefined') {
