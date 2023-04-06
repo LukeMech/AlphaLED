@@ -28,10 +28,11 @@ async function getLastPatterns() {
     const lines = files.split("\n")
 
     for (let i = 0; i < lines.length; i++) {
-        const filename = lines[i].substring(0, 10)
+        const filename = lines[i].substring(12)
         const res = await fetch(`../functions/LEDs/getSavedPattern?filename=${filename}`)
+        console.log(res)
         let responseJson = await res.json()
-        responseJson.unshift(lines[i].substring(12))
+        responseJson.unshift(lines[i].substring(0, 10))
         patterns.push(responseJson)
     }
 
@@ -96,7 +97,7 @@ submitBtn.addEventListener("click", async function () {
 
         const urlSearchParams = new URLSearchParams(params);
         if(i===0) urlSearchParams.append("start", true);
-        else if(i===optionsPerAnim.length-1) urlSearchParams.append("filename", characters);        
+        else if(i===optionsPerAnim.length-1) urlSearchParams.append("filename", characters.join());        
         await request("LEDs/changePattern", urlSearchParams.toString())
     }
 

@@ -708,7 +708,7 @@ void initServer()
       file.close();
 
       File patternsFile = SPIFFS.open("/patterns/patterns.txt", "a");
-      patternsFile.println(request->getParam("filename", true)->value() + "->" + filename);
+      patternsFile.println(filename + "->" + request->getParam("filename", true)->value());
       patternsFile.close();
 
       patternNum=1;
