@@ -122,6 +122,7 @@ function changeLetter(num) {
     animSpeed.value = 550-optionsPerAnim[num].animSpeed
     addDelay.value = ''
     addDelay.placeholder = `${(optionsPerAnim[num].delay/1000)} sec`
+    if(num === optionsPerAnim.length-1 && outAnim.innerHTML==='OFF') addDelay.placeholder = ''
     addDelay.removeAttribute('readonly')
 }
 
@@ -185,13 +186,13 @@ function runSavedPattern(num) {
     
     optionsPerAnim = patterns[num].slice(1)
     let textInputValueArray = []
-    for(let i = 0; i < optionsPerAnim.length; i++) if(optionsPerAnim[i].from != 'undefined') textInputValueArray.push(optionsPerAnim[i].from)
+    for(let i = 0; i < optionsPerAnim.length; i++) if(optionsPerAnim[i].to != 'undefined') textInputValueArray.push(optionsPerAnim[i].to)
     
     textInput.value = textInputValueArray.join("")
     optionsBox.style.height = ''
+    optionsBtn.click()
 
     optionsPerAnim = patterns[num].slice(1)
-    optionsBtn.click()
     changeLetter(0)
 
     if(optionsPerAnim[0].from === 'undefined') {
@@ -236,7 +237,7 @@ outAnim.addEventListener("click", function () {
         optionsPerAnim[0].from = 'undefined'
         optionsPerAnim.push({
             from: optionsPerAnim[optionsPerAnim.length - 1].to,
-            to: " ",
+            to: "undefined",
             "color[R]": 200,
             "color[G]": 0,
             "color[B]": 0,
