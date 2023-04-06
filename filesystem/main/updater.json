@@ -1,6 +1,6 @@
 {
     "gitRepoName": "LukeMech/AlphaLED",
-    "currentBranch": "development",
+    "currentBranch": "main",
 
     "versionFile": "updater/build-version.txt",
     "firmwareFile": "updater/firmware.bin",
