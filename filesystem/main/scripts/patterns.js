@@ -122,7 +122,7 @@ function changeLetter(num) {
     animSpeed.value = 550-optionsPerAnim[num].animSpeed
     addDelay.value = ''
     addDelay.placeholder = `${(optionsPerAnim[num].delay/1000)} sec`
-    if(num === optionsPerAnim.length-1 && outAnim.innerHTML==='OFF') addDelay.placeholder = ''
+    if(num === optionsPerAnim.length && outAnim.innerHTML==='OFF') addDelay.placeholder = ''
     addDelay.removeAttribute('readonly')
 }
 
