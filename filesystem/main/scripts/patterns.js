@@ -205,6 +205,6 @@ outAnim.addEventListener("click", function () {
         optionsPerAnim[0].from = optionsPerAnim[optionsPerAnim.length-1].to
         animSpeed.value=0
         animDir.style.rotate=''
-        addDelay.placeholder='disabled'
+        addDelay.placeholder=''
     }
 })
