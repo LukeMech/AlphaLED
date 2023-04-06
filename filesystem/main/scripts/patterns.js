@@ -37,7 +37,7 @@ submitBtn.addEventListener("click", async function () {
     optionsBox.style.height = ''
     addDelay.setAttribute('readonly', true)
 
-    for (let i = 0; i <= characters.length; i++) {
+    for (let i = 0; i < optionsPerAnim.length; i++) {
         const params = ({
             from: optionsPerAnim[i].from,
             to: optionsPerAnim[i].to,
@@ -51,7 +51,7 @@ submitBtn.addEventListener("click", async function () {
 
         const urlSearchParams = new URLSearchParams(params);
         if(i===0) urlSearchParams.append("start", true);
-        else if(i===characters.length) urlSearchParams.append("end", true);        
+        else if(i===optionsPerAnim.length-1) urlSearchParams.append("end", true);        
         await request("LEDs/changePattern", urlSearchParams.toString())
     }
 
@@ -116,7 +116,7 @@ function changeLetter(num) {
     else if(optionsPerAnim[num].animType === 1) animDir.style.rotate='180deg'
     else if(optionsPerAnim[num].animType === 2) animDir.style.rotate='90deg'
     else if(optionsPerAnim[num].animType === 3) animDir.style.rotate='-90deg'
-    animSpeed.value = 850-optionsPerAnim[num].animSpeed
+    animSpeed.value = 550-optionsPerAnim[num].animSpeed
     addDelay.value = ''
     addDelay.placeholder = `${(optionsPerAnim[num].delay/1000)} sec`
     addDelay.removeAttribute('readonly')
@@ -137,6 +137,9 @@ optionsBtn.addEventListener("click", function () {
             if(i === 0) option.classList.add("selected")
             charactersList.appendChild(option)
         }
+
+        outAnim.innerHTML = 'ON'
+        outAnim.style.borderColor = ''
 
         changeLetter(0)
         optionsBtn.style.rotate = '180deg'
@@ -169,7 +172,7 @@ animDir.addEventListener('click', function() {
 })
 animSpeed.addEventListener("input", function () {
     if(outAnim.innerHTML === 'OFF' && outAnimDiv.style.height) return animSpeed.value=0
-    optionsPerAnim[choosenLetter].animSpeed = 850-animSpeed.value
+    optionsPerAnim[choosenLetter].animSpeed = 550-animSpeed.value
 })
 addDelay.addEventListener("input", function () {
     if(outAnim.innerHTML === 'OFF' && outAnimDiv.style.height) return;
@@ -192,7 +195,7 @@ outAnim.addEventListener("click", function () {
             animSpeed: 120,
             delay: 0,
         })
-        animSpeed.value=850-120;
+        animSpeed.value=550-120;
         addDelay.placeholder='0 sec'
     }
     else {
