@@ -129,6 +129,7 @@ optionsBtn.addEventListener("click", function () {
     if (!textInput.value) return;
 
     if (!optionsBox.style.height) {
+
         charactersList.innerHTML=''
         
         for(let i = 0; i < optionsPerAnim.length; i++) {
@@ -177,26 +178,20 @@ async function getLastPatterns() {
 
         lastPatternsList.appendChild(option)
     }
-
-    console.log(patterns)
 }
 getLastPatterns()
 
 function runSavedPattern(num) {
     
-    console.log(optionsPerAnim[num])
-
     optionsPerAnim = patterns[num].slice(1)
-
     let textInputValueArray = []
-    for(let i = 0; i < optionsPerAnim.length; i++) {
-        if(optionsPerAnim[i].from != 'undefined') textInputValueArray.push(optionsPerAnim[i].from)
-    }
-
+    for(let i = 0; i < optionsPerAnim.length; i++) if(optionsPerAnim[i].from != 'undefined') textInputValueArray.push(optionsPerAnim[i].from)
+    
     textInput.value = textInputValueArray.join("")
-    optionsBtn.click()
+    optionsBox.style.height = ''
 
     optionsPerAnim = patterns[num].slice(1)
+    optionsBtn.click()
     changeLetter(0)
 
     if(optionsPerAnim[0].from === 'undefined') {

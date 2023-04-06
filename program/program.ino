@@ -690,9 +690,9 @@ void initServer()
     JsonObject obj = displayPatternJson.as<JsonArray>().createNestedObject();
     if(request->hasParam("from", true)) obj["from"] = request->getParam("from", true)->value();
     if(request->hasParam("to", true)) obj["to"] = request->getParam("to", true)->value();
-    if(request->hasParam("color[R]", true)) obj["color"]["R"] = request->getParam("color[R]", true)->value().toInt();
-    if(request->hasParam("color[G]", true)) obj["color"]["G"] = request->getParam("color[G]", true)->value().toInt();
-    if(request->hasParam("color[B]", true)) obj["color"]["B"] = request->getParam("color[B]", true)->value().toInt();
+    if(request->hasParam("color[R]", true)) obj["color[R]"] = request->getParam("color[R]", true)->value().toInt();
+    if(request->hasParam("color[G]", true)) obj["color[G]"] = request->getParam("color[G]", true)->value().toInt();
+    if(request->hasParam("color[B]", true)) obj["color[B]"] = request->getParam("color[B]", true)->value().toInt();
     if(request->hasParam("animType", true)) obj["animType"] = request->getParam("animType", true)->value().toInt();
     if(request->hasParam("animSpeed", true)) obj["animSpeed"] = request->getParam("animSpeed", true)->value().toInt();
     if(request->hasParam("delay", true)) obj["delay"] = request->getParam("delay", true)->value().toInt();
@@ -763,7 +763,7 @@ void loop()
   {
     for (JsonVariant obj : displayPatternJson.as<JsonArray>())
     {
-      animate(characterToMap(obj["from"].as<String>()), characterToMap(obj["to"].as<String>()), obj["animType"].as<int>(), obj["animSpeed"].as<int>(), strip.Color(obj["color"]["R"].as<int>() * 0.5, obj["color"]["G"].as<int>() * 0.5, obj["color"]["B"].as<int>() * 0.5));
+      animate(characterToMap(obj["from"].as<String>()), characterToMap(obj["to"].as<String>()), obj["animType"].as<int>(), obj["animSpeed"].as<int>(), strip.Color(obj["color[R]"].as<int>() * 0.5, obj["color[G]"].as<int>() * 0.5, obj["color[B]"].as<int>() * 0.5));
       if (!strlen(updateFv) && !strlen(updateFS))
         delay(obj["delay"].as<int>());
     }
