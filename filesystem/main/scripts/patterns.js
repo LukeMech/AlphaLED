@@ -91,10 +91,12 @@ function changeLetter(num) {
     if(charactersList.children.item(num).value == " ") {
         optionsBox.style.height = `240px`
         slidersDiv.style.height = ''
+        charactersList.style.height = ''
         animationDirDiv.style.marginTop = '0px'
     }
     else {
         optionsBox.style.height = `370px`
+        charactersList.style.height = '360px'
         slidersDiv.style.height = `${slidersDiv.scrollHeight}px`
         animationDirDiv.style.marginTop = ''
         redControl.value = optionsPerAnim[num]["color[R]"]

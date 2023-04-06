@@ -441,13 +441,22 @@
   display: block;
   color: white;
   margin-top: 5px;
+  margin-bottom: 5px;
   text-align: center;
   width: min-content;
   float: left;
 }
+.patternspage .optionsBox .list {
+  overflow-y: scroll;
+  height: 230px;
+  transition: 0.3s;
+}
+.patternspage .optionsBox .list::-webkit-scrollbar {
+  display: none;
+}
 .patternspage .optionsBox .list .list-option {
   border: 2px solid yellow;
-  padding: 2px 5px;
+  padding: 2px 8px;
   margin-top: 3px;
   border-radius: 2px;
   transition: 0.3s;
