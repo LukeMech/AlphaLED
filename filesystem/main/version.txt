@@ -1,2 +1,2 @@
-Filesystem: DEV-23.04.05-11
-Firmware: DEV-23.04.05-1.t
+Filesystem: DEV-23.04.06
+Firmware: DEV-23.04.06

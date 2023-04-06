@@ -390,13 +390,15 @@
 }
 
 .patternspage .text {
+  display: inline-block;
   border-radius: 10px;
   color: rgb(255,255,153);
   background-color: rgba(0, 0, 0, 0);
   border: 3px solid #f44336;
   padding: 5px;
-  width: 70vw;
+  width: 60vw;
   margin: 20px;
+  margin-bottom: 10px;
   text-align: center;
 }
 .patternspage .text:focus {
@@ -404,6 +406,35 @@
 }
 .patternspage .text::placeholder {
   color: #ffffff9d;
+}
+
+.patternspage .options-btn {
+  display: inline-block;
+  text-decoration: none;
+  color: #fff;
+  border: 3px solid yellow;
+  border-radius: 10px;
+  padding: 2px 5px;
+  font-size: 15px;
+  background: transparent;
+  margin: 20px;
+  margin-bottom: 10px;
+  margin-left: -15px;
+  cursor: pointer;
+  transition: 0.5s;
+}
+
+.patternspage .hidden {
+  height: 0;
+  overflow: hidden;
+  margin: 0px;
+  margin-bottom: 0px;
+  transition: 0.3s ease-in-out;
+}
+
+.patternspage .optionsBox {
+  color: #0ad826;
+
 }
 
 .patternspage .btn {
@@ -417,6 +448,7 @@
   cursor: pointer;
   transition: 0.5s;
   margin: 20px;
+  margin-top: 10px;
 }
 
 /* 
