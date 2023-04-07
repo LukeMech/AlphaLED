@@ -117,15 +117,22 @@ function changeLetter(num) {
         greenControl.value = optionsPerAnim[num]["color[G]"]
         blueControl.value = optionsPerAnim[num]["color[B]"]
     }
-    if(optionsPerAnim[num].animType === 0) animDir.style.rotate=''
-    else if(optionsPerAnim[num].animType === 1) animDir.style.rotate='180deg'
-    else if(optionsPerAnim[num].animType === 2) animDir.style.rotate='90deg'
-    else if(optionsPerAnim[num].animType === 3) animDir.style.rotate='-90deg'
-    animSpeed.value = 550-optionsPerAnim[num].animSpeed
-    addDelay.value = ''
-    addDelay.placeholder = `${(optionsPerAnim[num].delay/1000)} sec`
-    if(num === charactersList.children.length-1 && outAnim.innerHTML === 'OFF') addDelay.placeholder=''
-    addDelay.removeAttribute('readonly')
+    if(optionsPerAnim[num]) {
+        if(optionsPerAnim[num].animType === 0) animDir.style.rotate=''
+        else if(optionsPerAnim[num].animType === 1) animDir.style.rotate='180deg'
+        else if(optionsPerAnim[num].animType === 2) animDir.style.rotate='90deg'
+        else if(optionsPerAnim[num].animType === 3) animDir.style.rotate='-90deg'
+        animSpeed.value = 550-optionsPerAnim[num].animSpeed
+        addDelay.value = ''
+        addDelay.placeholder = `${(optionsPerAnim[num].delay/1000)} sec`
+        addDelay.removeAttribute('readonly')
+    }
+    else {
+        animSpeed.value=0
+        animDir.style.rotate=''
+        addDelay.placeholder=''
+    }
+    
 }
 
 optionsBtn.addEventListener("click", function () {
