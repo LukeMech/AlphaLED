@@ -14,16 +14,16 @@
 #include <time.h>
 #include <WiFiClientSecure.h>
 
-const char *backupURLFS = "https://raw.githubusercontent.com/LukeMech/AlphaLED/main/updater/backup-filesystem.bin";
-const bool WiFi_UpdateCredentialsFile = false; // Update network_config.txt in filesystem?
-const char *ssid = "";                         // Network name
-const char *password = "";                     // Network password
+const char *PROGMEM backupURLFS = "https://raw.githubusercontent.com/LukeMech/AlphaLED/main/updater/backup-filesystem.bin";
+const bool PROGMEM WiFi_UpdateCredentialsFile = false; // Update network_config.txt in filesystem?
+const char *PROGMEM ssid = "";                         // Network name
+const char *PROGMEM password = "";                     // Network password
 
-const int LED_PIN = D1; // LED Pin
+const int PROGMEM LED_PIN = D1; // LED Pin
 
 Adafruit_NeoPixel strip(64, LED_PIN, NEO_GRB + NEO_KHZ800); // Init LEDs
 
-const uint8_t led_map[8][8] = { // Table corresponding to the physical position/number of the LEDs
+const uint8_t PROGMEM led_map[8][8] = { // Table corresponding to the physical position/number of the LEDs
     {56, 55, 40, 39, 24, 23, 8, 7},
     {57, 54, 41, 38, 25, 22, 9, 6},
     {58, 53, 42, 37, 26, 21, 10, 5},
@@ -33,24 +33,21 @@ const uint8_t led_map[8][8] = { // Table corresponding to the physical position/
     {62, 49, 46, 33, 30, 17, 14, 1},
     {63, 48, 47, 32, 31, 16, 15, 0}};
 
-uint32_t LED_COLOR_0 = strip.Color(0, 0, 0);  // diode color for 0 (background) (R G B)
-uint32_t LED_COLOR_1 = strip.Color(25, 0, 0); // diode color for 1 (text) (R G B)
-
-const uint32_t LED_COLOR_CONN = strip.Color(0, 50, 0); // diode color for update
-const uint32_t LED_COLOR_UPD = strip.Color(0, 0, 10);  // diode color for update
-const uint32_t LED_COLOR_ERR = strip.Color(100, 0, 0); // diode color for update
+const uint32_t PROGMEM LED_COLOR_CONN = strip.Color(0, 50, 0); // diode color for update
+const uint32_t PROGMEM LED_COLOR_UPD = strip.Color(0, 0, 10);  // diode color for update
+const uint32_t PROGMEM LED_COLOR_ERR = strip.Color(100, 0, 0); // diode color for update
 
 int8_t patternNum = 0;
 byte flashlightColorR = 255, flashlightColorG = 255, flashlightColorB = 255;
 float flashlightBrightness = 0, visualizerBrightness = 0.7;
-bool serverOn = false;
-char updateFS[150];
-char updateFv[150];
-char versionString[60];
+bool ICACHE_FLASH_ATTR serverOn = false;
+char ICACHE_FLASH_ATTR updateFS[150];
+char ICACHE_FLASH_ATTR updateFv[150];
+char ICACHE_FLASH_ATTR versionString[60];
 DynamicJsonDocument displayPatternJson(4096);
 
 // Alphabet maps
-const struct
+const struct PROGMEM
 {
   const uint8_t
 
@@ -90,7 +87,7 @@ const struct
 } alphabet;
 
 // Characters maps
-const struct
+const struct PROGMEM
 {
   const uint8_t
 
@@ -101,7 +98,7 @@ const struct
 } characters;
 
 // Numbers maps
-const struct
+const struct PROGMEM
 {
   const uint8_t
       one[8][8] = {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 1, 1, 0, 0, 0}, {0, 0, 0, 1, 1, 0, 0, 0}, {0, 0, 0, 1, 1, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 1, 1, 0, 0, 0}, {0, 0, 0, 1, 1, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}};
@@ -190,40 +187,16 @@ arrayPtr characterToMap(String value)
   return characters.space;
 }
 
-// Visualizer helpers
-struct colorMap
-{
-  uint8_t R;
-  uint8_t G;
-  uint8_t B;
-};
-colorMap visualizerMap[8][8];
-
 AsyncWebServer server(80);
 
 // ------------------------
 // --------- LEDs ---------
 // ------------------------
 
-// Display static map
-void displayMap(const uint8_t map[][8])
-{
-  for (uint8_t i = 0; i < 8; i++)
-  {
-    for (uint8_t j = 0; j < 8; j++)
-    {
-      uint8_t value = map[i][j];
-      uint8_t index = led_map[i][j];
-      if (value == 0)
-        strip.setPixelColor(index, LED_COLOR_0);
-      else if (value == 1)
-        strip.setPixelColor(index, LED_COLOR_1);
-    }
-  }
-  strip.show();
-}
-
 // Animate between maps
+uint32_t LED_COLOR_0;
+uint32_t LED_COLOR_1;
+
 void animate(const uint8_t startMap[][8], const uint8_t endMap[][8], uint8_t direction = 0, int gap = 50, uint32_t newColor1 = 0, uint32_t newColor0 = 0)
 {
   if (strlen(updateFv) || strlen(updateFS))
@@ -371,13 +344,6 @@ void animate(const uint8_t startMap[][8], const uint8_t endMap[][8], uint8_t dir
   }
 }
 
-// Display colorful map
-void displayColorMap(struct colorMap map[][8])
-{
-  for (uint8_t i = 0; i < 8; i++) for (uint8_t j = 0; j < 8; j++) strip.setPixelColor(led_map[i][j], strip.Color(map[i][j].R * 0.6 * visualizerBrightness, map[i][j].G * 0.6 * visualizerBrightness, map[i][j].B * 0.6 * visualizerBrightness));
-  strip.show();
-}
-
 void mainAnimation()
 {
   animate(characterToMap("C"), characterToMap("B"), 2, 120, strip.Color(0, 0, 25));
@@ -389,13 +355,13 @@ void mainAnimation()
 void flashlight()
 {
   strip.fill(strip.Color(flashlightBrightness * 0.2 * flashlightColorR, flashlightBrightness * 0.2 * flashlightColorG, flashlightBrightness * 0.2 * flashlightColorB));
-  for (int s = 0; s < 8; s++)
+  for (uint8_t s = 0; s < 8; s++)
     strip.setPixelColor(led_map[0][s], strip.Color(flashlightBrightness * 0.4 * flashlightColorR, flashlightBrightness * 0.4 * flashlightColorG, flashlightBrightness * 0.4 * flashlightColorB));
-  for (int e = 0; e < 8; e++)
+  for (uint8_t e = 0; e < 8; e++)
     strip.setPixelColor(led_map[7][e], strip.Color(flashlightBrightness * 0.4 * flashlightColorR, flashlightBrightness * 0.4 * flashlightColorG, flashlightBrightness * 0.4 * flashlightColorB));
-  for (int x = 0; x < 8; x++)
+  for (uint8_t x = 0; x < 8; x++)
     strip.setPixelColor(led_map[x][0], strip.Color(flashlightBrightness * 0.4 * flashlightColorR, flashlightBrightness * 0.4 * flashlightColorG, flashlightBrightness * 0.4 * flashlightColorB));
-  for (int y = 0; y < 8; y++)
+  for (uint8_t y = 0; y < 8; y++)
     strip.setPixelColor(led_map[y][7], strip.Color(flashlightBrightness * 0.4 * flashlightColorR, flashlightBrightness * 0.4 * flashlightColorG, flashlightBrightness * 0.4 * flashlightColorB));
   strip.show();
 }
@@ -491,7 +457,7 @@ void wiFiInit()
 void firmwareUpdate() // Updater
 {
 
-  displayMap(characters.space);
+  strip.fill(strip.Color(0, 0, 0));
   server.end();
   displayPatternJson.clear();
   displayPatternJson.shrinkToFit();
@@ -641,7 +607,7 @@ void initServer()
             { request->send(SPIFFS, "/scripts/visualizer.js", "text/javascript"); });
   server.on("/scripts/settings.js", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/scripts/settings.js", "text/javascript"); });
-            
+
   // Files
   server.on("/images/logo.png", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/images/logo.png", String(), true); });
@@ -742,19 +708,9 @@ void initServer()
       {
     displayPatternJson.clear();
     displayPatternJson.shrinkToFit();
-    patternNum=2;
     
-    for(uint8_t i=0; i<8; i++) {
-      for(uint8_t y=0; y<8; y++) {
-        visualizerMap[i][y].R = 0;
-        visualizerMap[i][y].G = 0;
-        visualizerMap[i][y].B = 0;
-        if(request->hasParam("color[" + String(i * 8 + y) + "][R]", true)) visualizerMap[i][y].R = request->getParam("color[" + String(i * 8 + y) + "][R]", true)->value().toInt();
-        if(request->hasParam("color[" + String(i * 8 + y) + "][G]", true)) visualizerMap[i][y].G = request->getParam("color[" + String(i * 8 + y) + "][G]", true)->value().toInt();
-        if(request->hasParam("color[" + String(i * 8 + y) + "][B]", true)) visualizerMap[i][y].B = request->getParam("color[" + String(i * 8 + y) + "][B]", true)->value().toInt();
-      }
-    }
-
+    patternNum=2;
+    for(uint8_t i=0; i<8; i++) for(uint8_t y=0; y<8; y++) if(request->hasParam("color[" + String(i * 8 + y) + "][R]", true)) strip.setPixelColor(led_map[i][y], strip.Color(request->getParam("color[" + String(i * 8 + y) + "][R]", true)->value().toInt(), request->getParam("color[" + String(i * 8 + y) + "][G]", true)->value().toInt(), request->getParam("color[" + String(i * 8 + y) + "][B]", true)->value().toInt()));
     if(request->hasParam("end", true)) patternNum=0;
     
     request->send(200, "text/plain", "OK"); });
@@ -801,7 +757,7 @@ void setup()
   Serial.println("[STATUS] Start!");
 
   strip.begin(); // Init strips
-  displayMap(characters.space);
+  strip.fill(strip.Color(0, 0, 0));
 
   if (!SPIFFS.begin())
     ESP.restart(); // Begin filesystem
@@ -835,7 +791,6 @@ void loop()
 
   while (patternNum == 2)
   {
-    displayColorMap(visualizerMap);
   }
 
   if (strlen(updateFv) || strlen(updateFS))
