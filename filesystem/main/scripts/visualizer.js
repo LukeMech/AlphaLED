@@ -23,7 +23,9 @@ navigator.mediaDevices.getUserMedia({ audio: true })
         console.error('Error getting audio', error);
     });
 
+let visualizerStopped = true;
 async function sendPixelDataToArduino() {
+    if(visualizerStopped) return;
     if(!connectionStatus.hasAttribute("Connected")) return;
 
     analyserNode.getByteFrequencyData(frequencyData);
@@ -35,19 +37,22 @@ async function sendPixelDataToArduino() {
         colors[y] = []
         for (let i = 0; i < 8; i++) {
             if(i > pixelsToTurnOn) colors[y].push({R: 0, G: 0, B: 0});
-            else colors[y].push({R: Math.round(i*255/7), G: Math.round(7-i*255/7), B: 0});
+            else colors[y].push({R: Math.round(i*255/7 + 50), G: Math.round(7-i*255/7), B: 0});
         }
     }
     
     let params = new URLSearchParams();
     for (let y = 0; y < 8; y++) {
         for (let i = 0; i < 8; i++) {
-            let color
+            let color=""
             if(colors[y]) color = colors[y][i]
             if(color) {
                 params.append(`rows[${y}][${i}][R]`, color.R);
                 params.append(`rows[${y}][${i}][G]`, color.G);
                 params.append(`rows[${y}][${i}][B]`, color.B);
+                console.log(color.R)
+                console.log(color.G)
+                console.log(color.B)
             }
             else {
                 params.append(`rows[${y}][${i}][R]`, 0);
@@ -56,11 +61,12 @@ async function sendPixelDataToArduino() {
             }
         }
     }
-    let data = params.toString();
+    const data = params.toString();
     await request('LEDs/visualizer', data)
+
+    await sendPixelDataToArduino()
 }
 
-let visualizerStopped = true;
 function draw() {
     if(visualizerStopped) {
         ctx.fillStyle = 'rgb(26, 25, 25)';
@@ -96,7 +102,7 @@ startBtn.addEventListener('click', () => {
 
         visualizerStopped = false;
         draw();
-        arduinoInterval = setInterval(sendPixelDataToArduino, 200);
+        sendPixelDataToArduino()
     }
 
     else {

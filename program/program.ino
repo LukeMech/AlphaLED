@@ -346,16 +346,16 @@ void animate(const uint8_t startMap[][8], const uint8_t endMap[][8], uint8_t dir
 
 void mainAnimation()
 {
-  if (patternNum != 1)
+  if (patternNum)
     return;
   animate(characterToMap("C"), characterToMap("B"), 2, 120, strip.Color(0, 0, 25));
-  if (patternNum != 1)
+  if (patternNum)
     return;
   animate(characterToMap("B"), characterToMap("A"), 2, 120, strip.Color(0, 25, 0));
-  if (patternNum != 1)
+  if (patternNum)
     return;
   animate(characterToMap("A"), characterToMap("B"), 3, 120, strip.Color(0, 0, 25));
-  if (patternNum != 1)
+  if (patternNum)
     return;
   animate(characterToMap("B"), characterToMap("C"), 3, 120, strip.Color(25, 0, 0));
 }
@@ -718,7 +718,14 @@ void initServer()
     displayPatternJson.shrinkToFit();
     
     patternNum=2;
-    for(uint8_t y=0; y<8; y++) for(uint8_t i=0; i<8; i++) if(request->hasParam("rows[" + String(y) + "][" + String(i) + "][R]", true)) strip.setPixelColor(led_map[7-i][y], strip.Color(request->getParam("rows[" + String(y) + "][" + String(i) + "][R]", true)->value().toInt()*0.7, request->getParam("rows[" + String(y) + "][" + String(i) + "][G]", true)->value().toInt()*0.4, request->getParam("rows[" + String(y) + "][" + String(i) + "][B]", true)->value().toInt()*0.5));
+    float brightness = 0.4;
+    if(request->hasParam("brightness", true)) brightness=request->getParam("brightness", true)->value().toFloat();
+    for(uint8_t y=0; y<8; y++) {
+      for(uint8_t i=0; i<8; i++) {
+        if(request->hasParam("rows[" + String(y) + "][" + String(i) + "][R]", true)) strip.setPixelColor(led_map[7-i][y], strip.Color(request->getParam("rows[" + String(y) + "][" + String(i) + "][R]", true)->value().toInt()*brightness*0.4, request->getParam("rows[" + String(y) + "][" + String(i) + "][G]", true)->value().toInt()*brightness*0.4, request->getParam("rows[" + String(y) + "][" + String(i) + "][B]", true)->value().toInt()*brightness*0.4));
+        else strip.setPixelColor(led_map[7-i][y], strip.Color(0, 0, 0));
+      }
+    }
     strip.show();
     if(request->hasParam("end", true)) patternNum=0;
     
