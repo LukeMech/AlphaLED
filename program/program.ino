@@ -14,16 +14,16 @@
 #include <time.h>
 #include <WiFiClientSecure.h>
 
-const char *backupURLFS ICACHE_RODATA_ATTR = "https://raw.githubusercontent.com/LukeMech/AlphaLED/main/updater/backup-filesystem.bin";
-const bool WiFi_UpdateCredentialsFile ICACHE_RODATA_ATTR = false; // Update network_config.txt in filesystem?
-const char *ssid ICACHE_RODATA_ATTR = "";                         // Network name
-const char *password ICACHE_RODATA_ATTR = "";                     // Network password
+const char *backupURLFS = "https://raw.githubusercontent.com/LukeMech/AlphaLED/main/updater/backup-filesystem.bin";
+const bool WiFi_UpdateCredentialsFile = false; // Update network_config.txt in filesystem?
+const char *ssid = "";                         // Network name
+const char *password = "";                     // Network password
 
-const int LED_PIN ICACHE_RODATA_ATTR = D1; // LED Pin
+const int LED_PIN = D1; // LED Pin
 
 Adafruit_NeoPixel strip(64, LED_PIN, NEO_GRB + NEO_KHZ800); // Init LEDs
 
-const uint8_t PROGMEM led_map[8][8] = { // Table corresponding to the physical position/number of the LEDs
+const uint8_t led_map[8][8] = { // Table corresponding to the physical position/number of the LEDs
     {56, 55, 40, 39, 24, 23, 8, 7},
     {57, 54, 41, 38, 25, 22, 9, 6},
     {58, 53, 42, 37, 26, 21, 10, 5},
@@ -33,21 +33,21 @@ const uint8_t PROGMEM led_map[8][8] = { // Table corresponding to the physical p
     {62, 49, 46, 33, 30, 17, 14, 1},
     {63, 48, 47, 32, 31, 16, 15, 0}};
 
-const uint32_t LED_COLOR_CONN ICACHE_RODATA_ATTR = strip.Color(0, 50, 0); // diode color for update
-const uint32_t LED_COLOR_UPD ICACHE_RODATA_ATTR = strip.Color(0, 0, 10);  // diode color for update
-const uint32_t LED_COLOR_ERR ICACHE_RODATA_ATTR = strip.Color(100, 0, 0); // diode color for update
+const uint32_t LED_COLOR_CONN = strip.Color(0, 50, 0); // diode color for update
+const uint32_t LED_COLOR_UPD = strip.Color(0, 0, 10);  // diode color for update
+const uint32_t LED_COLOR_ERR = strip.Color(100, 0, 0); // diode color for update
 
 int8_t patternNum = 0;
 byte flashlightColorR = 255, flashlightColorG = 255, flashlightColorB = 255;
 float flashlightBrightness = 0, visualizerBrightness = 0.7;
-bool ICACHE_FLASH_ATTR serverOn = false;
-char ICACHE_FLASH_ATTR updateFS[150];
-char ICACHE_FLASH_ATTR updateFv[150];
-char ICACHE_FLASH_ATTR versionString[60];
+bool serverOn = false;
+char updateFS[150];
+char updateFv[150];
+char versionString[60];
 DynamicJsonDocument displayPatternJson(4096);
 
 // Alphabet maps
-const struct PROGMEM
+const struct
 {
   const uint8_t
 
@@ -87,7 +87,7 @@ const struct PROGMEM
 } alphabet;
 
 // Characters maps
-const struct PROGMEM
+const struct
 {
   const uint8_t
 
@@ -98,7 +98,7 @@ const struct PROGMEM
 } characters;
 
 // Numbers maps
-const struct PROGMEM
+const struct
 {
   const uint8_t
       one[8][8] = {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 1, 1, 0, 0, 0}, {0, 0, 0, 1, 1, 0, 0, 0}, {0, 0, 0, 1, 1, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 1, 1, 0, 0, 0}, {0, 0, 0, 1, 1, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}};
@@ -106,7 +106,7 @@ const struct PROGMEM
 } numbers;
 
 // Return maps
-typedef const uint8_t PROGMEM (*arrayPtr)[8];
+typedef const uint8_t (*arrayPtr)[8];
 arrayPtr characterToMap(String value)
 {
   if (value == "A")
