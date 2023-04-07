@@ -30,7 +30,7 @@ function hexToRgb(hex) {
     return { r, g, b };
 }
 
-function sendPixelDataToArduino() {
+async function sendPixelDataToArduino() {
     if(!connectionStatus.hasAttribute("Connected")) return;
 
     analyserNode.getByteFrequencyData(frequencyData);
@@ -63,7 +63,7 @@ function sendPixelDataToArduino() {
 
     let data = params.toString();
     
-    request('LEDs/visualizer', data)
+    await request('LEDs/visualizer', data)
 }
 
 function drawVisualization() {
@@ -94,8 +94,8 @@ startBtn.addEventListener('click', () => {
         startBtn.innerHTML = 'STOP'
         startBtn.style.borderColor = '#00f80c'
 
-        arduinoInterval = setInterval(sendPixelDataToArduino, 1000);
-        drawInterval = setInterval(drawVisualization, 1000);
+        arduinoInterval = setInterval(sendPixelDataToArduino, 500);
+        drawInterval = setInterval(drawVisualization, 500);
     }
 
     else {

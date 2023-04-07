@@ -711,6 +711,7 @@ void initServer()
     
     patternNum=2;
     for(uint8_t i=0; i<8; i++) for(uint8_t y=0; y<8; y++) if(request->hasParam("color[" + String(i * 8 + y) + "][R]", true)) strip.setPixelColor(led_map[i][y], strip.Color(request->getParam("color[" + String(i * 8 + y) + "][R]", true)->value().toInt(), request->getParam("color[" + String(i * 8 + y) + "][G]", true)->value().toInt(), request->getParam("color[" + String(i * 8 + y) + "][B]", true)->value().toInt()));
+    strip.show();
     if(request->hasParam("end", true)) patternNum=0;
     
     request->send(200, "text/plain", "OK"); });
