@@ -28,27 +28,34 @@ async function sendPixelDataToArduino() {
 
     analyserNode.getByteFrequencyData(frequencyData);
     
-    colors = []
+    let colors = []
     for (let y = 0; y < 8; y++) {
-        barHeight = 1.2 * (((frequencyData[i] + frequencyData[i+1] + frequencyData[i+2] + frequencyData[i+3] + frequencyData[i+4] + frequencyData[i+5] + frequencyData[i+6] + frequencyData[i+7]) / 8) / 255)
+        barHeight = 1.2 * (((frequencyData[y] + frequencyData[y+1] + frequencyData[y+2] + frequencyData[y+3] + frequencyData[y+4] + frequencyData[y+5] + frequencyData[y+6] + frequencyData[y+7]) / 8) / 255)
         const pixelsToTurnOn = barHeight*8
         colors[y] = []
         for (let i = 0; i < 8; i++) {
             if(i > pixelsToTurnOn) colors[y].push({R: 0, G: 0, B: 0});
-            colors[y].push({R: Math.round(i*255/7), G: Math.round(7-i*255/7), B: 0});
+            else colors[y].push({R: Math.round(i*255/7), G: Math.round(7-i*255/7), B: 0});
         }
     }
     
     let params = new URLSearchParams();
     for (let y = 0; y < 8; y++) {
         for (let i = 0; i < 8; i++) {
-            let color = colors[y][i];
-            params.append(`rows[${y}][${i}][R]`, color.R);
-            params.append(`rows[${y}][${i}][G]`, color.G);
-            params.append(`rows[${y}][${i}][B]`, color.B);
+            let color
+            if(colors[y]) color = colors[y][i]
+            if(color) {
+                params.append(`rows[${y}][${i}][R]`, color.R);
+                params.append(`rows[${y}][${i}][G]`, color.G);
+                params.append(`rows[${y}][${i}][B]`, color.B);
+            }
+            else {
+                params.append(`rows[${y}][${i}][R]`, 0);
+                params.append(`rows[${y}][${i}][G]`, 0);
+                params.append(`rows[${y}][${i}][B]`, 0);
+            }
         }
     }
-
     let data = params.toString();
     await request('LEDs/visualizer', data)
 }
@@ -89,7 +96,7 @@ startBtn.addEventListener('click', () => {
 
         visualizerStopped = false;
         draw();
-        arduinoInterval = setInterval(sendPixelDataToArduino, 800);
+        arduinoInterval = setInterval(sendPixelDataToArduino, 200);
     }
 
     else {

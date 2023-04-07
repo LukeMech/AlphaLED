@@ -346,9 +346,17 @@ void animate(const uint8_t startMap[][8], const uint8_t endMap[][8], uint8_t dir
 
 void mainAnimation()
 {
+  if (patternNum != 1)
+    return;
   animate(characterToMap("C"), characterToMap("B"), 2, 120, strip.Color(0, 0, 25));
+  if (patternNum != 1)
+    return;
   animate(characterToMap("B"), characterToMap("A"), 2, 120, strip.Color(0, 25, 0));
+  if (patternNum != 1)
+    return;
   animate(characterToMap("A"), characterToMap("B"), 3, 120, strip.Color(0, 0, 25));
+  if (patternNum != 1)
+    return;
   animate(characterToMap("B"), characterToMap("C"), 3, 120, strip.Color(25, 0, 0));
 }
 
@@ -710,7 +718,7 @@ void initServer()
     displayPatternJson.shrinkToFit();
     
     patternNum=2;
-    for(uint8_t y=0; y<8; y++) for(uint8_t i=0; i<8; i++) if(request->hasParam("rows[" + String(y) + "][" + String(i) + "][R]", true)) strip.setPixelColor(led_map[i][y], strip.Color(request->getParam("rows[" + String(y) + "][" + String(i) + "][R]", true)->value().toInt(), request->getParam("rows[" + String(y) + "][" + String(i) + "][G]", true)->value().toInt(), request->getParam("rows[" + String(y) + "][" + String(i) + "][B]", true)->value().toInt()));
+    for(uint8_t y=0; y<8; y++) for(uint8_t i=0; i<8; i++) if(request->hasParam("rows[" + String(y) + "][" + String(i) + "][R]", true)) strip.setPixelColor(led_map[7-i][y], strip.Color(request->getParam("rows[" + String(y) + "][" + String(i) + "][R]", true)->value().toInt()*0.4, request->getParam("rows[" + String(y) + "][" + String(i) + "][G]", true)->value().toInt()*0.4, request->getParam("rows[" + String(y) + "][" + String(i) + "][B]", true)->value().toInt()*0.4));
     strip.show();
     if(request->hasParam("end", true)) patternNum=0;
     
@@ -784,7 +792,8 @@ void loop()
   {
     for (JsonVariant obj : displayPatternJson.as<JsonArray>())
     {
-      if(patternNum != 1) return;
+      if (patternNum != 1)
+        return;
       animate(characterToMap(obj["from"].as<String>()), characterToMap(obj["to"].as<String>()), obj["animType"].as<int>(), obj["animSpeed"].as<int>(), strip.Color(obj["color[R]"].as<int>() * 0.5, obj["color[G]"].as<int>() * 0.5, obj["color[B]"].as<int>() * 0.5));
       if (!strlen(updateFv) && !strlen(updateFS))
         delay(obj["delay"].as<int>());
