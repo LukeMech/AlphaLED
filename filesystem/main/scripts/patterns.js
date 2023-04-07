@@ -3,6 +3,7 @@ const submitBtn = document.getElementById("submit")
 const textInput = document.getElementById("text")
 const optionsBtn = document.getElementById('optionsBtn')
 const optionsBox = document.getElementById("optionsBox")
+const speechRecButton = document.getElementById("speechRecognition")
 
 const charactersList = document.getElementById('charList')
 const redControl = document.getElementById("red");
@@ -19,8 +20,7 @@ const outAnimDiv = document.getElementById("addSpaceToggle")
 
 const lastPatternsList = document.getElementById('lastPatterns')
 
-let choosenLetter
-let optionsPerAnim = [], patterns = []
+let choosenLetter, optionsPerAnim = [], patterns = [], speechRecognition
 
 textInput.addEventListener('keydown', function (event) {
     if (event.key === "Enter") {
@@ -96,13 +96,14 @@ function changeLetter(num) {
     charactersList.children.item(num).classList.add('selected')
 
     optionsBox.style.height = `370px`
-    charactersList.style.height = '360px'
+    charactersList.style.height = '340px'
     slidersDiv.style.height = `${slidersDiv.scrollHeight}px`
     animationDirDiv.style.marginTop = ''
     outAnimDiv.style.height = ''
 
     if(charactersList.children.item(num).getAttribute("data-value") == "undefined") {
         optionsBox.style.height = `330px`
+        charactersList.style.height = '305px'
         slidersDiv.style.height = ''
         outAnimDiv.style.height = `${outAnimDiv.scrollHeight}px`
     }
@@ -165,6 +166,27 @@ optionsBtn.addEventListener("click", function () {
     }
 });
 
+if ('webkitSpeechRecognition' in window) speechRecButton.style.color = 'yellow'
+
+speechRecButton.addEventListener("click", function () {
+    if (!('webkitSpeechRecognition' in window)) return;
+
+    speechRecognition = new window.webkitSpeechRecognition();
+    speechRecognition.lang = navigator.language || navigator.userLanguage;
+
+    speechRecognition.onstart = () => speechRecButton.style.color='green'
+    speechRecognition.addEventListener('result', event => {
+        textInput.value  = event.results[0][0].transcript;
+        textInputFunction()
+        optionsBtn.click();
+        speechRecognition.pause();
+    });
+
+    speechRecognition.addEventListener('end', () => speechRecButton.style.color = 'yellow')
+
+    speechRecognition.start();
+})
+
 async function getLastPatterns() {
     const response = await fetch("../functions/LEDs/getSavedPattern")
     const files = await response.text()
@@ -218,7 +240,6 @@ function runSavedPattern(num) {
     
     textInput.value = textInputValueArray.join("")
     textInputFunction()
-    optionsBox.style.height = ''
     optionsBtn.click()
 
     optionsPerAnim = patterns[num].slice(1)
