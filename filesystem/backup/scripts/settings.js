@@ -69,4 +69,7 @@ async function callUpdater() {
     }, 6000);
     
 }
-callUpdater();
+
+setTimeout(() => {
+    callUpdater();
+}, 3000);
