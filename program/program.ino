@@ -629,25 +629,27 @@ void initServer()
             { request->send(SPIFFS, "/html/patterns.html", "text/html"); });
   server.on("/flashlight", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/html/flashlight.html", "text/html"); });
+  server.on("/visualizer", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(SPIFFS, "/html/visualizer.html", "text/html"); });
 
-  // Additional html & css
+  // Additional html, css, js
   server.on("/html/footer.html", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/html/footer.html", "text/html"); });
   server.on("/style/style.css", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/style/style.css", "text/css"); });
   server.on("/style/footer.css", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/style/footer.css", "text/css"); });
-
-  // Javascript
   server.on("/scripts/script.js", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/scripts/script.js", "text/javascript"); });
-  server.on("/scripts/flashlight.js", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/scripts/flashlight.js", "text/javascript"); });
-  server.on("/scripts/settings.js", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/scripts/settings.js", "text/javascript"); });
   server.on("/scripts/patterns.js", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/scripts/patterns.js", "text/javascript"); });
-
+  server.on("/scripts/flashlight.js", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(SPIFFS, "/scripts/flashlight.js", "text/javascript"); });
+  server.on("/scripts/visualizer.js", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(SPIFFS, "/scripts/visualizer.js", "text/javascript"); });
+  server.on("/scripts/settings.js", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(SPIFFS, "/scripts/settings.js", "text/javascript"); });
+            
   // Files
   server.on("/images/logo.png", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/images/logo.png", String(), true); });
