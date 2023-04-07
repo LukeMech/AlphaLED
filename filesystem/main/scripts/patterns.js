@@ -123,8 +123,8 @@ function changeLetter(num) {
     else if(optionsPerAnim[num].animType === 3) animDir.style.rotate='-90deg'
     animSpeed.value = 550-optionsPerAnim[num].animSpeed
     addDelay.value = ''
-    addDelay.placeholder = `${(optionsPerAnim[num].delay/1000)} sec`
-    if(num === optionsPerAnim.length && outAnim.innerHTML==='OFF') addDelay.placeholder = ''
+    if(!optionsPerAnim[num].delay/1000) addDelay.placeholder = ''
+    else addDelay.placeholder = `${(optionsPerAnim[num].delay/1000)} sec`
     addDelay.removeAttribute('readonly')
 }
 
@@ -164,7 +164,7 @@ async function getLastPatterns() {
     const lines = files.split("\n")
     patterns = []
     
-    for (let i = 0; i < lines.length; i++) {
+    for (let i = lines.length-1; i >= 0; i--) {
         const filename = lines[i].substring(0, 10)
         if(filename) {
             const res = await fetch(`../functions/LEDs/getSavedPattern?filename=${filename}`)
@@ -177,7 +177,7 @@ async function getLastPatterns() {
     lastPatternsList.innerHTML = ''
     for (let i = 0; i < patterns.length; i++) {
         const option = document.createElement("div");
-        option.innerHTML = `<div class="lastPatterns"><h1>${patterns[i][0]}</h1><a class="button delPattern" id="delButton-${i}" onclick="delSavedPattern(${i})"><i class="fa-solid fa-trash"></i></a><a class="button runPattern" id="runButton-${i}" onclick="runSavedPattern(${i})"><i class="fa-solid fa-play"></i></a></div>`
+        option.innerHTML = `<div class="lastPatterns"><h1>${patterns[i][0].name}</h1><a class="button delPattern" id="delButton-${i}" onclick="delSavedPattern(${i})"><i class="fa-solid fa-trash"></i></a><a class="button runPattern" id="runButton-${i}" onclick="runSavedPattern(${i})"><i class="fa-solid fa-play"></i></a></div>`
         option.classList.add('patternOption')
 
         lastPatternsList.appendChild(option)
