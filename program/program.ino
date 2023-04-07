@@ -14,12 +14,12 @@
 #include <time.h>
 #include <WiFiClientSecure.h>
 
-const char *PROGMEM backupURLFS = "https://raw.githubusercontent.com/LukeMech/AlphaLED/main/updater/backup-filesystem.bin";
-const bool PROGMEM WiFi_UpdateCredentialsFile = false; // Update network_config.txt in filesystem?
-const char *PROGMEM ssid = "";                         // Network name
-const char *PROGMEM password = "";                     // Network password
+const char *backupURLFS ICACHE_RODATA_ATTR = "https://raw.githubusercontent.com/LukeMech/AlphaLED/main/updater/backup-filesystem.bin";
+const bool WiFi_UpdateCredentialsFile ICACHE_RODATA_ATTR = false; // Update network_config.txt in filesystem?
+const char *ssid ICACHE_RODATA_ATTR = "";                         // Network name
+const char *password ICACHE_RODATA_ATTR = "";                     // Network password
 
-const int PROGMEM LED_PIN = D1; // LED Pin
+const int LED_PIN ICACHE_RODATA_ATTR = D1; // LED Pin
 
 Adafruit_NeoPixel strip(64, LED_PIN, NEO_GRB + NEO_KHZ800); // Init LEDs
 
@@ -33,9 +33,9 @@ const uint8_t PROGMEM led_map[8][8] = { // Table corresponding to the physical p
     {62, 49, 46, 33, 30, 17, 14, 1},
     {63, 48, 47, 32, 31, 16, 15, 0}};
 
-const uint32_t PROGMEM LED_COLOR_CONN = strip.Color(0, 50, 0); // diode color for update
-const uint32_t PROGMEM LED_COLOR_UPD = strip.Color(0, 0, 10);  // diode color for update
-const uint32_t PROGMEM LED_COLOR_ERR = strip.Color(100, 0, 0); // diode color for update
+const uint32_t LED_COLOR_CONN ICACHE_RODATA_ATTR = strip.Color(0, 50, 0); // diode color for update
+const uint32_t LED_COLOR_UPD ICACHE_RODATA_ATTR = strip.Color(0, 0, 10);  // diode color for update
+const uint32_t LED_COLOR_ERR ICACHE_RODATA_ATTR = strip.Color(100, 0, 0); // diode color for update
 
 int8_t patternNum = 0;
 byte flashlightColorR = 255, flashlightColorG = 255, flashlightColorB = 255;
@@ -106,7 +106,7 @@ const struct PROGMEM
 } numbers;
 
 // Return maps
-typedef const uint8_t (*arrayPtr)[8];
+typedef const uint8_t PROGMEM (*arrayPtr)[8];
 arrayPtr characterToMap(String value)
 {
   if (value == "A")
