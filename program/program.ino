@@ -191,10 +191,11 @@ arrayPtr characterToMap(String value)
 }
 
 // Visualizer helpers
-struct colorMap {
-    uint8_t R;
-    uint8_t G;
-    uint8_t B;
+struct colorMap
+{
+  uint8_t R;
+  uint8_t G;
+  uint8_t B;
 };
 colorMap visualizerMap[8][8];
 
@@ -379,7 +380,7 @@ void displayColorMap(struct colorMap map[][8])
     {
       colorMap value = map[i][j];
       uint8_t index = led_map[i][j];
-      strip.setPixelColor(index, strip.Color(value.R*0.6*visualizerBrightness, value.G*0.6*visualizerBrightness, value.B*0.6*visualizerBrightness));
+      strip.setPixelColor(index, strip.Color(value.R * 0.6 * visualizerBrightness, value.G * 0.6 * visualizerBrightness, value.B * 0.6 * visualizerBrightness));
     }
   }
   strip.show();
@@ -620,7 +621,7 @@ void initServer()
       request->send(SPIFFS, "/html/index.html", "text/html");
     else {
       strcpy(updateFS, backupURLFS);
-      request->send(404, "text/plain", "Files not found, downloading backup filesystem!");
+      request->send(404, "text/plain", "Files not found, downloading recovery filesystem!");
     } });
   server.on("/settings", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/html/settings.html", "text/html"); });
@@ -660,6 +661,10 @@ void initServer()
             { request->send(SPIFFS, "/updater.json", String(), true); });
 
   // Functions - global
+  server.on("/functions/recovery", HTTP_GET, [](AsyncWebServerRequest *request)
+            {
+  strcpy(updateFS, backupURLFS);
+  request->send(200, "text/plain", "Downloading recovery and restarting!"); });
   server.on("/functions/getSystemInfo", HTTP_GET, [](AsyncWebServerRequest *request)
             {
     File file = SPIFFS.open("/version.txt", "r");  // Read versions
@@ -754,8 +759,7 @@ void initServer()
 
     if(request->hasParam("end", true)) patternNum=0;
     
-    request->send(200, "text/plain", "OK");
-    });
+    request->send(200, "text/plain", "OK"); });
 
   server.on("/functions/LEDs/getSavedPattern", HTTP_GET, [](AsyncWebServerRequest *request)
             { 
