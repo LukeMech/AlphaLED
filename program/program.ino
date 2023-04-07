@@ -718,7 +718,7 @@ void initServer()
     displayPatternJson.shrinkToFit();
     
     patternNum=2;
-    for(uint8_t y=0; y<8; y++) for(uint8_t i=0; i<8; i++) if(request->hasParam("rows[" + String(y) + "][" + String(i) + "][R]", true)) strip.setPixelColor(led_map[7-i][y], strip.Color(request->getParam("rows[" + String(y) + "][" + String(i) + "][R]", true)->value().toInt()*0.4, request->getParam("rows[" + String(y) + "][" + String(i) + "][G]", true)->value().toInt()*0.4, request->getParam("rows[" + String(y) + "][" + String(i) + "][B]", true)->value().toInt()*0.4));
+    for(uint8_t y=0; y<8; y++) for(uint8_t i=0; i<8; i++) if(request->hasParam("rows[" + String(y) + "][" + String(i) + "][R]", true)) strip.setPixelColor(led_map[7-i][y], strip.Color(request->getParam("rows[" + String(y) + "][" + String(i) + "][R]", true)->value().toInt()*0.7, request->getParam("rows[" + String(y) + "][" + String(i) + "][G]", true)->value().toInt()*0.4, request->getParam("rows[" + String(y) + "][" + String(i) + "][B]", true)->value().toInt()*0.5));
     strip.show();
     if(request->hasParam("end", true)) patternNum=0;
     
