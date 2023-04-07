@@ -32,12 +32,13 @@ async function sendPixelDataToArduino() {
     
     let colors = []
     for (let y = 0; y < 8; y++) {
-        barHeight = 1.2 * (((frequencyData[y] + frequencyData[y+1] + frequencyData[y+2] + frequencyData[y+3] + frequencyData[y+4] + frequencyData[y+5] + frequencyData[y+6] + frequencyData[y+7]) / 8) / 255)
+        const j = Math.abs(3 - y);
+        barHeight = (((frequencyData[j] + frequencyData[j*2] + frequencyData[j*3] + frequencyData[j*4] + [j*5] + frequencyData[j*6] + frequencyData[j*7] + frequencyData[j*8]) / 8) / 255)
         const pixelsToTurnOn = barHeight*8
         colors[y] = []
         for (let i = 0; i < 8; i++) {
             if(i > pixelsToTurnOn) colors[y].push({R: 0, G: 0, B: 0});
-            else colors[y].push({R: Math.round(i*255/7 + 50), G: Math.round(7-i*255/7), B: 0});
+            else colors[y].push({R: Math.round(i*255/7 + 100), G: Math.round((7-i)*255/7), B: 0});
         }
     }
     
@@ -76,14 +77,15 @@ function draw() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     const barWidth = canvas.width / 8;
     let barHeight;
-    for (let i = 0; i < 8; i++) {
+    for (let j = 0; j < 8; j++) {
+        const i = Math.abs(3 - j);
         const gradient = ctx.createLinearGradient(0, canvas.height, 0, 0);
         gradient.addColorStop(0, 'green');
         gradient.addColorStop(Math.random() * 0.03 + 0.4, 'yellow');
         gradient.addColorStop(1, 'red');
-        barHeight = 1.2* canvas.height * (((frequencyData[i] + frequencyData[i+1] + frequencyData[i+2] + frequencyData[i+3] + frequencyData[i+4] + frequencyData[i+5] + frequencyData[i+6] + frequencyData[i+7]) / 8) / 255)
+        const barHeight = 1.2 * canvas.height * (((frequencyData[i] + frequencyData[i*2] + frequencyData[i*3] + frequencyData[i*4] + frequencyData[i*5] + frequencyData[i*6] + frequencyData[i*7] + frequencyData[i*8]) / 8) / 255);
         ctx.fillStyle = gradient;
-        ctx.fillRect(i * barWidth, canvas.height - barHeight, barWidth, barHeight);    
+        ctx.fillRect(j * barWidth, canvas.height - barHeight, barWidth, barHeight);    
     }
 }
 
