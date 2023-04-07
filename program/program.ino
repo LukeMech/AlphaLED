@@ -374,15 +374,7 @@ void animate(const uint8_t startMap[][8], const uint8_t endMap[][8], uint8_t dir
 // Display colorful map
 void displayColorMap(struct colorMap map[][8])
 {
-  for (uint8_t i = 0; i < 8; i++)
-  {
-    for (uint8_t j = 0; j < 8; j++)
-    {
-      colorMap value = map[i][j];
-      uint8_t index = led_map[i][j];
-      strip.setPixelColor(index, strip.Color(value.R * 0.6 * visualizerBrightness, value.G * 0.6 * visualizerBrightness, value.B * 0.6 * visualizerBrightness));
-    }
-  }
+  for (uint8_t i = 0; i < 8; i++) for (uint8_t j = 0; j < 8; j++) strip.setPixelColor(led_map[i][j], strip.Color(map[i][j].R * 0.6 * visualizerBrightness, map[i][j].G * 0.6 * visualizerBrightness, map[i][j].B * 0.6 * visualizerBrightness));
   strip.show();
 }
 
@@ -748,11 +740,15 @@ void initServer()
   server.on(
       "/functions/LEDs/visualizer", HTTP_POST, [](AsyncWebServerRequest *request)
       {
-
+    displayPatternJson.clear();
+    displayPatternJson.shrinkToFit();
     patternNum=2;
-
+    
     for(uint8_t i=0; i<8; i++) {
       for(uint8_t y=0; y<8; y++) {
+        visualizerMap[i][y].R = 0;
+        visualizerMap[i][y].G = 0;
+        visualizerMap[i][y].B = 0;
         if(request->hasParam("color[" + String(i * 8 + y) + "][R]", true)) visualizerMap[i][y].R = request->getParam("color[" + String(i * 8 + y) + "][R]", true)->value().toInt();
         if(request->hasParam("color[" + String(i * 8 + y) + "][G]", true)) visualizerMap[i][y].G = request->getParam("color[" + String(i * 8 + y) + "][G]", true)->value().toInt();
         if(request->hasParam("color[" + String(i * 8 + y) + "][B]", true)) visualizerMap[i][y].B = request->getParam("color[" + String(i * 8 + y) + "][B]", true)->value().toInt();

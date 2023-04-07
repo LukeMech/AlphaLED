@@ -94,17 +94,18 @@ startBtn.addEventListener('click', () => {
         startBtn.innerHTML = 'STOP'
         startBtn.style.borderColor = '#00f80c'
 
-        arduinoInterval = setInterval(sendPixelDataToArduino, 50);
-        drawInterval = setInterval(drawVisualization, 50);
+        arduinoInterval = setInterval(sendPixelDataToArduino, 1000);
+        drawInterval = setInterval(drawVisualization, 1000);
     }
 
     else {
-        audioCtx.suspend();
         startBtn.innerHTML = 'START'
         startBtn.style.borderColor = ''
 
         clearInterval(arduinoInterval)
         clearInterval(drawInterval)
+
+        audioCtx.suspend();
 
         let data = new URLSearchParams({end: true}).toString();
         request('LEDs/visualizer', data)
