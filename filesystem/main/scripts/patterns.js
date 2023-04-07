@@ -171,6 +171,8 @@ if ('webkitSpeechRecognition' in window) speechRecButton.style.color = 'yellow'
 speechRecButton.addEventListener("click", function () {
     if (!('webkitSpeechRecognition' in window)) return;
 
+    if(speechRecognition) return speechRecognition.stop()
+    
     speechRecognition = new window.webkitSpeechRecognition();
     speechRecognition.lang = navigator.language || navigator.userLanguage;
 
@@ -182,7 +184,10 @@ speechRecButton.addEventListener("click", function () {
         speechRecognition.pause();
     });
 
-    speechRecognition.addEventListener('end', () => speechRecButton.style.color = 'yellow')
+    speechRecognition.addEventListener('end', () => {
+        speechRecButton.style.color = 'yellow'
+        speechRecognition = ""
+    })
 
     speechRecognition.start();
 })
