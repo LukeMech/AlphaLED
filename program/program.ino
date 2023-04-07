@@ -191,12 +191,12 @@ arrayPtr characterToMap(String value)
 }
 
 // Visualizer helpers
-struct ColorMap {
+struct colorMap {
     uint8_t R;
     uint8_t G;
     uint8_t B;
 };
-ColorMap visualizerMap[8][8];
+colorMap visualizerMap[8][8];
 
 AsyncWebServer server(80);
 
@@ -370,14 +370,14 @@ void animate(const uint8_t startMap[][8], const uint8_t endMap[][8], uint8_t dir
   }
 }
 
-// Display static map
-void displayColorMap(ColorMap map[][8])
+// Display colorful map
+void displayColorMap(struct colorMap map[][8])
 {
   for (uint8_t i = 0; i < 8; i++)
   {
     for (uint8_t j = 0; j < 8; j++)
     {
-      ColorMap value = map[i][j];
+      colorMap value = map[i][j];
       uint8_t index = led_map[i][j];
       strip.setPixelColor(index, strip.Color(value.R*0.6*visualizerBrightness, value.G*0.6*visualizerBrightness, value.B*0.6*visualizerBrightness));
     }
