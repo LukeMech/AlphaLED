@@ -191,9 +191,15 @@ async function delSavedPattern(num) {
 
     const filename = patterns[num][0].filename
     const urlSearchParams = new URLSearchParams({filename: filename}).toString();
-    await request('LEDs/deleteSavedPattern', urlSearchParams)
-    
-    getLastPatterns()
+    try {
+        await request('LEDs/deleteSavedPattern', urlSearchParams);
+        getLastPatterns()
+    }
+    catch (err) {
+        setTimeout(() => {
+            document.getElementById(`delButton-${num}`).style.borderColor = ''
+        }, 500);
+    }
 }
 function runSavedPattern(num) {
 
