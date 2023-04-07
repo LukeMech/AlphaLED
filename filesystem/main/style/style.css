@@ -703,10 +703,13 @@
 }
 
 .visualizerpage canvas {
-  border-radius: 5px;
-  width: 80vw;
-  height: 300px;
+  width: calc(100vw - 40px - 10px);
+  height: 200px;
+  background-color: black;
+  margin: 20px;
+  margin-bottom: 0px;
   border: 3px solid rgb(255, 0, 0);
+  border-radius: 10px;
 }
 
 .visualizerpage .btn {

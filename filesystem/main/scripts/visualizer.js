@@ -1,13 +1,13 @@
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const pixelSize = 10;
-ctx.fillStyle = 'rgba(0, 0, 0, 0)';
+ctx.fillStyle = 'rgb(26, 25, 25)';
 ctx.fillRect(0, 0, canvas.width, canvas.height);
 const connectionStatus = document.getElementById('connection')
 
 const audioCtx = new AudioContext();
 const analyserNode = audioCtx.createAnalyser();
-analyserNode.fftSize = 512;
+analyserNode.fftSize = 128;
 const frequencyData = new Uint8Array(analyserNode.frequencyBinCount);
 const gainNode = audioCtx.createGain();
 gainNode.gain.value = 0;
@@ -23,90 +23,61 @@ navigator.mediaDevices.getUserMedia({ audio: true })
         console.error('Error getting audio', error);
     });
 
-function hexToRgb(hex) {
-    let r = parseInt(hex.slice(1, 3), 16);
-    let g = parseInt(hex.slice(3, 5), 16);
-    let b = parseInt(hex.slice(5, 7), 16);
-    return { r, g, b };
-}
-
 async function sendPixelDataToArduino() {
     if(!connectionStatus.hasAttribute("Connected")) return;
 
     analyserNode.getByteFrequencyData(frequencyData);
     
-    let colors = [];
-    for (let i = 0; i < frequencyData.length; i += 4) {
-        let value = (frequencyData[i] + frequencyData[i + 1] + frequencyData[i + 2] + frequencyData[i + 3]) / 4;    
-        let hue = value / 255 * 360;
-        let saturation_procent = 1;
-        let lightness_procent = 0.7;
-        let chroma = (1 - Math.abs(2 * lightness_procent - 1)) * saturation_procent;
-        let hue_point;
-        if (hue < 60) {
-        hue_point = chroma;
-        } else if (hue < 120) {
-        hue_point = chroma * (1 - Math.abs((hue / 60) % 2 - 1));
-        } else if (hue < 180) {
-        hue_point = 0;
-        } else if (hue < 240) {
-        hue_point = chroma * (1 - Math.abs((hue / 60) % 2 - 1));
-        } else if (hue < 300) {
-        hue_point = chroma;
-        } else {
-        hue_point = chroma * (1 - Math.abs((hue / 60) % 2 - 1));
+    colors = []
+    for (let y = 0; y < 8; y++) {
+        barHeight = 1.2 * (((frequencyData[i] + frequencyData[i+1] + frequencyData[i+2] + frequencyData[i+3] + frequencyData[i+4] + frequencyData[i+5] + frequencyData[i+6] + frequencyData[i+7]) / 8) / 255)
+        const pixelsToTurnOn = barHeight*8
+        colors[y] = []
+        for (let i = 0; i < 8; i++) {
+            if(i > pixelsToTurnOn) colors[y].push({R: 0, G: 0, B: 0});
+            colors[y].push({R: Math.round(i*255/7), G: Math.round(7-i*255/7), B: 0});
         }
-        let m = lightness_procent - chroma / 2;
-        let r = (hue_point + m) * 255;
-        let g = (chroma + m) * 255;
-        let b = (hue_point - chroma + m) * 255;
-        r = Math.round(r);
-        g = Math.round(g);
-        b = Math.round(b);
-        colors.push({ R: r, G: g, B: b });
     }
-
-    let pixelData = [];
-    for (let i = 0; i < 8; i++) {
-        let row = [];
-        for (let j = 0; j < 8; j++) {
-            row.push(colors[i * 8 + j]);
-        }
-        pixelData.push(row);
-    }
-
+    
     let params = new URLSearchParams();
-    for (let i = 0; i < colors.length; i++) {
-        let color = colors[i];
-        params.append(`colors[${i}][R]`, color.R);
-        params.append(`colors[${i}][G]`, color.G);
-        params.append(`colors[${i}][B]`, color.B);
+    for (let y = 0; y < 8; y++) {
+        for (let i = 0; i < 8; i++) {
+            let color = colors[y][i];
+            params.append(`rows[${y}][${i}][R]`, color.R);
+            params.append(`rows[${y}][${i}][G]`, color.G);
+            params.append(`rows[${y}][${i}][B]`, color.B);
+        }
     }
 
     let data = params.toString();
-    
     await request('LEDs/visualizer', data)
 }
 
-function drawVisualization() {
-    analyserNode.getByteFrequencyData(frequencyData);
-
-    for (let i = 0; i < frequencyData.length; i++) {
-        let value = frequencyData[i];
-        let hue = value / 255 * 360;
-        let color = `hsl(${hue}, 100%, 50%)`;
-        let x = i % 8;
-        let y = 7 - Math.floor(i / 8);
-
-        ctx.fillStyle = color;
-        ctx.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+let visualizerStopped = true;
+function draw() {
+    if(visualizerStopped) {
+        ctx.fillStyle = 'rgb(26, 25, 25)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        return;
     }
-
+    requestAnimationFrame(draw)
+    analyserNode.getByteFrequencyData(frequencyData);
+    ctx.fillStyle = "rgb(26, 25, 25)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    const barWidth = canvas.width / 8;
+    let barHeight;
+    for (let i = 0; i < 8; i++) {
+        const gradient = ctx.createLinearGradient(0, canvas.height, 0, 0);
+        gradient.addColorStop(0, 'green');
+        gradient.addColorStop(Math.random() * 0.03 + 0.4, 'yellow');
+        gradient.addColorStop(1, 'red');
+        barHeight = 1.2* canvas.height * (((frequencyData[i] + frequencyData[i+1] + frequencyData[i+2] + frequencyData[i+3] + frequencyData[i+4] + frequencyData[i+5] + frequencyData[i+6] + frequencyData[i+7]) / 8) / 255)
+        ctx.fillStyle = gradient;
+        ctx.fillRect(i * barWidth, canvas.height - barHeight, barWidth, barHeight);    
+    }
 }
 
-
 const startBtn = document.getElementById('start-btn');
-
 let arduinoInterval, drawInterval;
 startBtn.addEventListener('click', () => {
 
@@ -116,8 +87,9 @@ startBtn.addEventListener('click', () => {
         startBtn.innerHTML = 'STOP'
         startBtn.style.borderColor = '#00f80c'
 
-        arduinoInterval = setInterval(sendPixelDataToArduino, 500);
-        drawInterval = setInterval(drawVisualization, 500);
+        visualizerStopped = false;
+        draw();
+        arduinoInterval = setInterval(sendPixelDataToArduino, 800);
     }
 
     else {
@@ -125,13 +97,10 @@ startBtn.addEventListener('click', () => {
         startBtn.style.borderColor = ''
 
         clearInterval(arduinoInterval)
-        clearInterval(drawInterval)
-
+        visualizerStopped=true;
         audioCtx.suspend();
 
         let data = new URLSearchParams({end: true}).toString();
         request('LEDs/visualizer', data)
-
-        ctx.fillStyle = 'rgba(0, 0, 0, 0)';
     }
 });

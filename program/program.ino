@@ -710,7 +710,7 @@ void initServer()
     displayPatternJson.shrinkToFit();
     
     patternNum=2;
-    for(uint8_t i=0; i<8; i++) for(uint8_t y=0; y<8; y++) if(request->hasParam("colors[" + String(i * 8 + y) + "][R]", true)) strip.setPixelColor(led_map[i][y], strip.Color(request->getParam("colors[" + String(i * 8 + y) + "][R]", true)->value().toInt(), request->getParam("colors[" + String(i * 8 + y) + "][G]", true)->value().toInt(), request->getParam("colors[" + String(i * 8 + y) + "][B]", true)->value().toInt()));
+    for(uint8_t y=0; y<8; y++) for(uint8_t i=0; i<8; i++) if(request->hasParam("rows[" + String(y) + "][" + String(i) + "][R]", true)) strip.setPixelColor(led_map[i][y], strip.Color(request->getParam("rows[" + String(y) + "][" + String(i) + "][R]", true)->value().toInt(), request->getParam("rows[" + String(y) + "][" + String(i) + "][G]", true)->value().toInt(), request->getParam("rows[" + String(y) + "][" + String(i) + "][B]", true)->value().toInt()));
     strip.show();
     if(request->hasParam("end", true)) patternNum=0;
     
@@ -784,6 +784,7 @@ void loop()
   {
     for (JsonVariant obj : displayPatternJson.as<JsonArray>())
     {
+      if(patternNum != 1) return;
       animate(characterToMap(obj["from"].as<String>()), characterToMap(obj["to"].as<String>()), obj["animType"].as<int>(), obj["animSpeed"].as<int>(), strip.Color(obj["color[R]"].as<int>() * 0.5, obj["color[G]"].as<int>() * 0.5, obj["color[B]"].as<int>() * 0.5));
       if (!strlen(updateFv) && !strlen(updateFS))
         delay(obj["delay"].as<int>());
