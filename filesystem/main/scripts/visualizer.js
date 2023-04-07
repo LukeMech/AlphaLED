@@ -38,7 +38,7 @@ async function sendPixelDataToArduino() {
         colors[y] = []
         for (let i = 0; i < 8; i++) {
             if(i > pixelsToTurnOn) colors[y].push({R: 0, G: 0, B: 0});
-            else colors[y].push({R: Math.round(i*255/7 + 100), G: Math.round((7-i)*255/7), B: 0});
+            else colors[y].push({R: Math.round((i*255/7)*1.2), G: Math.round((7-i)*255/7), B: 0});
         }
     }
     
@@ -51,6 +51,9 @@ async function sendPixelDataToArduino() {
                 params.append(`rows[${y}][${i}][R]`, color.R);
                 params.append(`rows[${y}][${i}][G]`, color.G);
                 params.append(`rows[${y}][${i}][B]`, color.B);
+                console.log(color.R)
+                console.log(color.G)
+                console.log(color.B)
             }
             else {
                 params.append(`rows[${y}][${i}][R]`, 0);
@@ -76,7 +79,6 @@ function draw() {
     ctx.fillStyle = "rgb(26, 25, 25)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     const barWidth = canvas.width / 8;
-    let barHeight;
     for (let j = 0; j < 8; j++) {
         const i = Math.abs(3 - j);
         const gradient = ctx.createLinearGradient(0, canvas.height, 0, 0);
@@ -101,7 +103,7 @@ startBtn.addEventListener('click', () => {
 
         visualizerStopped = false;
         draw();
-        sendPixelDataToArduino()
+        sendPixelDataToArduino();
     }
 
     else {
@@ -112,7 +114,7 @@ startBtn.addEventListener('click', () => {
         visualizerStopped=true;
         audioCtx.suspend();
 
-        let data = new URLSearchParams({end: true}).toString();
+        const data = new URLSearchParams({end: true}).toString();
         request('LEDs/visualizer', data)
     }
 });

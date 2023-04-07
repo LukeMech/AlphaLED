@@ -199,7 +199,7 @@ uint32_t LED_COLOR_1;
 
 void animate(const uint8_t startMap[][8], const uint8_t endMap[][8], uint8_t direction = 0, int gap = 50, uint32_t newColor1 = 0, uint32_t newColor0 = 0)
 {
-  if (strlen(updateFv) || strlen(updateFS))
+  if (strlen(updateFv) || strlen(updateFS) || patternNum==2)
     return;
 
   uint32_t oldColor0 = LED_COLOR_0, oldColor1 = LED_COLOR_1, color0, color1;
@@ -346,17 +346,9 @@ void animate(const uint8_t startMap[][8], const uint8_t endMap[][8], uint8_t dir
 
 void mainAnimation()
 {
-  if (patternNum)
-    return;
   animate(characterToMap("C"), characterToMap("B"), 2, 120, strip.Color(0, 0, 25));
-  if (patternNum)
-    return;
   animate(characterToMap("B"), characterToMap("A"), 2, 120, strip.Color(0, 25, 0));
-  if (patternNum)
-    return;
   animate(characterToMap("A"), characterToMap("B"), 3, 120, strip.Color(0, 0, 25));
-  if (patternNum)
-    return;
   animate(characterToMap("B"), characterToMap("C"), 3, 120, strip.Color(25, 0, 0));
 }
 
@@ -716,7 +708,6 @@ void initServer()
       {
     displayPatternJson.clear();
     displayPatternJson.shrinkToFit();
-    
     patternNum=2;
     float brightness = 0.4;
     if(request->hasParam("brightness", true)) brightness=request->getParam("brightness", true)->value().toFloat();
@@ -807,9 +798,7 @@ void loop()
     }
   }
 
-  while (patternNum == 2)
-  {
-  }
+  while (patternNum == 2) {}
 
   if (strlen(updateFv) || strlen(updateFS))
   {
