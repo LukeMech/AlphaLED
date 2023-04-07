@@ -169,7 +169,7 @@ async function getLastPatterns() {
         if(filename) {
             const res = await fetch(`../functions/LEDs/getSavedPattern?filename=${filename}`)
             let responseJson = await res.json()
-            responseJson.unshift(lines[i].substring(12))
+            responseJson.unshift({name: lines[i].substring(12), filename: filename})
             patterns.push(await responseJson)
         }
     }
@@ -177,7 +177,7 @@ async function getLastPatterns() {
     lastPatternsList.innerHTML = ''
     for (let i = 0; i < patterns.length; i++) {
         const option = document.createElement("div");
-        option.innerHTML = `<div class="lastPatterns"><h1>${patterns[i][0]}</h1><a class="runPattern-btn" onclick="runSavedPattern(${i})"><i class="fa-solid fa-play"></i></a></div>`
+        option.innerHTML = `<div class="lastPatterns"><h1>${patterns[i][0]}</h1><a class="button delPattern" id="delButton-${i}" onclick="delSavedPattern(${i})"><i class="fa-solid fa-trash"></i></a><a class="button runPattern" id="runButton-${i}" onclick="runSavedPattern(${i})"><i class="fa-solid fa-play"></i></a></div>`
         option.classList.add('patternOption')
 
         lastPatternsList.appendChild(option)
@@ -185,7 +185,19 @@ async function getLastPatterns() {
 }
 getLastPatterns()
 
+async function delSavedPattern(num) {
+    
+    document.getElementById(`delButton-${num}`).style.borderColor = 'rgb(0, 68, 255)'
+
+    const filename = patterns[num][0].filename
+    const urlSearchParams = new URLSearchParams({filename: filename}).toString();
+    await request('LEDs/deleteSavedPattern', urlSearchParams)
+    
+    getLastPatterns()
+}
 function runSavedPattern(num) {
+
+    document.getElementById(`runButton-${num}`).style.borderColor = '#04ec2b'
     
     optionsPerAnim = patterns[num].slice(1)
     let textInputValueArray = []
@@ -203,6 +215,10 @@ function runSavedPattern(num) {
         outAnim.innerHTML = 'OFF'
         outAnim.style.borderColor = '#f44336' 
     }
+
+    setTimeout(() => {
+        document.getElementById(`runButton-${num}`).style.borderColor = ''
+    }, 500);
 }
 
 redControl.addEventListener("input", function () {

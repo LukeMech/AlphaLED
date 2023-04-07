@@ -719,6 +719,26 @@ void initServer()
             { 
         if(!request->hasParam("filename")) request->send(SPIFFS, "/patterns/patterns.txt", String(), true); 
         else request->send(SPIFFS, "/patterns/" + request->getParam("filename")->value() + ".json", String(), true); });
+  server.on("/functions/LEDs/deleteSavedPattern", HTTP_POST, [](AsyncWebServerRequest *request)
+            { 
+        if(request->hasParam("filename", true)) {
+          const String filename = request->getParam("filename", true)->value(); // Delete line from patterns.txt
+          String fileContent = "";
+          File file = SPIFFS.open("/patterns/patterns.txt", "r");
+          while (file.available()) {
+            String line = file.readStringUntil('\n');
+            if (!strstr(line.c_str(), filename.c_str())) fileContent += line + "\n";
+          }
+          file.close(); 
+          SPIFFS.remove("/patterns/patterns.txt"); 
+          File newFile = SPIFFS.open("/patterns/patterns.txt", "w");
+          newFile.print(fileContent);
+          newFile.close();
+
+          SPIFFS.remove("/patterns/" + filename + ".json"); 
+        }
+
+        request->send(200, "text/plain", "OK"); });
 
   server.begin();
   serverOn = true;
