@@ -178,7 +178,7 @@ speechRecButton.addEventListener("click", function () {
 
     speechRecognition.onstart = () => speechRecButton.style.color='green'
     speechRecognition.addEventListener('result', event => {
-        textInput.value  = event.results[0][0].transcript;
+        textInput.value  = event.results[0][0].transcript.slice(0, 24);
         textInputFunction()
         optionsBtn.click();
         speechRecognition.pause();
