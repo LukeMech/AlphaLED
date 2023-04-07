@@ -667,7 +667,60 @@
 }
 
 .patternspage .lastPatterns .delPattern {
+  border: 3px solid #f44336;
+}
+
+
+/* 
+--------------------------------------------------------
+------------------- VISUALIZER PAGE --------------------
+--------------------------------------------------------
+*/
+
+.visualizerpage-header {
+  height: 250px;
+  width: 100%;
+  background-image: linear-gradient(rgba(4,9,30,0.6),rgba(4,9,30,0.6)), url(../images/space.jpg);
+  background-position: center;
+  background-size: cover;
+  text-align: center;
+  color: #fff;
+}
+.visualizerpage-header h3 {
+  margin-top: 50px;
+  font-size: 40px;
+}
+
+.visualizerpage {
+  min-height: calc(100vh - 250px - 100px - 50px);
+  width: 100%;
+  background: rgb(26, 25, 25);
+  margin: auto;
+  padding: 5px;
+  display: none;
+  align-items: center;
+  text-align: center;
+}
+
+.visualizerpage canvas {
+  border-radius: 5px;
+  width: 80vw;
+  height: 300px;
   border: 3px solid rgb(255, 0, 0);
+}
+
+.visualizerpage .btn {
+  text-decoration: none;
+  color: #fff;
+  border-radius: 5px;
+  padding: 5px 15px;
+  cursor: pointer;
+  background: transparent;
+  font-size: 15px;
+  margin-left: auto;
+  transition: 0.5s;
+  border: 3px solid rgb(255, 0, 0);
+  margin: 20px;
 }
 
 /* 

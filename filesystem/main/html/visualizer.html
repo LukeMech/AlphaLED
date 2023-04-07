@@ -11,13 +11,13 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;600;700&display=swap"
     rel="stylesheet" type='text/css'>
 
-  <title>LED Controller - settings</title>
+  <title>LED Controller - visualizer</title>
 
 </head>
 
 <body>
 
-  <section class="settingspage-header">
+  <section class="visualizerpage-header">
 
     <nav>
       <i id="connection"><i class="fa-solid fa-arrow-rotate-right fa-spin" style="color: #33dc09"></i> Connecting...</i>
@@ -28,8 +28,8 @@
           <li><a href="../home" class="link">HOME</a></li>
           <li><a href="../patterns" class="link">PATTERNS</a></li>
           <li><a href="../flashlight" class="link">FLASHLIGHT</a></li>
-          <li><a href="../visualizer" class="link">VISUALIZER</a></li>
-          <li><a onclick="reload()" class="here">SETTINGS</a></li>
+          <li><a onclick="reload()" class="here">VISUALIZER</a></li>
+          <li><a href="../settings" class="link">SETTINGS</a></li>
         </ul>
       </div>
       <i class="fa-regular fa-square-plus" onclick="showMenu()"></i>
@@ -39,35 +39,25 @@
       <p id="announcment"></p>
     </div>
 
-    <h3 id="title">Settings</h3>
+    <h3 id="title">Visualizer</h3>
 
   </section>
 
   <div id="loading"></div>
 
-  <!--  Info content  -->
+  <!--  Flashlight content  -->
 
-  <section class="settingspage" id="mainSection">
-    
-    <h2 class="versionTitle"><i class="i fas fa-code-compare"></i> Firmware version:</h2>
-    <h2 class="versionInfo" id="fvVersion"><i class="fa-solid fa-ellipsis fa-bounce"></i></h2>
-    <h2 class="versionTitle"><i class="i fas fa-folder-tree"></i> Server files version:</h2>
-    <h2 class="versionInfo" id="fsVersion"><i class="fa-solid fa-ellipsis fa-bounce"></i></h2>
-    <h2 class="versionTitle"><i class="i fas fa-microchip"></i> Chip ID:</h2>
-    <h2 class="versionInfo" id="chipID"><i class="fa-solid fa-ellipsis fa-bounce"></i></h2>
-
-    <i id="warn1" class="hidden ghWarning fa-solid fa-triangle-exclamation"></i>
-    <select id="branches" class="branches"></select>
-    <div id="warn2" class="hidden ghWarningOverflow">Failed to fetch channels, using current.</div>
-    
-    <a onclick="callUpdater()" class="btn" id="updButton"><i class="fa-solid fa-ellipsis fa-bounce"></i></a>
+  <section class="visualizerpage" id="mainSection">
+    <canvas id="canvas" width="80" height="80"></canvas>
+    <button class="btn" id="start-btn">START</button>
 
   </section>
+
 
   <iframe src="../html/footer.html" seamless scrolling="no"></iframe>
 
   <script src="../scripts/script.js"></script>
-  <script src="../scripts/settings.js"></script>
+  <script src="../scripts/visualizer.js"></script>
 
 </body>
 

@@ -42,7 +42,7 @@ const uint32_t LED_COLOR_ERR = strip.Color(100, 0, 0); // diode color for update
 
 int8_t patternNum = 0;
 byte flashlightColorR = 255, flashlightColorG = 255, flashlightColorB = 255;
-float flashlightBrightness = 0;
+float flashlightBrightness = 0, visualizerBrightness = 0.7;
 bool serverOn = false;
 char updateFS[150];
 char updateFv[150];
@@ -190,6 +190,14 @@ arrayPtr characterToMap(String value)
   return characters.space;
 }
 
+// Visualizer helpers
+struct ColorMap {
+    uint8_t R;
+    uint8_t G;
+    uint8_t B;
+};
+ColorMap visualizerMap[8][8];
+
 AsyncWebServer server(80);
 
 // ------------------------
@@ -197,7 +205,7 @@ AsyncWebServer server(80);
 // ------------------------
 
 // Display static map
-void display(const uint8_t map[][8])
+void displayMap(const uint8_t map[][8])
 {
   for (uint8_t i = 0; i < 8; i++)
   {
@@ -362,6 +370,21 @@ void animate(const uint8_t startMap[][8], const uint8_t endMap[][8], uint8_t dir
   }
 }
 
+// Display static map
+void displayColorMap(ColorMap map[][8])
+{
+  for (uint8_t i = 0; i < 8; i++)
+  {
+    for (uint8_t j = 0; j < 8; j++)
+    {
+      ColorMap value = map[i][j];
+      uint8_t index = led_map[i][j];
+      strip.setPixelColor(index, strip.Color(value.R*0.6*visualizerBrightness, value.G*0.6*visualizerBrightness, value.B*0.6*visualizerBrightness));
+    }
+  }
+  strip.show();
+}
+
 void mainAnimation()
 {
   animate(characterToMap("C"), characterToMap("B"), 2, 120, strip.Color(0, 0, 25));
@@ -475,7 +498,7 @@ void wiFiInit()
 void firmwareUpdate() // Updater
 {
 
-  display(characters.space);
+  displayMap(characters.space);
   server.end();
   displayPatternJson.clear();
   displayPatternJson.shrinkToFit();
@@ -715,6 +738,25 @@ void initServer()
     }
     request->send(200, "text/plain", "OK"); });
 
+  server.on(
+      "/functions/LEDs/visualizer", HTTP_POST, [](AsyncWebServerRequest *request)
+      {
+
+    patternNum=2;
+
+    for(uint8_t i=0; i<8; i++) {
+      for(uint8_t y=0; y<8; y++) {
+        if(request->hasParam("color[" + String(i * 8 + y) + "][R]", true)) visualizerMap[i][y].R = request->getParam("color[" + String(i * 8 + y) + "][R]", true)->value().toInt();
+        if(request->hasParam("color[" + String(i * 8 + y) + "][G]", true)) visualizerMap[i][y].G = request->getParam("color[" + String(i * 8 + y) + "][G]", true)->value().toInt();
+        if(request->hasParam("color[" + String(i * 8 + y) + "][B]", true)) visualizerMap[i][y].B = request->getParam("color[" + String(i * 8 + y) + "][B]", true)->value().toInt();
+      }
+    }
+
+    if(request->hasParam("end", true)) patternNum=0;
+    
+    request->send(200, "text/plain", "OK");
+    });
+
   server.on("/functions/LEDs/getSavedPattern", HTTP_GET, [](AsyncWebServerRequest *request)
             { 
         if(!request->hasParam("filename")) request->send(SPIFFS, "/patterns/patterns.txt", String(), true); 
@@ -757,7 +799,7 @@ void setup()
   Serial.println("[STATUS] Start!");
 
   strip.begin(); // Init strips
-  display(characters.space);
+  displayMap(characters.space);
 
   if (!SPIFFS.begin())
     ESP.restart(); // Begin filesystem
@@ -787,6 +829,11 @@ void loop()
       if (!strlen(updateFv) && !strlen(updateFS))
         delay(obj["delay"].as<int>());
     }
+  }
+
+  while (patternNum == 2)
+  {
+    displayColorMap(visualizerMap);
   }
 
   if (strlen(updateFv) || strlen(updateFS))
