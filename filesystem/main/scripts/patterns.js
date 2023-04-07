@@ -123,8 +123,8 @@ function changeLetter(num) {
     else if(optionsPerAnim[num].animType === 3) animDir.style.rotate='-90deg'
     animSpeed.value = 550-optionsPerAnim[num].animSpeed
     addDelay.value = ''
-    if(!optionsPerAnim[num].delay/1000) addDelay.placeholder = ''
-    else addDelay.placeholder = `${(optionsPerAnim[num].delay/1000)} sec`
+    addDelay.placeholder = `${(optionsPerAnim[num].delay/1000)} sec`
+    if(num === charactersList.children.length-1 && outAnim.innerHTML === 'OFF') addDelay.placeholder=''
     addDelay.removeAttribute('readonly')
 }
 
