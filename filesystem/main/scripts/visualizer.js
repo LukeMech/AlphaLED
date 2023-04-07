@@ -39,9 +39,31 @@ async function sendPixelDataToArduino() {
     for (let i = 0; i < frequencyData.length; i += 4) {
         let value = (frequencyData[i] + frequencyData[i + 1] + frequencyData[i + 2] + frequencyData[i + 3]) / 4;    
         let hue = value / 255 * 360;
-        let color = `hsl(${hue}, 100%, 50%)`;
-        let { R, G, B } = hexToRgb(color);
-        colors.push({ R, G, B });
+        let saturation_procent = 1;
+        let lightness_procent = 0.7;
+        let chroma = (1 - Math.abs(2 * lightness_procent - 1)) * saturation_procent;
+        let hue_point;
+        if (hue < 60) {
+        hue_point = chroma;
+        } else if (hue < 120) {
+        hue_point = chroma * (1 - Math.abs((hue / 60) % 2 - 1));
+        } else if (hue < 180) {
+        hue_point = 0;
+        } else if (hue < 240) {
+        hue_point = chroma * (1 - Math.abs((hue / 60) % 2 - 1));
+        } else if (hue < 300) {
+        hue_point = chroma;
+        } else {
+        hue_point = chroma * (1 - Math.abs((hue / 60) % 2 - 1));
+        }
+        let m = lightness_procent - chroma / 2;
+        let r = (hue_point + m) * 255;
+        let g = (chroma + m) * 255;
+        let b = (hue_point - chroma + m) * 255;
+        r = Math.round(r);
+        g = Math.round(g);
+        b = Math.round(b);
+        colors.push({ R: r, G: g, B: b });
     }
 
     let pixelData = [];
@@ -74,7 +96,7 @@ function drawVisualization() {
         let hue = value / 255 * 360;
         let color = `hsl(${hue}, 100%, 50%)`;
         let x = i % 8;
-        let y = 7 - Math.floor(i / 8); // odwrócenie pozycji y
+        let y = 7 - Math.floor(i / 8);
 
         ctx.fillStyle = color;
         ctx.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
