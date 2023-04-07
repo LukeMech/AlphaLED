@@ -50,9 +50,6 @@ async function sendPixelDataToArduino() {
                 params.append(`rows[${y}][${i}][R]`, color.R);
                 params.append(`rows[${y}][${i}][G]`, color.G);
                 params.append(`rows[${y}][${i}][B]`, color.B);
-                console.log(color.R)
-                console.log(color.G)
-                console.log(color.B)
             }
             else {
                 params.append(`rows[${y}][${i}][R]`, 0);
@@ -64,7 +61,7 @@ async function sendPixelDataToArduino() {
     const data = params.toString();
     await request('LEDs/visualizer', data)
 
-    await sendPixelDataToArduino()
+    sendPixelDataToArduino()
 }
 
 function draw() {
