@@ -33,7 +33,7 @@ async function sendPixelDataToArduino() {
     let colors = []
     for (let y = 0; y < 8; y++) {
         const j = Math.abs(3 - y);
-        const barHeight = (((frequencyData[j] + frequencyData[j*2] + frequencyData[j*3] + frequencyData[j*4] + [j*5] + frequencyData[j*6] + frequencyData[j*7] + frequencyData[j*8]) / 8) / 255)
+        const barHeight = (((frequencyData[j] + frequencyData[j*2] + frequencyData[j*3] + frequencyData[j*4] + frequencyData[j*5] + frequencyData[j*6] + frequencyData[j*7] + frequencyData[j*8]) / 8) / 255)
         const pixelsToTurnOn = barHeight*8
         colors[y] = []
         for (let i = 0; i < 8; i++) {

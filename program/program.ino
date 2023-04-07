@@ -199,7 +199,7 @@ uint32_t LED_COLOR_1;
 
 void animate(const uint8_t startMap[][8], const uint8_t endMap[][8], uint8_t direction = 0, int gap = 50, uint32_t newColor1 = 0, uint32_t newColor0 = 0)
 {
-  if (strlen(updateFv) || strlen(updateFS) || patternNum==2)
+  if (strlen(updateFv) || strlen(updateFS) || patternNum == 2)
     return;
 
   uint32_t oldColor0 = LED_COLOR_0, oldColor1 = LED_COLOR_1, color0, color1;
@@ -687,9 +687,7 @@ void initServer()
     if(request->hasParam("filename", true)) {
       String filename = "";
       const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-      for (int i = 0; i < 10; i++) {
-        filename += charset[random(sizeof(charset))];
-      }
+      for (uint8_t i = 0; i < 10; i++) filename += charset[random(sizeof(charset))];
       String filepath = "/patterns/" + filename + ".json";
       File file = SPIFFS.open(filepath, "w");
       serializeJson(displayPatternJson, file);
@@ -798,7 +796,9 @@ void loop()
     }
   }
 
-  while (patternNum == 2) {}
+  while (patternNum == 2)
+  {
+  }
 
   if (strlen(updateFv) || strlen(updateFS))
   {
