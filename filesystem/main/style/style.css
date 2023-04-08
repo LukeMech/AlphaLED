@@ -396,6 +396,7 @@
   background-color: rgba(0, 0, 0, 0);
   border: 3px solid #f44336;
   padding: 5px;
+  padding-left: 30px;
   width: 70vw;
   margin: 20px;
   margin-bottom: 10px;
@@ -413,16 +414,29 @@
   display: inline-block;
   text-decoration: none;
   color: #fff;
-  border: 3px solid yellow;
-  border-radius: 10px;
-  padding: 2px 5px;
   font-size: 15px;
   background: transparent;
-  margin: 20px;
+  margin: 10px;
   margin-bottom: 10px;
-  margin-left: -15px;
   cursor: pointer;
   transition: 0.3s;
+}
+.patternspage .optionsOpen {
+  border: 3px solid yellow;
+  border-radius: 8px;
+  padding: 2px 5px;
+  margin-left: -10px;
+}
+.patternspage .speechRecognition {
+  position: absolute;
+  border: 3px solid #f44336;
+  padding: 5px 5px;
+  padding-left: 6px;
+  margin-left: 20px;
+  margin-top: 20px;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+  color: red;
 }
 
 .patternspage .hidden {
@@ -449,7 +463,9 @@
 }
 .patternspage .optionsBox .list {
   overflow-y: scroll;
-  height: 230px;
+  height: 215px;
+  margin-top: 5px;
+  margin-bottom: 5px;
   transition: 0.3s;
 }
 .patternspage .optionsBox .list::-webkit-scrollbar {
@@ -586,8 +602,170 @@
   background: transparent;
   cursor: pointer;
   transition: 0.5s;
+  margin: 10px;
+}
+
+.patternspage .historyInfo {
+  border-top: 3px solid;
+  border-image-source: linear-gradient(to right, rgb(26, 25, 25), rgba(38, 155, 22, 0.8), rgb(26, 25, 25));
+  border-image-slice: 1;
+  padding-top: 20px;
+  text-align: left;
   margin: 20px;
-  margin-top: 10px;
+  margin-bottom: -10px;
+  color: bisque;
+}
+.patternspage .historyInfo i {
+  color: white;
+}
+.patternspage .historyInfo span {
+  font-size: 15px;
+  color: white;
+}
+.patternspage .info {
+  width: calc(100vw - 40px);
+  margin: 20px;
+  padding: 5px;
+  background-color: rgba(255, 60, 60, 0.521);
+  border: 3px solid rgba(255, 255, 0, 0.699);
+  border-radius: 5px;
+  color: white;
+}
+.patternspage .info h1 {
+  font-size: 18px;
+  font-weight: 600;
+}
+.patternspage .info h2 {
+  font-size: 13px;
+  font-weight: 400;
+}
+.patternspage .info b {
+  font-weight: 600;
+}
+
+.patternspage .lastPatterns {
+  color: white;
+  display: flex;
+  align-items: center;
+  width: calc(100vw - 40px);
+  text-align: left;
+  margin: 20px;
+  margin-top: -20px;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+.patternspage .lastPatterns h1 {
+  width: 100vw;
+  white-space: nowrap;
+  border: 3px solid red;
+  border-radius: 5px;
+  margin-right: 10px;
+  padding-left: 5px;
+  padding-right: 5px;
+  font-size: 20px;
+  overflow-x: scroll;
+}
+.patternspage .lastPatterns h1::-webkit-scrollbar {
+  display: none;
+}
+
+.patternspage .lastPatterns .button {
+  text-decoration: none;
+  color: #fff;
+  border-radius: 5px;
+  padding: 5px 15px;
+  cursor: pointer;
+  background: transparent;
+  font-size: 15px;
+  margin-left: auto;
+  transition: 0.5s;
+}  
+.patternspage .lastPatterns .runPattern {
+  border: 3px solid yellow;
+  margin-bottom: 2px;
+  margin-left: 10px;
+}
+
+.patternspage .lastPatterns .delPattern {
+  border: 3px solid #f44336;
+}
+
+
+/* 
+--------------------------------------------------------
+------------------- VISUALIZER PAGE --------------------
+--------------------------------------------------------
+*/
+
+.visualizerpage-header {
+  width: 100%;
+  background-image: linear-gradient(rgba(4,9,30,0.6),rgba(4,9,30,0.6)), url(../images/space.jpg);
+  background-position: center;
+  background-size: cover;
+  text-align: center;
+  color: #fff;
+}
+.visualizerpage-header h3 {
+  margin-top: 20px;
+  font-size: 40px;
+  padding-bottom: 30px;
+}
+
+.visualizerpage-header .info {
+  width: calc(100vw - 40px);
+  margin: 20px;
+  padding: 5px;
+  background-color: rgba(255, 60, 60, 0.521);
+  border: 3px solid rgba(255, 255, 0, 0.699);
+  border-radius: 5px;
+  color: white;
+}
+.visualizerpage-header .info h1 {
+  font-size: 18px;
+  font-weight: 600;
+}
+.visualizerpage-header .info h2 {
+  font-size: 13px;
+  font-weight: 400;
+}
+.visualizerpage-header .info b {
+  font-weight: 600;
+}
+
+.visualizerpage {
+  min-height: calc(100vh - 250px - 100px - 50px);
+  width: 100%;
+  background: rgb(26, 25, 25);
+  margin: auto;
+  padding: 5px;
+  display: none;
+  align-items: center;
+  text-align: center;
+}
+
+.visualizerpage canvas {
+  width: calc(100vw - 40px - 10px);
+  height: 200px;
+  background-color: black;
+  margin: 20px;
+  margin-bottom: 0px;
+  border: 3px solid rgb(255, 0, 0);
+  border-radius: 10px;
+}
+
+.visualizerpage .btn {
+  text-decoration: none;
+  color: #fff;
+  border-radius: 5px;
+  padding: 5px 15px;
+  cursor: pointer;
+  background: transparent;
+  font-size: 15px;
+  margin-left: auto;
+  transition: 0.5s;
+  border: 3px solid rgb(255, 0, 0);
+  margin: 20px;
 }
 
 /* 
@@ -597,7 +775,6 @@
 */
 
 .settingspage-header {
-  height: 250px;
   width: 100%;
   background-image: linear-gradient(rgba(4,9,30,0.6),rgba(4,9,30,0.6)), url(../images/cosmos.jpg);
   background-position: center;
@@ -606,8 +783,30 @@
   color: #fff;
 }
 .settingspage-header h3 {
-  margin-top: 50px;
+  margin-top: 20px;
   font-size: 40px;
+  padding-bottom: 30px;
+}
+
+.settingspage-header .info {
+  width: calc(100vw - 40px);
+  margin: 20px;
+  padding: 5px;
+  background-color: rgba(255, 60, 60, 0.521);
+  border: 3px solid rgba(255, 255, 0, 0.699);
+  border-radius: 5px;
+  color: white;
+}
+.settingspage-header .info h1 {
+  font-size: 18px;
+  font-weight: 600;
+}
+.settingspage-header .info h2 {
+  font-size: 13px;
+  font-weight: 400;
+}
+.settingspage-header .info b {
+  font-weight: 600;
 }
 
 .settingspage {

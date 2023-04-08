@@ -28,6 +28,7 @@
           <li><a href="../home" class="link">HOME</a></li>
           <li><a onclick="reload()" class="here">PATTERNS</a></li>
           <li><a href="../flashlight" class="link">FLASHLIGHT</a></li>
+          <li><a href="../visualizer" class="link">VISUALIZER</a></li>
           <li><a href="../settings" class="link">SETTINGS</a></li>
         </ul>
       </div>
@@ -48,8 +49,10 @@
 
   <section class="patternspage" id="mainSection">
 
-    <input class="text" placeholder="Type here... (max 24 characters)" type="text" id="text" maxlength="24">
-    <a class="options-btn" id="optionsBtn"><i class="fa-solid fa-chevron-down"></i></a>
+    <a class="options-btn speechRecognition" id="speechRecognition"><i class="fa-solid fa-microphone-lines"></i></a>
+    <input class="text" placeholder="Max 24 characters" type="text" id="text" maxlength="24">
+    <a class="options-btn optionsOpen" id="optionsBtn"><i class="fa-solid fa-chevron-down"></i></a>
+
     <div id="optionsBox" class="hidden optionsBox">
       
       <div class='charsDiv'>
@@ -84,7 +87,12 @@
     </div>
 
     <a class="btn" id="submit">SUBMIT</a>
-  
+
+    <h1 class="historyInfo"><i class="fa-solid fa-clock-rotate-left"></i> History <span>from latest</span></h1>
+    <div class="info">
+      <h1><i class="fa-solid fa-recycle"></i> Warning<h2> every <b>filesystem update</b> will <b>clear</b> the history.</h2></h1>
+    </div>
+    <div id="lastPatterns"></div>
   </section>
 
   <iframe src="../html/footer.html" seamless scrolling="no"></iframe>

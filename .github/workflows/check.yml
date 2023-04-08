@@ -5,10 +5,7 @@ on:
   # On sketch change 
   push:
     branches: 
-      - "development"
-      
-    paths:
-      - "filesystem/main/version.txt"
+      - "main"
       
   # On workflow dispatch
   workflow_dispatch:
@@ -49,19 +46,3 @@ jobs:
           /home/runner/.arduino15/packages/esp8266/tools/mkspiffs/**/mkspiffs -c ./filesystem/backup -b 8192 -p 256 -s 524288 -- ./program/build/backup-filesystem.bin
           /home/runner/.arduino15/packages/esp8266/tools/mkspiffs/**/mkspiffs -c ./filesystem/main -b 8192 -p 256 -s 524288 -- ./program/build/filesystem.bin
           arduino-cli compile -b "esp8266:esp8266:nodemcuv2" -e './program'
-          
-      # Upload to repository
-      - name: Push changes to repo
-        run: |
-          mkdir ./updater || true
-          cp ./program/build/**/*.ino.bin ./updater/firmware.bin
-          cp ./program/build/backup-filesystem.bin ./updater/backup-filesystem.bin
-          cp ./program/build/filesystem.bin ./updater/filesystem.bin
-          cp ./filesystem/main/version.txt ./updater/build-version.txt
-          rm -rf ./program/build
-          git config --global user.name github-actions
-          git config --global user.email github-actions@github.com
-          git pull
-          git add .
-          git commit -m "🏗️ Firmware v$(grep 'Firmware:' ./updater/build-version.txt | cut -d' ' -f2) | FS v$(grep 'Filesystem:' ./updater/build-version.txt | cut -d' ' -f2)"
-          git push
