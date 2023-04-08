@@ -3,6 +3,7 @@
     "currentBranch": "development",
 
     "versionFile": "updater/build-version.txt",
+    "[optional] announcmentFile": "announcment.txt",
     "firmwareFile": "updater/firmware.bin",
     "filesystemFile": "updater/filesystem.bin"
 }

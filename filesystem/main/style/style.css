@@ -678,7 +678,6 @@
 */
 
 .visualizerpage-header {
-  height: 250px;
   width: 100%;
   background-image: linear-gradient(rgba(4,9,30,0.6),rgba(4,9,30,0.6)), url(../images/space.jpg);
   background-position: center;
@@ -687,8 +686,9 @@
   color: #fff;
 }
 .visualizerpage-header h3 {
-  margin-top: 50px;
+  margin-top: 20px;
   font-size: 40px;
+  padding-bottom: 20px;
 }
 
 .visualizerpage {
@@ -700,6 +700,27 @@
   display: none;
   align-items: center;
   text-align: center;
+}
+
+.visualizerpage-header .error {
+  width: calc(100vw - 40px);
+  margin: 20px;
+  padding: 5px;
+  background-color: rgba(255, 60, 60, 0.521);
+  border: 3px solid rgba(255, 255, 0, 0.699);
+  border-radius: 5px;
+  color: white;
+}
+.visualizerpage-header .error h1 {
+  font-size: 18px;
+  font-weight: 600;
+}
+.visualizerpage-header .error h2 {
+  font-size: 13px;
+  font-weight: 400;
+}
+.visualizerpage-header .error b {
+  font-weight: 600;
 }
 
 .visualizerpage canvas {

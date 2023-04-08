@@ -23,9 +23,18 @@ navigator.mediaDevices.getUserMedia({ audio: true })
         console.error('Error getting audio', error);
     });
 
-let visualizerStopped = true;
+let visualizerStopped = true, endSent = false;
 async function sendPixelDataToArduino() {
-    if(visualizerStopped) return;
+    if(visualizerStopped) {
+        if(!endSent) {
+            const data = new URLSearchParams({end: true}).toString();
+            await request('LEDs/visualizer', data)
+            endSent=true;
+        }
+        return;
+    };
+    endSent=false;
+
     if(!connectionStatus.hasAttribute("Connected")) return;
 
     analyserNode.getByteFrequencyData(frequencyData);
@@ -110,11 +119,7 @@ startBtn.addEventListener('click', () => {
         startBtn.innerHTML = 'START'
         startBtn.style.borderColor = ''
 
-        clearInterval(arduinoInterval)
         visualizerStopped=true;
         audioCtx.suspend();
-
-        const data = new URLSearchParams({end: true}).toString();
-        request('LEDs/visualizer', data)
     }
 });

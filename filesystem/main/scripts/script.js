@@ -1,8 +1,14 @@
-// Here paste announcments
-const globalAnnouncment = '<i class="fa-solid fa-wrench"></i> Work in progress'
-
 const announcment = document.getElementById('announcment')
-announcment.innerHTML = globalAnnouncment
+try{
+  fetch("../updater.json").then(res => {
+    res.json().then(settings => {
+      fetch('https://raw.githubusercontent.com/' + settings.gitRepoName + '/' + settings.branchName + '/' + settings["[optional] announcmentFile"]).then(resp => {
+        resp.text().then(announcmentText => announcment.innerHTML = announcment.innerHTML ? (announcmentText ? announcment.innerHTML+'<br>': announcment.innerHTML) : '' + announcmentText)
+      })
+    })
+  })
+}
+catch(err) {}
 
 // Navigator, on show show, on hide hide
 const navLinks = document.getElementById('navLinks')
