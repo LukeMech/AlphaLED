@@ -3,7 +3,10 @@ try{
   fetch("../updater.json").then(res => {
     res.json().then(settings => {
       fetch('https://raw.githubusercontent.com/' + settings.gitRepoName + '/' + settings.currentBranch + '/' + settings["[optional] announcmentFile"]).then(resp => {
-        if(resp.ok) resp.text().then(announcmentText => announcment.innerHTML = announcment.innerHTML + announcmentText ? ('<br>' + announcmentText) : '')
+        if(resp.ok) resp.text().then(announcmentText => {
+          if(announcment.innerHTML != '' && announcmentText != '') announcment.innerHTML = announcment.innerHTML +  '<br>' + announcmentText
+          else if (announcmentText != '') announcment.innerHTML = announcmentText
+        })
       })
     })
   })
