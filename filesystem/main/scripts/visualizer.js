@@ -13,16 +13,6 @@ const gainNode = audioCtx.createGain();
 gainNode.gain.value = 0;
 gainNode.connect(audioCtx.destination);
 
-navigator.mediaDevices.getUserMedia({ audio: true })
-    .then(stream => {
-        let sourceNode = audioCtx.createMediaStreamSource(stream);
-        sourceNode.connect(analyserNode);
-        analyserNode.connect(gainNode);
-    })
-    .catch(error => {
-        console.error('Error getting audio', error);
-    });
-
 let visualizerStopped = true, endSent = false;
 async function sendPixelDataToArduino() {
     if(visualizerStopped) {
@@ -105,14 +95,23 @@ let arduinoInterval, drawInterval;
 startBtn.addEventListener('click', () => {
 
     if(startBtn.innerHTML === 'START') {
-        audioCtx.resume();
-    
-        startBtn.innerHTML = 'STOP'
-        startBtn.style.borderColor = '#00f80c'
+        navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(stream => {
+            let sourceNode = audioCtx.createMediaStreamSource(stream);
+            sourceNode.connect(analyserNode);
+            analyserNode.connect(gainNode);
+            audioCtx.resume();
 
-        visualizerStopped = false;
-        draw();
-        sendPixelDataToArduino();
+            startBtn.innerHTML = 'STOP'
+            startBtn.style.borderColor = '#00f80c'
+
+            visualizerStopped = false;
+            draw();
+            sendPixelDataToArduino();
+        })
+        .catch(error => {
+            console.error('Error getting audio', error);
+        });
     }
 
     else {
