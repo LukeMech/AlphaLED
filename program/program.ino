@@ -796,10 +796,6 @@ void loop()
     }
   }
 
-  while (patternNum == 2)
-  {
-  }
-
   if (strlen(updateFv) || strlen(updateFS))
   {
     firmwareUpdate(); // Update firmware if server requested
