@@ -457,10 +457,10 @@ void wiFiInit()
 void firmwareUpdate() // Updater
 {
 
-  strip.fill(strip.Color(0, 0, 0));
-  server.end();
   displayPatternJson.clear();
   displayPatternJson.shrinkToFit();
+  strip.fill(strip.Color(0, 0, 0));
+  server.end();
 
   bool secStage = false, dualUpdate = false;
 
@@ -704,8 +704,6 @@ void initServer()
   server.on(
       "/functions/LEDs/visualizer", HTTP_POST, [](AsyncWebServerRequest *request)
       {
-    displayPatternJson.clear();
-    displayPatternJson.shrinkToFit();
     patternNum=2;
     float brightness = 0.4;
     if(request->hasParam("brightness", true)) brightness=request->getParam("brightness", true)->value().toFloat();

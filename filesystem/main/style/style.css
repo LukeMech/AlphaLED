@@ -691,17 +691,6 @@
   padding-bottom: 20px;
 }
 
-.visualizerpage {
-  min-height: calc(100vh - 250px - 100px - 50px);
-  width: 100%;
-  background: rgb(26, 25, 25);
-  margin: auto;
-  padding: 5px;
-  display: none;
-  align-items: center;
-  text-align: center;
-}
-
 .visualizerpage-header .error {
   width: calc(100vw - 40px);
   margin: 20px;
@@ -721,6 +710,17 @@
 }
 .visualizerpage-header .error b {
   font-weight: 600;
+}
+
+.visualizerpage {
+  min-height: calc(100vh - 250px - 100px - 50px);
+  width: 100%;
+  background: rgb(26, 25, 25);
+  margin: auto;
+  padding: 5px;
+  display: none;
+  align-items: center;
+  text-align: center;
 }
 
 .visualizerpage canvas {
@@ -754,7 +754,6 @@
 */
 
 .settingspage-header {
-  height: 250px;
   width: 100%;
   background-image: linear-gradient(rgba(4,9,30,0.6),rgba(4,9,30,0.6)), url(../images/cosmos.jpg);
   background-position: center;
@@ -763,8 +762,30 @@
   color: #fff;
 }
 .settingspage-header h3 {
-  margin-top: 50px;
+  margin-top: 20px;
   font-size: 40px;
+  padding-bottom: 10px;
+}
+
+.settingspage-header .error {
+  width: calc(100vw - 40px);
+  margin: 20px;
+  padding: 5px;
+  background-color: rgba(255, 60, 60, 0.521);
+  border: 3px solid rgba(255, 255, 0, 0.699);
+  border-radius: 5px;
+  color: white;
+}
+.settingspage-header .error h1 {
+  font-size: 18px;
+  font-weight: 600;
+}
+.settingspage-header .error h2 {
+  font-size: 13px;
+  font-weight: 400;
+}
+.settingspage-header .error b {
+  font-weight: 600;
 }
 
 .settingspage {

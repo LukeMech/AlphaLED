@@ -242,7 +242,7 @@ function runSavedPattern(num) {
     optionsPerAnim = patterns[num].slice(1)
     let textInputValueArray = []
     for(let i = 0; i < optionsPerAnim.length; i++) if(optionsPerAnim[i].to != 'undefined') textInputValueArray.push(optionsPerAnim[i].to)
-    
+
     textInput.value = textInputValueArray.join("")
     textInputFunction()
     optionsBtn.click()
