@@ -612,6 +612,7 @@
   padding-top: 20px;
   text-align: left;
   margin: 20px;
+  margin-bottom: -10px;
   color: bisque;
 }
 .patternspage .historyInfo i {
@@ -620,6 +621,26 @@
 .patternspage .historyInfo span {
   font-size: 15px;
   color: white;
+}
+.patternspage .info {
+  width: calc(100vw - 40px);
+  margin: 20px;
+  padding: 5px;
+  background-color: rgba(255, 60, 60, 0.521);
+  border: 3px solid rgba(255, 255, 0, 0.699);
+  border-radius: 5px;
+  color: white;
+}
+.patternspage .info h1 {
+  font-size: 18px;
+  font-weight: 600;
+}
+.patternspage .info h2 {
+  font-size: 13px;
+  font-weight: 400;
+}
+.patternspage .info b {
+  font-weight: 600;
 }
 
 .patternspage .lastPatterns {
@@ -691,7 +712,7 @@
   padding-bottom: 30px;
 }
 
-.visualizerpage-header .error {
+.visualizerpage-header .info {
   width: calc(100vw - 40px);
   margin: 20px;
   padding: 5px;
@@ -700,15 +721,15 @@
   border-radius: 5px;
   color: white;
 }
-.visualizerpage-header .error h1 {
+.visualizerpage-header .info h1 {
   font-size: 18px;
   font-weight: 600;
 }
-.visualizerpage-header .error h2 {
+.visualizerpage-header .info h2 {
   font-size: 13px;
   font-weight: 400;
 }
-.visualizerpage-header .error b {
+.visualizerpage-header .info b {
   font-weight: 600;
 }
 
@@ -767,7 +788,7 @@
   padding-bottom: 30px;
 }
 
-.settingspage-header .error {
+.settingspage-header .info {
   width: calc(100vw - 40px);
   margin: 20px;
   padding: 5px;
@@ -776,15 +797,15 @@
   border-radius: 5px;
   color: white;
 }
-.settingspage-header .error h1 {
+.settingspage-header .info h1 {
   font-size: 18px;
   font-weight: 600;
 }
-.settingspage-header .error h2 {
+.settingspage-header .info h2 {
   font-size: 13px;
   font-weight: 400;
 }
-.settingspage-header .error b {
+.settingspage-header .info b {
   font-weight: 600;
 }
 
