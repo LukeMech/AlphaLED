@@ -49,7 +49,7 @@ bool serverOn = false;
 char updateFS[150];
 char updateFv[150];
 char versionString[60];
-DynamicJsonDocument* displayPatternJson = NULL;
+DynamicJsonDocument *displayPatternJson = NULL;
 
 // Alphabet maps
 const struct
@@ -465,7 +465,8 @@ void firmwareUpdate() // Updater
   strip.fill(strip.Color(0, 0, 0));
   server.end();
   patternNum = -1;
-  if (displayPatternJson != NULL) delete displayPatternJson;
+  if (displayPatternJson != NULL)
+    delete displayPatternJson;
 
   bool secStage = false, dualUpdate = false;
 
@@ -694,11 +695,14 @@ void initServer()
     if(request->hasParam("filename", true)) {
       String filename = "";
       const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-      for (uint8_t i = 0; i < 10; i++) filename += charset[random(sizeof(charset))];
+      for (uint8_t i = 0; i < 10; i++) {
+        char randomChar = charset[random(sizeof(charset))];
+        if (randomChar == ' ')  filename+= 'u';
+        else filename+= randomChar;
+      }
       patternFile = "/patterns/" + filename + ".json";
       File file = SPIFFS.open(patternFile, "w");
-      serializeJson(*displayPatternJson, file);
-      serializeJsonPretty(*displayPatternJson, Serial);
+      serializeJsonPretty(*displayPatternJson, file);
       file.close();
 
       File patternsFile = SPIFFS.open("/patterns/patterns.txt", "a");
@@ -809,11 +813,13 @@ void loop()
     DynamicJsonDocument pattern(4096);
     File file = SPIFFS.open("/patterns/" + patternFile + ".json", "r");
     deserializeJson(pattern, file);
+    serializeJsonPretty(pattern, Serial);
+    delay(1000);
     file.close();
     for (JsonVariant obj : pattern.as<JsonArray>())
     {
       animate(characterToMap(obj["from"].as<String>()), characterToMap(obj["to"].as<String>()), obj["animType"].as<int>(), obj["animSpeed"].as<int>(), strip.Color(obj["color[R]"].as<int>() * 0.5, obj["color[G]"].as<int>() * 0.5, obj["color[B]"].as<int>() * 0.5));
-      if (!strlen(updateFv) && !strlen(updateFS) && patternNum==1)
+      if (!strlen(updateFv) && !strlen(updateFS) && patternNum == 1)
         delay(obj["delay"].as<int>());
     }
   }
