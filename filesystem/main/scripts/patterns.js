@@ -227,7 +227,7 @@ function savePattern(num) {
     const url = `../functions/LEDs/getSavedPattern?filename=${filename}`
     let link = document.createElement('a');
     link.href = url;
-    link.download = filename;
+    link.download = patterns[num][0].name + ".json";
   
     document.body.appendChild(link);
     link.click();
