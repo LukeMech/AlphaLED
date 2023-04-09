@@ -736,16 +736,7 @@ void initServer()
   server.on("/functions/LEDs/getSavedPattern", HTTP_GET, [](AsyncWebServerRequest *request)
             { 
         if(!request->hasParam("filename")) request->send(SPIFFS, "/patterns/patterns.txt", String(), true); 
-        else {
-            String filePath = "/patterns/" + request->getParam("filename")->value() + ".json";
-            if(SPIFFS.exists(filePath)) {
-                File file = SPIFFS.open(filePath, "r");
-                AsyncWebServerResponse *response = request->beginResponse(file, "application/json");
-                request->send(response);
-                file.close();
-            } 
-            else request->send(404, "text/plain", "File not found");
-        } });
+        else request->send(SPIFFS, "/patterns/" + request->getParam("filename")->value() + ".json", String(), true);; });
 
   server.on("/functions/LEDs/deleteSavedPattern", HTTP_POST, [](AsyncWebServerRequest *request)
 
@@ -811,10 +802,8 @@ void loop()
   else if (patternNum == 1)
   {
     DynamicJsonDocument pattern(4096);
-    File file = SPIFFS.open("/patterns/" + patternFile + ".json", "r");
+    File file = SPIFFS.open(patternFile, "r");
     deserializeJson(pattern, file);
-    serializeJsonPretty(pattern, Serial);
-    delay(1000);
     file.close();
     for (JsonVariant obj : pattern.as<JsonArray>())
     {
