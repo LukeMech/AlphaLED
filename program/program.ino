@@ -721,8 +721,16 @@ void initServer()
   server.on("/functions/LEDs/getSavedPattern", HTTP_GET, [](AsyncWebServerRequest *request)
             { 
         if(!request->hasParam("filename")) request->send(SPIFFS, "/patterns/patterns.txt", String(), true); 
-        else request->send(SPIFFS, "/patterns/" + request->getParam("filename")->value() + ".json", String(), true); });
+        else {
+           AsyncWebServerResponse *response = request->beginResponse(SPIFFS, "/patterns/" + request->getParam("filename")->value() + ".json", String(), true);
+            response->addHeader("Content-Encoding", "gzip");
+            response->addHeader("Content-Disposition", "attachment");
+            request->send(response);
+
+        } });
+
   server.on("/functions/LEDs/deleteSavedPattern", HTTP_POST, [](AsyncWebServerRequest *request)
+
             { 
         if(request->hasParam("filename", true)) {
           const String filename = request->getParam("filename", true)->value(); // Delete line from patterns.txt
