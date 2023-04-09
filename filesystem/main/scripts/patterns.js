@@ -4,6 +4,7 @@ const textInput = document.getElementById("text")
 const optionsBtn = document.getElementById('optionsBtn')
 const optionsBox = document.getElementById("optionsBox")
 const speechRecButton = document.getElementById("speechRecognition")
+const uploadButton = document.getElementById("upload")
 
 const charactersList = document.getElementById('charList')
 const redControl = document.getElementById("red");
@@ -211,7 +212,7 @@ async function getLastPatterns() {
     lastPatternsList.innerHTML = ''
     for (let i = 0; i < patterns.length; i++) {
         const option = document.createElement("div");
-        option.innerHTML = `<div class="lastPatterns"><h1>${patterns[i][0].name}</h1><a class="button delPattern" id="delButton-${i}" onclick="delSavedPattern(${i})"><i class="fa-solid fa-trash"></i></a><a class="button runPattern" id="runButton-${i}" onclick="runSavedPattern(${i})"><i class="fa-solid fa-play"></i></a></div>`
+        option.innerHTML = `<div class="lastPatterns"><h1>${patterns[i][0].name}</h1><a class="button dwnld" id="dwnlButton-${i}" onclick="savePattern(${i})"><i class="fa-solid fa-download"></i></a><a class="button delPattern" id="delButton-${i}" onclick="delSavedPattern(${i})"><i class="fa-solid fa-trash"></i></a><a class="button runPattern" id="runButton-${i}" onclick="runSavedPattern(${i})"><i class="fa-solid fa-play"></i></a></div>`
         option.classList.add('patternOption')
 
         lastPatternsList.appendChild(option)
@@ -219,6 +220,22 @@ async function getLastPatterns() {
 }
 getLastPatterns()
 
+function savePattern(num) {
+    document.getElementById(`dwnlButton-${num}`).style.borderColor = '#04ec2b'
+
+    const filename = patterns[num][0].filename
+    const url = `../functions/LEDs/getSavedPattern?filename=${filename}`
+    let link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+  
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(() => {
+        document.getElementById(`dwnlButton-${num}`).style.borderColor = ''
+    }, 500);
+}
 async function delSavedPattern(num) {
     
     document.getElementById(`delButton-${num}`).style.borderColor = 'rgb(0, 68, 255)'
@@ -235,19 +252,22 @@ async function delSavedPattern(num) {
         }, 500);
     }
 }
-function runSavedPattern(num) {
-
-    document.getElementById(`runButton-${num}`).style.borderColor = '#04ec2b'
-    
-    optionsPerAnim = patterns[num].slice(1)
+function runSavedPattern(num, file) {
+    if(file) optionsPerAnim = file
+    else {
+        optionsPerAnim = patterns[num].slice(1)
+        document.getElementById(`runButton-${num}`).style.borderColor = 'yellow'
+    }
     let textInputValueArray = []
     for(let i = 0; i < optionsPerAnim.length; i++) if(optionsPerAnim[i].to != 'undefined') textInputValueArray.push(optionsPerAnim[i].to)
 
     textInput.value = textInputValueArray.join("")
+    if(!textInput.value) return;
     textInputFunction()
     optionsBtn.click()
 
-    optionsPerAnim = patterns[num].slice(1)
+    if(!file) optionsPerAnim = patterns[num].slice(1)
+    else optionsPerAnim = file
     changeLetter(0)
 
     if(optionsPerAnim[0].from != 'undefined') {
@@ -256,9 +276,35 @@ function runSavedPattern(num) {
     }
 
     setTimeout(() => {
-        document.getElementById(`runButton-${num}`).style.borderColor = ''
+        if(!file) document.getElementById(`runButton-${num}`).style.borderColor = ''
     }, 500);
 }
+
+uploadButton.addEventListener("click", function () {
+    uploadButton.style.borderColor = '#04ec2b'
+
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.style.display = 'none';
+    input.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+
+        const reader = new FileReader();
+        reader.readAsText(file);
+
+        reader.onload = () => {
+          const jsonData = JSON.parse(reader.result);
+          if(jsonData) runSavedPattern(0, jsonData);
+
+          uploadButton.style.borderColor = ''
+        };
+        
+        input.remove();
+      });      
+    
+    input.click();
+});
 
 redControl.addEventListener("input", function () {
     optionsPerAnim[choosenLetter]["color[R]"] = redControl.value

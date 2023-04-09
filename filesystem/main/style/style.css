@@ -593,27 +593,34 @@
 }
 
 .patternspage .btn {
-  display: inline-block;
   text-decoration: none;
   color: #fff;
   border: 3px solid #f44336;
-  padding: 10px 20px;
   font-size: 15px;
   background: transparent;
   cursor: pointer;
   transition: 0.5s;
+}
+
+.patternspage .submit {
+  display: inline-block;
+  padding: 10px 20px;
   margin: 10px;
 }
 
 .patternspage .historyInfo {
+  display: flex;
+  justify-content: space-between;
   border-top: 3px solid;
   border-image-source: linear-gradient(to right, rgb(26, 25, 25), rgba(38, 155, 22, 0.8), rgb(26, 25, 25));
   border-image-slice: 1;
   padding-top: 20px;
-  text-align: left;
   margin: 20px;
   margin-bottom: -10px;
   color: bisque;
+}
+.patternspage .historyInfo h1 {
+  text-align: left;
 }
 .patternspage .historyInfo i {
   color: white;
@@ -622,8 +629,13 @@
   font-size: 15px;
   color: white;
 }
+.patternspage .historyInfo .upload {
+  padding: 3px 15px;
+  border-radius: 5px;
+}
+
 .patternspage .info {
-  width: calc(100vw - 40px);
+  width: calc(100vw - 50px);
   margin: 20px;
   padding: 5px;
   background-color: rgba(255, 60, 60, 0.521);
@@ -682,13 +694,17 @@
   transition: 0.5s;
 }  
 .patternspage .lastPatterns .runPattern {
-  border: 3px solid yellow;
+  border: 3px solid #00f80c;
   margin-bottom: 2px;
-  margin-left: 10px;
+  margin-left: 5px;
 }
 
 .patternspage .lastPatterns .delPattern {
   border: 3px solid #f44336;
+  margin-left: 5px;
+}
+.patternspage .lastPatterns .dwnld {
+  border: 3px solid yellow;
 }
 
 
