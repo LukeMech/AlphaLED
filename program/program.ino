@@ -698,6 +698,7 @@ void initServer()
       patternFile = "/patterns/" + filename + ".json";
       File file = SPIFFS.open(patternFile, "w");
       serializeJson(*displayPatternJson, file);
+      serializeJsonPretty(*displayPatternJson, Serial);
       file.close();
 
       File patternsFile = SPIFFS.open("/patterns/patterns.txt", "a");
@@ -736,7 +737,6 @@ void initServer()
             if(SPIFFS.exists(filePath)) {
                 File file = SPIFFS.open(filePath, "r");
                 AsyncWebServerResponse *response = request->beginResponse(file, "application/json");
-                response->addHeader("Content-Encoding", "gzip");
                 request->send(response);
                 file.close();
             } 
