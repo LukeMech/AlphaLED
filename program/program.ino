@@ -2,6 +2,10 @@
 // - Important assigments -
 // ------------------------
 
+// Pattern num 0 -> default
+// Pattern num 1 -> custom text
+// Pattern num 2 -> visualizer
+
 #include <Adafruit_NeoPixel.h>
 #include <ArduinoJson.h>
 #include <EEPROM.h>
@@ -38,13 +42,14 @@ const uint32_t LED_COLOR_UPD = strip.Color(0, 0, 10);  // diode color for update
 const uint32_t LED_COLOR_ERR = strip.Color(100, 0, 0); // diode color for update
 
 int8_t patternNum = 0;
+String patternFile = "";
 byte flashlightColorR = 255, flashlightColorG = 255, flashlightColorB = 255;
 float flashlightBrightness = 0, visualizerBrightness = 0.7;
 bool serverOn = false;
 char updateFS[150];
 char updateFv[150];
 char versionString[60];
-DynamicJsonDocument displayPatternJson(4096);
+DynamicJsonDocument* displayPatternJson = NULL;
 
 // Alphabet maps
 const struct
@@ -457,10 +462,10 @@ void wiFiInit()
 void firmwareUpdate() // Updater
 {
 
-  displayPatternJson.clear();
-  displayPatternJson.shrinkToFit();
   strip.fill(strip.Color(0, 0, 0));
   server.end();
+  patternNum = -1;
+  if (displayPatternJson != NULL) delete displayPatternJson;
 
   bool secStage = false, dualUpdate = false;
 
@@ -672,10 +677,12 @@ void initServer()
 
     if(request->hasParam("start", true)) {
       patternNum=-1;
-      displayPatternJson.to<JsonArray>();
+      if (displayPatternJson != NULL) delete displayPatternJson;
+      displayPatternJson = new DynamicJsonDocument(4096);
+      displayPatternJson->to<JsonArray>();
     }
 
-    JsonObject obj = displayPatternJson.as<JsonArray>().createNestedObject();
+    JsonObject obj = displayPatternJson->as<JsonArray>().createNestedObject();
     if(request->hasParam("from", true)) obj["from"] = request->getParam("from", true)->value();
     if(request->hasParam("to", true)) obj["to"] = request->getParam("to", true)->value();
     if(request->hasParam("color[R]", true)) obj["color[R]"] = request->getParam("color[R]", true)->value().toInt();
@@ -688,14 +695,17 @@ void initServer()
       String filename = "";
       const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
       for (uint8_t i = 0; i < 10; i++) filename += charset[random(sizeof(charset))];
-      String filepath = "/patterns/" + filename + ".json";
-      File file = SPIFFS.open(filepath, "w");
-      serializeJson(displayPatternJson, file);
+      patternFile = "/patterns/" + filename + ".json";
+      File file = SPIFFS.open(patternFile, "w");
+      serializeJson(*displayPatternJson, file);
       file.close();
 
       File patternsFile = SPIFFS.open("/patterns/patterns.txt", "a");
       patternsFile.println(filename + "->" + request->getParam("filename", true)->value());
       patternsFile.close();
+
+      delete displayPatternJson;
+      displayPatternJson = NULL;
 
       patternNum=1;
     }
@@ -792,12 +802,14 @@ void loop()
 
   else if (patternNum == 1)
   {
-    for (JsonVariant obj : displayPatternJson.as<JsonArray>())
+    DynamicJsonDocument pattern(4096);
+    File file = SPIFFS.open("/patterns/" + patternFile, "r");
+    deserializeJson(pattern, file);
+    file.close();
+    for (JsonVariant obj : pattern.as<JsonArray>())
     {
-      if (patternNum != 1)
-        return;
       animate(characterToMap(obj["from"].as<String>()), characterToMap(obj["to"].as<String>()), obj["animType"].as<int>(), obj["animSpeed"].as<int>(), strip.Color(obj["color[R]"].as<int>() * 0.5, obj["color[G]"].as<int>() * 0.5, obj["color[B]"].as<int>() * 0.5));
-      if (!strlen(updateFv) && !strlen(updateFS))
+      if (!strlen(updateFv) && !strlen(updateFS) && patternNum==1)
         delay(obj["delay"].as<int>());
     }
   }
