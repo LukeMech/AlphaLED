@@ -702,7 +702,7 @@ void initServer()
       }
       patternFile = "/patterns/" + filename + ".json";
       File file = SPIFFS.open(patternFile, "w");
-      serializeJsonPretty(*displayPatternJson, file);
+      serializeJson(*displayPatternJson, file);
       file.close();
 
       File patternsFile = SPIFFS.open("/patterns/patterns.txt", "a");
