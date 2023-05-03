@@ -203,7 +203,7 @@ uint32_t LED_COLOR_1; // Var to store led color
 // Animate between maps
 void animate(const uint8_t startMap[][8], const uint8_t endMap[][8], uint8_t direction = 0, int gap = 50, uint32_t newColor1 = 0, uint32_t newColor0 = 0)
 {
-  if (patternNum == -1) // If updater called stop don't animate
+  if (patternNum == -1 || patternNum == 2) // If updater called or visualizer activated don't animate
     return;
 
   uint32_t oldColor0 = LED_COLOR_0, oldColor1 = LED_COLOR_1, color0, color1;
