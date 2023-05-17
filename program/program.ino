@@ -568,10 +568,10 @@ void firmwareUpdate() // Updater
   secStage = true; // Update filesystem
   SPIFFS.end();
 
-  if (strlen(updateFS) && (!strlen(updateFv) || ret == HTTP_UPDATE_OK || ret == 0))
+  if (strlen(updateFS) && (!strlen(updateFv) || ret != HTTP_UPDATE_FAILED))
     ret = ESPhttpUpdate.updateFS(client, updateFS);
 
-  if (ret != HTTP_UPDATE_OK && ret != 0)
+  if (ret == HTTP_UPDATE_FAILED)
   { // Error
     Serial.print("[ERROR] ");
     Serial.println(ESPhttpUpdate.getLastErrorString());
