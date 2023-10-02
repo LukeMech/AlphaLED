@@ -27,8 +27,8 @@ jobs:
           pio run --target buildfs
 
           cp ./data/version.txt ./updater/build-version.txt
-          cp ".pio/build/**/firmware.bin" "./updater/firmware.bin"
-          cp ".pio/build/**/littlefs.bin" "./updater/filesystem.bin"
+          cp .pio/build/*/firmware.bin ./updater/firmware.bin
+          cp .pio/build/*/littlefs.bin ./updater/filesystem.bin
           
       - name: (?) Push files
         run: |
