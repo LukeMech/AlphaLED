@@ -1,67 +1,44 @@
 name: Build firmware
-
-on:
-
-  # On sketch change 
-  push:
-    branches: 
-      - "development"
-      
-    paths:
-      - "filesystem/main/version.txt"
-      
-  # On workflow dispatch
-  workflow_dispatch:
-
+on: [push, workflow_dispatch]
 
 jobs:
 
   # Compile code
   compile:
-
     runs-on: ubuntu-latest
-    
     steps:
 
-      # Clone repository
       - name: Clone repository
-        uses: actions/checkout@main
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
-      # Setup arduino CLI
-      - name: Setup Arduino CLI
-        uses: arduino/setup-arduino-cli@master
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
 
-      # Configure platform
-      - name: Configure platform
-        run: |
-          arduino-cli config init 
-          arduino-cli config set library.enable_unsafe_install true
-          arduino-cli core update-index --additional-urls https://arduino.esp8266.com/stable/package_esp8266com_index.json
-          arduino-cli core install esp8266:esp8266 --additional-urls https://arduino.esp8266.com/stable/package_esp8266com_index.json
-  
-          arduino-cli lib install "ArduinoJson" "Adafruit NeoPixel" "ESPAsyncWebSrv"
-          arduino-cli lib install --git-url "" || true
+      - name: Install PlatformIO
+        run: pip install --upgrade platformio
 
-          # Compile
-      - name: Compile sketch and pack filesystems
-        run: |
-          mkdir ./program/build || true
-          /home/runner/.arduino15/packages/esp8266/tools/mkspiffs/**/mkspiffs -c ./filesystem/backup -b 8192 -p 256 -s 524288 -- ./program/build/backup-filesystem.bin
-          /home/runner/.arduino15/packages/esp8266/tools/mkspiffs/**/mkspiffs -c ./filesystem/main -b 8192 -p 256 -s 524288 -- ./program/build/filesystem.bin
-          arduino-cli compile -b "esp8266:esp8266:nodemcuv2" -e './program'
+      - name: Compile firmware & Build filesystem
+        run: |          
+          pio run
+          pio run --target buildfs
+
+          cp ./data/version.txt ./updater/build-version.txt
+          cp ".pio/build/**/firmware.bin" "./updater/firmware.bin"
+          cp ".pio/build/**/littlefs.bin" "./updater/filesystem.bin"
           
-      # Upload to repository
-      - name: Push changes to repo
+      - name: (?) Push files
         run: |
-          mkdir ./updater || true
-          cp ./program/build/**/*.ino.bin ./updater/firmware.bin
-          cp ./program/build/backup-filesystem.bin ./updater/backup-filesystem.bin
-          cp ./program/build/filesystem.bin ./updater/filesystem.bin
-          cp ./filesystem/main/version.txt ./updater/build-version.txt
-          rm -rf ./program/build
-          git config --global user.name github-actions
-          git config --global user.email github-actions@github.com
-          git pull
-          git add .
-          git commit -m "🏗️ Firmware v$(grep 'Firmware:' ./updater/build-version.txt | cut -d' ' -f2) | FS v$(grep 'Filesystem:' ./updater/build-version.txt | cut -d' ' -f2)"
-          git push
+
+          if [ -n "$(git diff --name-only ${{ github.sha }}^ ${{ github.sha }} -- 'data/version.txt')" ]; then
+            git config --global user.name github-actions
+            git config --global user.email github-actions@github.com
+            git add .
+            git commit -m "🏗️ Firmware v$(grep 'Firmware:' ./updater/build-version.txt | cut -d' ' -f2) | FS v$(grep 'Filesystem:' ./updater/build-version.txt | cut -d' ' -f2)"
+            git push
+          else
+            echo "Version list not changed, aborting push."
+          fi

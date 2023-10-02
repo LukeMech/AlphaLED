@@ -1,2 +1,0 @@
-Filesystem: DEV-23.05.03
-Firmware: DEV-23.05.17

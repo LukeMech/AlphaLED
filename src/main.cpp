@@ -9,16 +9,15 @@
 #include <Adafruit_NeoPixel.h>
 #include <ArduinoJson.h>
 #include <EEPROM.h>
-#include <ESPAsyncTCP.h>
-#include <ESPAsyncWebSrv.h>
+#include <ESPAsyncWebServer.h>
 #include <ESP8266HTTPClient.h>
 #include <ESP8266httpUpdate.h>
 #include <ESP8266WiFi.h>
-#include <FS.h>
+#include <LittleFS.h>
 #include <time.h>
 #include <WiFiClientSecure.h>
 
-const char *backupURLFS = "https://raw.githubusercontent.com/LukeMech/AlphaLED/main/updater/backup-filesystem.bin"; // Backup filesystem link
+const char *backupURLFS = "https://raw.githubusercontent.com/LukeMech/AlphaLED/main/updater/filesystem.bin";        // Backup filesystem link
 const bool WiFi_UpdateCredentialsFile = false;                                                                      // Update network config in filesystem?
 const char *ssid = "";                                                                                              // Network name
 const char *password = "";                                                                                          // Network password
@@ -490,7 +489,6 @@ void firmwareUpdate() // Updater
 
   WiFiClientSecure client; // Create secure wifi client
   client.setTrustAnchors(&cert);
-  time_t now = time(nullptr);
 
   // Set LEDs
   strip.setPixelColor(led_map[0][0], LED_COLOR_0);
@@ -550,7 +548,7 @@ void firmwareUpdate() // Updater
     strip.setPixelColor(led_map[dualUpdate ? (secStage ? 5 : 1) : 3][6], LED_COLOR_CONN);
     strip.setPixelColor(led_map[dualUpdate ? (secStage ? 6 : 2) : 4][6], LED_COLOR_CONN);
     if (!strlen(updateFS)) {
-      File versionFile = SPIFFS.open("/version.txt", "w");
+      File versionFile = LittleFS.open("/version.txt", "w");
       versionFile.seek(0);
       versionFile.write(versionString, sizeof(versionString));
       Serial.println("[INFO] Updating version.txt based on http string:\n-----");
@@ -566,7 +564,7 @@ void firmwareUpdate() // Updater
     ret = ESPhttpUpdate.update(client, updateFv);
 
   secStage = true; // Update filesystem
-  SPIFFS.end();
+  LittleFS.end();
 
   if (strlen(updateFS) && (!strlen(updateFv) || ret != HTTP_UPDATE_FAILED))
     ret = ESPhttpUpdate.updateFS(client, updateFS);
@@ -608,59 +606,59 @@ void initServer()
             { request->redirect("/home"); });
   server.on("/home", HTTP_GET, [](AsyncWebServerRequest *request)
             {
-        if (SPIFFS.exists("/html/index.html")) {
-            request->send(SPIFFS, "/html/index.html", "text/html");
+        if (LittleFS.exists("/html/index.html")) {
+            request->send(LittleFS, "/html/index.html", "text/html");
         } else {
             strcpy(updateFS, backupURLFS);
-            request->send(404, "text/plain", "Files not found, downloading recovery filesystem!");
+            request->send(404, "text/plain", "Files not found, redownloading filesystem!");
         } });
   server.on("/settings", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/html/settings.html", "text/html"); });
+            { request->send(LittleFS, "/html/settings.html", "text/html"); });
   server.on("/patterns", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/html/patterns.html", "text/html"); });
+            { request->send(LittleFS, "/html/patterns.html", "text/html"); });
   server.on("/flashlight", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/html/flashlight.html", "text/html"); });
+            { request->send(LittleFS, "/html/flashlight.html", "text/html"); });
   server.on("/visualizer", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/html/visualizer.html", "text/html"); });
+            { request->send(LittleFS, "/html/visualizer.html", "text/html"); });
 
   // Additional html, css, js
   server.on("/html/footer.html", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/html/footer.html", "text/html"); });
+            { request->send(LittleFS, "/html/footer.html", "text/html"); });
   server.on("/style/style.css", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/style/style.css", "text/css"); });
+            { request->send(LittleFS, "/style/style.css", "text/css"); });
   server.on("/style/footer.css", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/style/footer.css", "text/css"); });
+            { request->send(LittleFS, "/style/footer.css", "text/css"); });
   server.on("/scripts/script.js", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/scripts/script.js", "text/javascript"); });
+            { request->send(LittleFS, "/scripts/script.js", "text/javascript"); });
   server.on("/scripts/patterns.js", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/scripts/patterns.js", "text/javascript"); });
+            { request->send(LittleFS, "/scripts/patterns.js", "text/javascript"); });
   server.on("/scripts/flashlight.js", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/scripts/flashlight.js", "text/javascript"); });
+            { request->send(LittleFS, "/scripts/flashlight.js", "text/javascript"); });
   server.on("/scripts/visualizer.js", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/scripts/visualizer.js", "text/javascript"); });
+            { request->send(LittleFS, "/scripts/visualizer.js", "text/javascript"); });
   server.on("/scripts/settings.js", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/scripts/settings.js", "text/javascript"); });
+            { request->send(LittleFS, "/scripts/settings.js", "text/javascript"); });
 
   // Files
   server.on("/images/logo.png", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/images/logo.png", String(), true); });
+            { request->send(LittleFS, "/images/logo.png", String(), true); });
   server.on("/images/blackhole.jpg", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/images/blackhole.jpg", String(), true); });
+            { request->send(LittleFS, "/images/blackhole.jpg", String(), true); });
   server.on("/images/cosmos.jpg", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/images/cosmos.jpg", String(), true); });
+            { request->send(LittleFS, "/images/cosmos.jpg", String(), true); });
   server.on("/images/space.jpg", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/images/space.jpg", String(), true); });
+            { request->send(LittleFS, "/images/space.jpg", String(), true); });
   server.on("/updater.json", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/updater.json", String(), true); });
+            { request->send(LittleFS, "/updater.json", String(), true); });
 
   // Functions - global
   server.on("/functions/recovery", HTTP_GET, [](AsyncWebServerRequest *request)
             {
         strcpy(updateFS, backupURLFS);
-        request->send(200, "text/plain", "Downloading recovery and restarting!"); });
+        request->send(200, "text/plain", "Redownloading filesystem and restarting!"); });
   server.on("/functions/getSystemInfo", HTTP_GET, [](AsyncWebServerRequest *request)
             {
-        File file = SPIFFS.open("/version.txt", "r");  // Read versions
+        File file = LittleFS.open("/version.txt", "r");  // Read versions
         String version = file.readString();
         file.close();
         String textToReturn = version + "\nChip ID: " + String(ESP.getChipId());
@@ -728,11 +726,11 @@ void initServer()
                         else filename+= randomChar;
                     }
                     patternFile = "/patterns/" + filename + ".json";
-                    File file = SPIFFS.open(patternFile, "w");
+                    File file = LittleFS.open(patternFile, "w");
                     serializeJson(*displayPatternJson, file);
                     file.close();
 
-                    File patternsFile = SPIFFS.open("/patterns/patterns.txt", "a");
+                    File patternsFile = LittleFS.open("/patterns/patterns.txt", "a");
                     patternsFile.println(filename + "->" + request->getParam("filename", true)->value());
                     patternsFile.close();
 
@@ -762,8 +760,8 @@ void initServer()
 
   server.on("/functions/LEDs/getSavedPattern", HTTP_GET, [](AsyncWebServerRequest *request)
             {
-        if(!request->hasParam("filename")) request->send(SPIFFS, "/patterns/patterns.txt", String(), true);
-        else request->send(SPIFFS, "/patterns/" + request->getParam("filename")->value() + ".json", String(), true);; });
+        if(!request->hasParam("filename")) request->send(LittleFS, "/patterns/patterns.txt", String(), true);
+        else request->send(LittleFS, "/patterns/" + request->getParam("filename")->value() + ".json", String(), true);; });
 
   server.on("/functions/LEDs/deleteSavedPattern", HTTP_POST, [](AsyncWebServerRequest *request)
 
@@ -771,18 +769,18 @@ void initServer()
         if(request->hasParam("filename", true)) {
             const String filename = request->getParam("filename", true)->value(); // Delete line from patterns.txt
             String fileContent = "";
-            File file = SPIFFS.open("/patterns/patterns.txt", "r");
+            File file = LittleFS.open("/patterns/patterns.txt", "r");
             while (file.available()) {
                 String line = file.readStringUntil('\n');
                 if (!strstr(line.c_str(), filename.c_str())) fileContent += line + "\n";
             }
             file.close();
-            SPIFFS.remove("/patterns/patterns.txt");
-            File newFile = SPIFFS.open("/patterns/patterns.txt", "w");
+            LittleFS.remove("/patterns/patterns.txt");
+            File newFile = LittleFS.open("/patterns/patterns.txt", "w");
             newFile.print(fileContent);
             newFile.close();
 
-            SPIFFS.remove("/patterns/" + filename + ".json");
+            LittleFS.remove("/patterns/" + filename + ".json");
         }
 
         request->send(200, "text/plain", "OK"); });
@@ -806,8 +804,10 @@ void setup()
   strip.begin(); // Init strips
   strip.fill(strip.Color(0, 0, 0));
 
-  if (!SPIFFS.begin())
+  if (!LittleFS.begin())
   {
+    Serial.println("[ERROR] Filesystem failed to start, re-formatting and re-downloading...");
+    LittleFS.format();
     ESP.restart(); // Begin filesystem
   }
 
@@ -833,7 +833,7 @@ void loop()
   else if (patternNum == 1)
   {
     DynamicJsonDocument pattern(4096);
-    File file = SPIFFS.open(patternFile, "r");
+    File file = LittleFS.open(patternFile, "r");
     deserializeJson(pattern, file);
     file.close();
 
