@@ -2,26 +2,30 @@
 // - Important assigments -
 // ------------------------
 
+// Pattern num 0 -> default
+// Pattern num 1 -> custom text
+// Pattern num 2 -> visualizer
+
 #include <Adafruit_NeoPixel.h>
 #include <ArduinoJson.h>
 #include <EEPROM.h>
-#include <ESPAsyncTCP.h>
-#include <ESPAsyncWebSrv.h>
+#include <ESPAsyncWebServer.h>
 #include <ESP8266HTTPClient.h>
 #include <ESP8266httpUpdate.h>
 #include <ESP8266WiFi.h>
-#include "FS.h"
+#include <LittleFS.h>
 #include <time.h>
 #include <WiFiClientSecure.h>
 
-const char *backupURLFS = "https://raw.githubusercontent.com/LukeMech/AlphaLED/main/updater/backup-filesystem.bin";
-const bool WiFi_UpdateCredentialsFile = false; // Update network_config.txt in filesystem?
-const char *ssid = "";                         // Network name
-const char *password = "";                     // Network password
+const char *backupURLFS = "https://raw.githubusercontent.com/LukeMech/AlphaLED/main/updater/filesystem.bin";        // Backup filesystem link
+const bool WiFi_UpdateCredentialsFile = false;                                                                      // Update network config in filesystem?
+const char *ssid = "";                                                                                              // Network name
+const char *password = "";                                                                                          // Network password
 
 const int LED_PIN = D1; // LED Pin
 
 Adafruit_NeoPixel strip(64, LED_PIN, NEO_GRB + NEO_KHZ800); // Init LEDs
+AsyncWebServer server(80);                                  // Server object
 
 const uint8_t led_map[8][8] = { // Table corresponding to the physical position/number of the LEDs
     {56, 55, 40, 39, 24, 23, 8, 7},
@@ -33,18 +37,19 @@ const uint8_t led_map[8][8] = { // Table corresponding to the physical position/
     {62, 49, 46, 33, 30, 17, 14, 1},
     {63, 48, 47, 32, 31, 16, 15, 0}};
 
-const uint32_t LED_COLOR_CONN = strip.Color(0, 50, 0); // diode color for update
-const uint32_t LED_COLOR_UPD = strip.Color(0, 0, 10);  // diode color for update
-const uint32_t LED_COLOR_ERR = strip.Color(100, 0, 0); // diode color for update
+const uint32_t LED_COLOR_CONN = strip.Color(0, 50, 0); // Color for updater frame
+const uint32_t LED_COLOR_UPD = strip.Color(0, 0, 10);  // Color for updater status percentage
+const uint32_t LED_COLOR_ERR = strip.Color(100, 0, 0); // Color for error
 
-int8_t patternNum = 0;
-byte flashlightColorR = 255, flashlightColorG = 255, flashlightColorB = 255;
-float flashlightBrightness = 0, visualizerBrightness = 0.7;
-bool serverOn = false;
-char updateFS[150];
-char updateFv[150];
-char versionString[60];
-DynamicJsonDocument displayPatternJson(4096);
+int8_t patternNum = 0;                                                       // Pattern number
+byte flashlightColorR = 255, flashlightColorG = 255, flashlightColorB = 255; // Flashlight colors
+float flashlightBrightness = 0, visualizerBrightness = 0.7;                  // Flashlight and visualizer brightness
+bool serverOn = false;                                                       // Server on help var
+char updateFS[150];                                                          // Temp var to store link for FS update
+char updateFv[150];                                                          // Temp var to store link for Fv update
+char versionString[60];                                                      // Temp var to store new version number
+DynamicJsonDocument *displayPatternJson = NULL;                              // Temp JSON to properly receive display pattern during multiple requests
+String patternFile = "";                                                     // String to store pattern file number after JSON is saved
 
 // Alphabet maps
 const struct
@@ -187,25 +192,24 @@ arrayPtr characterToMap(String value)
   return characters.space;
 }
 
-AsyncWebServer server(80);
-
 // ------------------------
 // --------- LEDs ---------
 // ------------------------
 
-// Animate between maps
-uint32_t LED_COLOR_0;
-uint32_t LED_COLOR_1;
+uint32_t LED_COLOR_0; // Var to store background led color
+uint32_t LED_COLOR_1; // Var to store led color
 
+// Animate between maps
 void animate(const uint8_t startMap[][8], const uint8_t endMap[][8], uint8_t direction = 0, int gap = 50, uint32_t newColor1 = 0, uint32_t newColor0 = 0)
 {
-  if (strlen(updateFv) || strlen(updateFS) || patternNum == 2)
+  if (patternNum == -1 || patternNum == 2) // If updater called or visualizer activated don't animate
     return;
 
   uint32_t oldColor0 = LED_COLOR_0, oldColor1 = LED_COLOR_1, color0, color1;
   // New background color
   if (newColor0)
     LED_COLOR_0 = newColor0;
+
   // New text color
   if (newColor1)
     LED_COLOR_1 = newColor1;
@@ -232,6 +236,7 @@ void animate(const uint8_t startMap[][8], const uint8_t endMap[][8], uint8_t dir
             color0 = LED_COLOR_0;
             color1 = LED_COLOR_1;
           }
+
           uint8_t index = led_map[y][x];
           if (value == 0)
             strip.setPixelColor(index, color0);
@@ -239,10 +244,12 @@ void animate(const uint8_t startMap[][8], const uint8_t endMap[][8], uint8_t dir
             strip.setPixelColor(index, color1);
         }
       }
+
       strip.show();
       delay(gap);
     }
   }
+
   // Direction 1: Text ---->>>
   else if (direction == 1)
   {
@@ -265,6 +272,7 @@ void animate(const uint8_t startMap[][8], const uint8_t endMap[][8], uint8_t dir
             color0 = LED_COLOR_0;
             color1 = LED_COLOR_1;
           }
+
           uint8_t index = led_map[y][x];
           if (value == 0)
             strip.setPixelColor(index, color0);
@@ -276,6 +284,7 @@ void animate(const uint8_t startMap[][8], const uint8_t endMap[][8], uint8_t dir
       delay(gap);
     }
   }
+
   // Direction 2:  ^ Text ^
   else if (direction == 2)
   {
@@ -298,6 +307,7 @@ void animate(const uint8_t startMap[][8], const uint8_t endMap[][8], uint8_t dir
             color0 = LED_COLOR_0;
             color1 = LED_COLOR_1;
           }
+
           uint8_t index = led_map[y][x];
           if (value == 0)
             strip.setPixelColor(index, color0);
@@ -305,6 +315,7 @@ void animate(const uint8_t startMap[][8], const uint8_t endMap[][8], uint8_t dir
             strip.setPixelColor(index, color1);
         }
       }
+
       strip.show();
       delay(gap);
     }
@@ -331,6 +342,7 @@ void animate(const uint8_t startMap[][8], const uint8_t endMap[][8], uint8_t dir
             color0 = LED_COLOR_0;
             color1 = LED_COLOR_1;
           }
+
           uint8_t index = led_map[y][x];
           if (value == 0)
             strip.setPixelColor(index, color0);
@@ -338,13 +350,14 @@ void animate(const uint8_t startMap[][8], const uint8_t endMap[][8], uint8_t dir
             strip.setPixelColor(index, color1);
         }
       }
+
       strip.show();
       delay(gap);
     }
   }
 }
 
-void mainAnimation()
+void mainAnimation() // Main animation
 {
   animate(characterToMap("C"), characterToMap("B"), 2, 120, strip.Color(0, 0, 25));
   animate(characterToMap("B"), characterToMap("A"), 2, 120, strip.Color(0, 25, 0));
@@ -352,17 +365,22 @@ void mainAnimation()
   animate(characterToMap("B"), characterToMap("C"), 3, 120, strip.Color(25, 0, 0));
 }
 
-void flashlight()
+void flashlight() // Flashlight
 {
   strip.fill(strip.Color(flashlightBrightness * 0.2 * flashlightColorR, flashlightBrightness * 0.2 * flashlightColorG, flashlightBrightness * 0.2 * flashlightColorB));
+
   for (uint8_t s = 0; s < 8; s++)
     strip.setPixelColor(led_map[0][s], strip.Color(flashlightBrightness * 0.4 * flashlightColorR, flashlightBrightness * 0.4 * flashlightColorG, flashlightBrightness * 0.4 * flashlightColorB));
+
   for (uint8_t e = 0; e < 8; e++)
     strip.setPixelColor(led_map[7][e], strip.Color(flashlightBrightness * 0.4 * flashlightColorR, flashlightBrightness * 0.4 * flashlightColorG, flashlightBrightness * 0.4 * flashlightColorB));
+
   for (uint8_t x = 0; x < 8; x++)
     strip.setPixelColor(led_map[x][0], strip.Color(flashlightBrightness * 0.4 * flashlightColorR, flashlightBrightness * 0.4 * flashlightColorG, flashlightBrightness * 0.4 * flashlightColorB));
+
   for (uint8_t y = 0; y < 8; y++)
     strip.setPixelColor(led_map[y][7], strip.Color(flashlightBrightness * 0.4 * flashlightColorR, flashlightBrightness * 0.4 * flashlightColorG, flashlightBrightness * 0.4 * flashlightColorB));
+
   strip.show();
 }
 
@@ -374,7 +392,7 @@ void flashlight()
 BearSSL::CertStore certStore;
 
 // DigiCert High Assurance EV Root CA
-const char trustRoot[] PROGMEM = R"EOF( 
+const char trustRoot[] PROGMEM = R"EOF(
 -----BEGIN CERTIFICATE-----
 MIIDrzCCApegAwIBAgIQCDvgVpBCRrGhdWrJWZHHSjANBgkqhkiG9w0BAQUFADBh
 MQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3
@@ -408,6 +426,7 @@ struct WiFiCredentials
   char password[32];
 };
 
+// Save WiFi info to EEPROM
 void saveWiFiCredentials(const char *ssid, const char *password)
 {
   WiFiCredentials credentials;
@@ -421,6 +440,7 @@ void saveWiFiCredentials(const char *ssid, const char *password)
   EEPROM.end();
 }
 
+// Load WiFi info from EEPROM
 bool loadWiFiCredentials(char *ssid, char *password)
 {
   WiFiCredentials credentials;
@@ -438,6 +458,7 @@ bool loadWiFiCredentials(char *ssid, char *password)
   return true;
 }
 
+// Connect to network
 void wiFiInit()
 {
   char savedSsid[32];
@@ -457,47 +478,55 @@ void wiFiInit()
 void firmwareUpdate() // Updater
 {
 
-  displayPatternJson.clear();
-  displayPatternJson.shrinkToFit();
+  patternNum = -1;
+
   strip.fill(strip.Color(0, 0, 0));
   server.end();
+  if (displayPatternJson != NULL)
+    delete displayPatternJson;
 
   bool secStage = false, dualUpdate = false;
 
   WiFiClientSecure client; // Create secure wifi client
   client.setTrustAnchors(&cert);
-  time_t now = time(nullptr);
 
   // Set LEDs
   strip.setPixelColor(led_map[0][0], LED_COLOR_0);
-  if (strlen(updateFv) && strlen(updateFS))
+  if (strlen(updateFv) && strlen(updateFS)) // Dual update
   {
     for (uint8_t i = 0; i < 8; i++)
       strip.setPixelColor(led_map[0][i], LED_COLOR_UPD);
+
     for (uint8_t i = 0; i < 8; i++)
       strip.setPixelColor(led_map[3][i], LED_COLOR_UPD);
+
     for (uint8_t i = 0; i < 8; i++)
       strip.setPixelColor(led_map[4][i], LED_COLOR_UPD);
+
     for (uint8_t i = 0; i < 8; i++)
       strip.setPixelColor(led_map[7][i], LED_COLOR_UPD);
+
     for (uint8_t i = 0; i < 8; i++)
       strip.setPixelColor(led_map[i][0], LED_COLOR_UPD);
+
     for (uint8_t i = 0; i < 8; i++)
       strip.setPixelColor(led_map[i][7], LED_COLOR_UPD);
 
     dualUpdate = true;
   }
-  else
+  else // Only 1 part updating
   {
     for (uint8_t i = 0; i < 8; i++)
       strip.setPixelColor(led_map[2][i], LED_COLOR_UPD);
     for (uint8_t i = 0; i < 8; i++)
       strip.setPixelColor(led_map[5][i], LED_COLOR_UPD);
+
     strip.setPixelColor(led_map[3][0], LED_COLOR_UPD);
     strip.setPixelColor(led_map[4][0], LED_COLOR_UPD);
     strip.setPixelColor(led_map[3][7], LED_COLOR_UPD);
     strip.setPixelColor(led_map[4][7], LED_COLOR_UPD);
   }
+
   strip.show();
 
   // Update progress - change leds
@@ -519,7 +548,7 @@ void firmwareUpdate() // Updater
     strip.setPixelColor(led_map[dualUpdate ? (secStage ? 5 : 1) : 3][6], LED_COLOR_CONN);
     strip.setPixelColor(led_map[dualUpdate ? (secStage ? 6 : 2) : 4][6], LED_COLOR_CONN);
     if (!strlen(updateFS)) {
-      File versionFile = SPIFFS.open("/version.txt", "w");
+      File versionFile = LittleFS.open("/version.txt", "w");
       versionFile.seek(0);
       versionFile.write(versionString, sizeof(versionString));
       Serial.println("[INFO] Updating version.txt based on http string:\n-----");
@@ -529,16 +558,18 @@ void firmwareUpdate() // Updater
     }
     strip.show(); });
 
+  // Update firmware
   t_httpUpdate_return ret;
-  if (strlen(updateFv)) // Update firmware
+  if (strlen(updateFv))
     ret = ESPhttpUpdate.update(client, updateFv);
 
   secStage = true; // Update filesystem
-  SPIFFS.end();
-  if (strlen(updateFS) && (!strlen(updateFv) || ret == HTTP_UPDATE_OK || ret == 0))
+  LittleFS.end();
+
+  if (strlen(updateFS) && (!strlen(updateFv) || ret != HTTP_UPDATE_FAILED))
     ret = ESPhttpUpdate.updateFS(client, updateFS);
 
-  if (ret != HTTP_UPDATE_OK && ret != 0)
+  if (ret == HTTP_UPDATE_FAILED)
   { // Error
     Serial.print("[ERROR] ");
     Serial.println(ESPhttpUpdate.getLastErrorString());
@@ -575,74 +606,74 @@ void initServer()
             { request->redirect("/home"); });
   server.on("/home", HTTP_GET, [](AsyncWebServerRequest *request)
             {
-    if (SPIFFS.exists("/html/index.html"))
-      request->send(SPIFFS, "/html/index.html", "text/html");
-    else {
-      strcpy(updateFS, backupURLFS);
-      request->send(404, "text/plain", "Files not found, downloading recovery filesystem!");
-    } });
+        if (LittleFS.exists("/html/index.html")) {
+            request->send(LittleFS, "/html/index.html", "text/html");
+        } else {
+            strcpy(updateFS, backupURLFS);
+            request->send(404, "text/plain", "Files not found, redownloading filesystem!");
+        } });
   server.on("/settings", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/html/settings.html", "text/html"); });
+            { request->send(LittleFS, "/html/settings.html", "text/html"); });
   server.on("/patterns", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/html/patterns.html", "text/html"); });
+            { request->send(LittleFS, "/html/patterns.html", "text/html"); });
   server.on("/flashlight", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/html/flashlight.html", "text/html"); });
+            { request->send(LittleFS, "/html/flashlight.html", "text/html"); });
   server.on("/visualizer", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/html/visualizer.html", "text/html"); });
+            { request->send(LittleFS, "/html/visualizer.html", "text/html"); });
 
   // Additional html, css, js
   server.on("/html/footer.html", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/html/footer.html", "text/html"); });
+            { request->send(LittleFS, "/html/footer.html", "text/html"); });
   server.on("/style/style.css", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/style/style.css", "text/css"); });
+            { request->send(LittleFS, "/style/style.css", "text/css"); });
   server.on("/style/footer.css", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/style/footer.css", "text/css"); });
+            { request->send(LittleFS, "/style/footer.css", "text/css"); });
   server.on("/scripts/script.js", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/scripts/script.js", "text/javascript"); });
+            { request->send(LittleFS, "/scripts/script.js", "text/javascript"); });
   server.on("/scripts/patterns.js", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/scripts/patterns.js", "text/javascript"); });
+            { request->send(LittleFS, "/scripts/patterns.js", "text/javascript"); });
   server.on("/scripts/flashlight.js", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/scripts/flashlight.js", "text/javascript"); });
+            { request->send(LittleFS, "/scripts/flashlight.js", "text/javascript"); });
   server.on("/scripts/visualizer.js", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/scripts/visualizer.js", "text/javascript"); });
+            { request->send(LittleFS, "/scripts/visualizer.js", "text/javascript"); });
   server.on("/scripts/settings.js", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/scripts/settings.js", "text/javascript"); });
+            { request->send(LittleFS, "/scripts/settings.js", "text/javascript"); });
 
   // Files
   server.on("/images/logo.png", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/images/logo.png", String(), true); });
+            { request->send(LittleFS, "/images/logo.png", String(), true); });
   server.on("/images/blackhole.jpg", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/images/blackhole.jpg", String(), true); });
+            { request->send(LittleFS, "/images/blackhole.jpg", String(), true); });
   server.on("/images/cosmos.jpg", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/images/cosmos.jpg", String(), true); });
+            { request->send(LittleFS, "/images/cosmos.jpg", String(), true); });
   server.on("/images/space.jpg", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/images/space.jpg", String(), true); });
+            { request->send(LittleFS, "/images/space.jpg", String(), true); });
   server.on("/updater.json", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/updater.json", String(), true); });
+            { request->send(LittleFS, "/updater.json", String(), true); });
 
   // Functions - global
   server.on("/functions/recovery", HTTP_GET, [](AsyncWebServerRequest *request)
             {
-  strcpy(updateFS, backupURLFS);
-  request->send(200, "text/plain", "Downloading recovery and restarting!"); });
+        strcpy(updateFS, backupURLFS);
+        request->send(200, "text/plain", "Redownloading filesystem and restarting!"); });
   server.on("/functions/getSystemInfo", HTTP_GET, [](AsyncWebServerRequest *request)
             {
-    File file = SPIFFS.open("/version.txt", "r");  // Read versions
-    String version = file.readString();
-    file.close();
-    String textToReturn = version + "\nChip ID: " + String(ESP.getChipId());
-    request->send(200, "text/plain", textToReturn); });
+        File file = LittleFS.open("/version.txt", "r");  // Read versions
+        String version = file.readString();
+        file.close();
+        String textToReturn = version + "\nChip ID: " + String(ESP.getChipId());
+        request->send(200, "text/plain", textToReturn); });
 
   server.on("/functions/updater/update", HTTP_POST, [](AsyncWebServerRequest *request)
             {
-              if (request->hasParam("firmware", true))
-                request->getParam("firmware", true)->value().toCharArray(updateFv, 150);
+        if (request->hasParam("firmware", true))
+            request->getParam("firmware", true)->value().toCharArray(updateFv, 150);
 
-              if (request->hasParam("filesystem", true))
-                request->getParam("filesystem", true)->value().toCharArray(updateFS, 150);
+        if (request->hasParam("filesystem", true))
+            request->getParam("filesystem", true)->value().toCharArray(updateFS, 150);
 
-              if (request->hasParam("versions", true))
-                request->getParam("versions", true)->value().toCharArray(versionString, 60); });
+        if (request->hasParam("versions", true))
+            request->getParam("versions", true)->value().toCharArray(versionString, 60); });
 
   server.on("/functions/connCheck", HTTP_HEAD, [](AsyncWebServerRequest *request)
             { request->send(200, "text/plain", "OK"); });
@@ -650,95 +681,106 @@ void initServer()
   // Functions - LEDs
   server.on("/functions/LEDs/checkFlashlight", HTTP_GET, [](AsyncWebServerRequest *request)
             {
-    String searchParams = "brightness=" + String(flashlightBrightness) + "&color[R]=" + String(flashlightColorR) + "&color[G]=" + String(flashlightColorG) + "&color[B]=" + String(flashlightColorB);
-    request->send(200, "application/x-www-form-urlencoded", searchParams); });
+        String searchParams = "brightness=" + String(flashlightBrightness) + "&color[R]=" + String(flashlightColorR) + "&color[G]=" + String(flashlightColorG) + "&color[B]=" + String(flashlightColorB);
+        request->send(200, "application/x-www-form-urlencoded", searchParams); });
   server.on(
       "/functions/LEDs/flashlight", HTTP_POST, [](AsyncWebServerRequest *request)
       {
-      patternNum = 0;
-      flashlightBrightness = request->getParam("brightness", true)->value().toFloat();
-      if(request->hasParam("color[R]", true))
-        flashlightColorR = request->getParam("color[R]", true)->value().toInt();
-      if(request->hasParam("color[G]", true))
-        flashlightColorG = request->getParam("color[G]", true)->value().toInt();
-      if(request->hasParam("color[B]", true))
-        flashlightColorB = request->getParam("color[B]", true)->value().toInt();
+                patternNum = 0;
+                flashlightBrightness = request->getParam("brightness", true)->value().toFloat();
+                if(request->hasParam("color[R]", true))
+                    flashlightColorR = request->getParam("color[R]", true)->value().toInt();
+                if(request->hasParam("color[G]", true))
+                    flashlightColorG = request->getParam("color[G]", true)->value().toInt();
+                if(request->hasParam("color[B]", true))
+                    flashlightColorB = request->getParam("color[B]", true)->value().toInt();
 
-    request->send(200, "text/plain", "OK"); });
+                request->send(200, "text/plain", "OK"); });
 
   server.on(
       "/functions/LEDs/changePattern", HTTP_POST, [](AsyncWebServerRequest *request)
       {
 
-    if(request->hasParam("start", true)) {
-      patternNum=-1;
-      displayPatternJson.to<JsonArray>();
-    }
+                if(request->hasParam("start", true)) {
+                    patternNum=-1;
+                    if (displayPatternJson != NULL) delete displayPatternJson;
+                    displayPatternJson = new DynamicJsonDocument(4096);
+                    displayPatternJson->to<JsonArray>();
+                }
 
-    JsonObject obj = displayPatternJson.as<JsonArray>().createNestedObject();
-    if(request->hasParam("from", true)) obj["from"] = request->getParam("from", true)->value();
-    if(request->hasParam("to", true)) obj["to"] = request->getParam("to", true)->value();
-    if(request->hasParam("color[R]", true)) obj["color[R]"] = request->getParam("color[R]", true)->value().toInt();
-    if(request->hasParam("color[G]", true)) obj["color[G]"] = request->getParam("color[G]", true)->value().toInt();
-    if(request->hasParam("color[B]", true)) obj["color[B]"] = request->getParam("color[B]", true)->value().toInt();
-    if(request->hasParam("animType", true)) obj["animType"] = request->getParam("animType", true)->value().toInt();
-    if(request->hasParam("animSpeed", true)) obj["animSpeed"] = request->getParam("animSpeed", true)->value().toInt();
-    if(request->hasParam("delay", true)) obj["delay"] = request->getParam("delay", true)->value().toInt();
-    if(request->hasParam("filename", true)) {
-      String filename = "";
-      const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-      for (uint8_t i = 0; i < 10; i++) filename += charset[random(sizeof(charset))];
-      String filepath = "/patterns/" + filename + ".json";
-      File file = SPIFFS.open(filepath, "w");
-      serializeJson(displayPatternJson, file);
-      file.close();
+                JsonObject obj = displayPatternJson->as<JsonArray>().createNestedObject();
+                if(request->hasParam("from", true)) obj["from"] = request->getParam("from", true)->value();
+                if(request->hasParam("to", true)) obj["to"] = request->getParam("to", true)->value();
+                if(request->hasParam("color[R]", true)) obj["color[R]"] = request->getParam("color[R]", true)->value().toInt();
+                if(request->hasParam("color[G]", true)) obj["color[G]"] = request->getParam("color[G]", true)->value().toInt();
+                if(request->hasParam("color[B]", true)) obj["color[B]"] = request->getParam("color[B]", true)->value().toInt();
+                if(request->hasParam("animType", true)) obj["animType"] = request->getParam("animType", true)->value().toInt();
+                if(request->hasParam("animSpeed", true)) obj["animSpeed"] = request->getParam("animSpeed", true)->value().toInt();
+                if(request->hasParam("delay", true)) obj["delay"] = request->getParam("delay", true)->value().toInt();
+                if(request->hasParam("filename", true)) {
+                    String filename = "";
+                    const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+                    for (uint8_t i = 0; i < 10; i++) {
+                        char randomChar = charset[random(sizeof(charset))];
+                        if (randomChar == ' ')  filename+= 'u';
+                        else filename+= randomChar;
+                    }
+                    patternFile = "/patterns/" + filename + ".json";
+                    File file = LittleFS.open(patternFile, "w");
+                    serializeJson(*displayPatternJson, file);
+                    file.close();
 
-      File patternsFile = SPIFFS.open("/patterns/patterns.txt", "a");
-      patternsFile.println(filename + "->" + request->getParam("filename", true)->value());
-      patternsFile.close();
+                    File patternsFile = LittleFS.open("/patterns/patterns.txt", "a");
+                    patternsFile.println(filename + "->" + request->getParam("filename", true)->value());
+                    patternsFile.close();
 
-      patternNum=1;
-    }
-    request->send(200, "text/plain", "OK"); });
+                    delete displayPatternJson;
+                    displayPatternJson = NULL;
+
+                    patternNum=1;
+                }
+                request->send(200, "text/plain", "OK"); });
 
   server.on(
       "/functions/LEDs/visualizer", HTTP_POST, [](AsyncWebServerRequest *request)
       {
-    patternNum=2;
-    float brightness = 0.4;
-    if(request->hasParam("brightness", true)) brightness=request->getParam("brightness", true)->value().toFloat();
-    for(uint8_t y=0; y<8; y++) {
-      for(uint8_t i=0; i<8; i++) {
-        if(request->hasParam("rows[" + String(y) + "][" + String(i) + "][R]", true)) strip.setPixelColor(led_map[7-i][y], strip.Color(request->getParam("rows[" + String(y) + "][" + String(i) + "][R]", true)->value().toInt()*brightness*0.4, request->getParam("rows[" + String(y) + "][" + String(i) + "][G]", true)->value().toInt()*brightness*0.4, request->getParam("rows[" + String(y) + "][" + String(i) + "][B]", true)->value().toInt()*brightness*0.4));
-        else strip.setPixelColor(led_map[7-i][y], strip.Color(0, 0, 0));
-      }
-    }
-    strip.show();
-    if(request->hasParam("end", true)) patternNum=0;
-    
-    request->send(200, "text/plain", "OK"); });
+                patternNum=2;
+                float brightness = 0.4;
+                if(request->hasParam("brightness", true)) brightness=request->getParam("brightness", true)->value().toFloat();
+                for(uint8_t y=0; y<8; y++) {
+                    for(uint8_t i=0; i<8; i++) {
+                        if(request->hasParam("rows[" + String(y) + "][" + String(i) + "][R]", true)) strip.setPixelColor(led_map[7-i][y], strip.Color(request->getParam("rows[" + String(y) + "][" + String(i) + "][R]", true)->value().toInt()*brightness*0.4, request->getParam("rows[" + String(y) + "][" + String(i) + "][G]", true)->value().toInt()*brightness*0.4, request->getParam("rows[" + String(y) + "][" + String(i) + "][B]", true)->value().toInt()*brightness*0.4));
+                        else strip.setPixelColor(led_map[7-i][y], strip.Color(0, 0, 0));
+                    }
+                }
+                strip.show();
+                if(request->hasParam("end", true)) patternNum=0;
+
+                request->send(200, "text/plain", "OK"); });
 
   server.on("/functions/LEDs/getSavedPattern", HTTP_GET, [](AsyncWebServerRequest *request)
-            { 
-        if(!request->hasParam("filename")) request->send(SPIFFS, "/patterns/patterns.txt", String(), true); 
-        else request->send(SPIFFS, "/patterns/" + request->getParam("filename")->value() + ".json", String(), true); });
-  server.on("/functions/LEDs/deleteSavedPattern", HTTP_POST, [](AsyncWebServerRequest *request)
-            { 
-        if(request->hasParam("filename", true)) {
-          const String filename = request->getParam("filename", true)->value(); // Delete line from patterns.txt
-          String fileContent = "";
-          File file = SPIFFS.open("/patterns/patterns.txt", "r");
-          while (file.available()) {
-            String line = file.readStringUntil('\n');
-            if (!strstr(line.c_str(), filename.c_str())) fileContent += line + "\n";
-          }
-          file.close(); 
-          SPIFFS.remove("/patterns/patterns.txt"); 
-          File newFile = SPIFFS.open("/patterns/patterns.txt", "w");
-          newFile.print(fileContent);
-          newFile.close();
+            {
+        if(!request->hasParam("filename")) request->send(LittleFS, "/patterns/patterns.txt", String(), true);
+        else request->send(LittleFS, "/patterns/" + request->getParam("filename")->value() + ".json", String(), true);; });
 
-          SPIFFS.remove("/patterns/" + filename + ".json"); 
+  server.on("/functions/LEDs/deleteSavedPattern", HTTP_POST, [](AsyncWebServerRequest *request)
+
+            {
+        if(request->hasParam("filename", true)) {
+            const String filename = request->getParam("filename", true)->value(); // Delete line from patterns.txt
+            String fileContent = "";
+            File file = LittleFS.open("/patterns/patterns.txt", "r");
+            while (file.available()) {
+                String line = file.readStringUntil('\n');
+                if (!strstr(line.c_str(), filename.c_str())) fileContent += line + "\n";
+            }
+            file.close();
+            LittleFS.remove("/patterns/patterns.txt");
+            File newFile = LittleFS.open("/patterns/patterns.txt", "w");
+            newFile.print(fileContent);
+            newFile.close();
+
+            LittleFS.remove("/patterns/" + filename + ".json");
         }
 
         request->send(200, "text/plain", "OK"); });
@@ -762,14 +804,20 @@ void setup()
   strip.begin(); // Init strips
   strip.fill(strip.Color(0, 0, 0));
 
-  if (!SPIFFS.begin())
+  if (!LittleFS.begin())
+  {
+    Serial.println("[ERROR] Filesystem failed to start, re-formatting and re-downloading...");
+    LittleFS.format();
     ESP.restart(); // Begin filesystem
+  }
 
   pinMode(LED_BUILTIN, OUTPUT); // Set pin modes
   digitalWrite(LED_BUILTIN, HIGH);
 
   if (WiFi_UpdateCredentialsFile)
+  {
     saveWiFiCredentials(ssid, password); // Save network config
+  }
 
   wiFiInit(); // Connect to wifi
 }
@@ -784,12 +832,16 @@ void loop()
 
   else if (patternNum == 1)
   {
-    for (JsonVariant obj : displayPatternJson.as<JsonArray>())
+    DynamicJsonDocument pattern(4096);
+    File file = LittleFS.open(patternFile, "r");
+    deserializeJson(pattern, file);
+    file.close();
+
+    for (JsonVariant obj : pattern.as<JsonArray>())
     {
-      if (patternNum != 1)
-        return;
       animate(characterToMap(obj["from"].as<String>()), characterToMap(obj["to"].as<String>()), obj["animType"].as<int>(), obj["animSpeed"].as<int>(), strip.Color(obj["color[R]"].as<int>() * 0.5, obj["color[G]"].as<int>() * 0.5, obj["color[B]"].as<int>() * 0.5));
-      if (!strlen(updateFv) && !strlen(updateFS))
+
+      if (!strlen(updateFv) && !strlen(updateFS) && patternNum == 1)
         delay(obj["delay"].as<int>());
     }
   }
@@ -801,7 +853,5 @@ void loop()
   }
 
   if (WiFi.status() == WL_CONNECTED && !serverOn)
-  {
     initServer(); // Start server if wifi initialized
-  }
 }

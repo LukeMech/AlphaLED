@@ -1,2 +1,0 @@
-Filesystem: 23.04.08
-Firmware: 23.04.08
